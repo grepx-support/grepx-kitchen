@@ -1,0 +1,24 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+# Permissions and the staff-role templates every new business starts with (seeded by `scripts/run.sh seed`).
+# A business's own copies are named <business>.<role>; its owner can change what each one may do (ACC-01..03).
+permissions:
+  manage_business: Business setup - locations, items, suppliers, users, roles, settings, costs (owner)
+  view_stock: See stock at every location and the movement history
+  warehouse_out: Warehouse out - send stock from the holding place to locations
+  warehouse_in: Receive stock and supplier deliveries
+  orders: Reorder recommendation and purchase orders
+  transfer: Move stock between stores
+  adjust_stock: Adjust stock (with a reason)
+  kitchen: Kitchen - production target, record production and ingredients used
+  closing: Staff closing - count, issues, sales
+  view_costs: See cost, COGS and profit figures
+  delivery: Delivery list (what leaves the warehouse) - not the production plan
+roles:
+  - {role_id: owner, name: Owner, perms: [manage_business, view_stock, warehouse_out, warehouse_in, orders, transfer, adjust_stock, kitchen, closing, view_costs, delivery]}
+  - {role_id: warehouse, name: Warehouse staff, perms: [view_stock, warehouse_out, warehouse_in, orders, transfer]}
+  - {role_id: kitchen, name: Kitchen staff, perms: [kitchen]}
+  - {role_id: closing, name: Store or truck staff, perms: [closing]}
+  - {role_id: delivery, name: Delivery, perms: [delivery]}

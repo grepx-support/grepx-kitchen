@@ -1,0 +1,13 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+# product-services/kitchen/stock-service - library lines are written by scripts/run.sh deps
+-e ../../../platform/libs/grepx-contracts
+-e ../../../platform/libs/grepx-config
+-e ../../../platform/libs/nexus-client
+-e ../../../platform/libs/grepx-store
+-e ../../../platform/libs/grepx-port-provider
+-e ../../../platform/libs/grepx-web-bootstrap
+-e ../../../platform/libs/nexus-logging
+-e ../../../platform/libs/grepx-service

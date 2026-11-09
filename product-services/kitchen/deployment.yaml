@@ -1,0 +1,65 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+# How the kitchen product plugs into the generic services (grepx.workspace.yaml `deployment:` points here).
+
+# Role ladder for the common services. Business users are all "staff": what each one may do comes from the staff role
+# of THEIR business (owner, warehouse, kitchen, closing, delivery - copied per business from catalog/access.yaml, so one
+# business can change its roles without touching another's - ACC-03). "admin" is the platform operator only (GrepX
+# staff who set up new businesses - Q2); a business owner is never "admin", so the platform's admin pages stay closed to them.
+roles:
+  member: member
+  staff: [staff, admin]
+  admin: admin
+
+phone:                     # numbers without + are read as Australian mobiles; anyone else types +<country code>
+  country: "61"
+  local: "4\\d{8}"
+  example: "412 345 678"
+
+links:                     # pages that messages link to (joined to SITE_URL)
+  home: /
+  dashboard: /#/today
+
+person:                    # the person record generic services read (name, email, phone); run.sh admin creates one
+  table: people
+  service: people-service
+  requests: people_requests
+  key: person_id
+
+messages:                  # message role a generic service sends -> template key (template-service)
+  welcome: welcome
+  broadcast: broadcast
+
+plugins:
+  path: product-services/kitchen/plugins
+
+kitchen:                   # read by kitchen-bff when it sets up a new business
+  staff_roles: [owner, warehouse, kitchen, closing, delivery]     # copied from catalog/access.yaml roles for each business
+  owner_role: owner
+
+monitor:                   # ops-monitor-service: the live operations screen at <site>/ops/
+  title: Kitchen Live
+  subtitle: Stock, kitchens and closings across every business
+  audience: admin          # the platform operator
+  history_hours: 12
+  map:
+    center: [134.0, -27.0]     # Australia; zoom out for other countries
+    zoom: 3.6
+    geocoder: nominatim
+  places:
+    table: locations
+    id: location_id
+    label: name
+    address: address
+    counts:
+      - {name: moves, table: stock_movements, by: location_id, where: "date = '{today}'"}
+      - {name: counted, table: stock_movements, by: location_id, where: "date = '{today}' AND kind = 'count'"}
+    known: {}
+  words: {places: Locations, moves: stock moves today, counted: items counted today}
+  kpis:
+    - {label: Businesses, table: businesses}
+    - {label: Closings today, table: closings, where: "date = '{today}'"}
+    - {label: Stock moves today, table: stock_movements, where: "date = '{today}'"}
+    - {label: Open purchase orders, table: purchase_orders, where: "state = 'saved'"}

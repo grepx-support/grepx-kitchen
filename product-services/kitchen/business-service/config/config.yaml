@@ -1,0 +1,12 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: business-service
+snapshot_table: business_requests
+project: kitchen
+description: "Businesses (each one a separate tenant: currency, time zone, modules on/off, planning and costing settings) and their locations (kitchen, warehouse, store, truck; holding place, days of cover, count frequency). Keywords: tenant, company, site, outlet, store, warehouse, settings, modules"
+owns: [businesses, locations]   # tables this service is the system of record for (kept in its own database)
+tables:                         # created in this service's own database by setup.sh (table: [indexed fields])
+  businesses: []
+  locations: [tenant_id, kind]

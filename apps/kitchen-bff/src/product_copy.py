@@ -1,0 +1,39 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+"""What people read when a request is refused (reason code -> sentence). Codes not listed fall back to the shared copy."""
+COPY = {
+    "MISSING_TENANT": "This account does not belong to a business.",
+    "UNKNOWN_BUSINESS": "That business does not exist.",
+    "BUSINESS_EXISTS": "That business already exists.",
+    "UNKNOWN_LOCATION": "That location does not exist in your business.",
+    "UNKNOWN_ITEM": "One of the items does not exist in your business.",
+    "UNKNOWN_SUPPLIER": "That supplier does not exist in your business.",
+    "UNKNOWN_ORDER": "That purchase order does not exist.",
+    "INVALID_NAME": "Please enter a name (2 to 80 characters).",
+    "INVALID_CURRENCY": "Use a 3-letter currency code, for example AUD.",
+    "INVALID_TIMEZONE": "Pick a time zone from the list, for example Australia/Sydney.",
+    "INVALID_KIND": "Pick one of the listed types.",
+    "INVALID_SETTING": "One of the settings is out of range.",
+    "INVALID_UNIT": "Enter a unit, for example kg, box or each.",
+    "INVALID_COST": "Enter a cost of 0 or more.",
+    "INVALID_QUANTITY": "Quantities must be numbers of 0 or more.",
+    "INVALID_AMOUNT": "Amounts must be numbers of 0 or more.",
+    "INVALID_MONTH": "Pick a month.",
+    "INVALID_DATE": "Pick today or a date in the last month.",
+    "NO_LINES": "Add at least one item with a quantity.",
+    "NO_HOLDING_LOCATION": "Keep at least one location that holds stock for the others (a warehouse or a kitchen storage area).",
+    "NOT_HOLDING_LOCATION": "This must be a location that holds stock (warehouse or storage area).",
+    "NOT_A_KITCHEN": "Only kitchens make finished goods.",
+    "NOT_FINISHED_GOOD": "Only finished products can be produced.",
+    "SAME_LOCATION": "Pick two different locations.",
+    "REASON_REQUIRED": "Say why the stock is being adjusted.",
+    "ALREADY_CLOSED": "This order was already received or cancelled.",
+    "ALREADY_SUBMITTED": "Today's closing for this location was already submitted.",
+    "STAFF_NAME_REQUIRED": "Enter your name.",
+    "UNKNOWN_SALES_TYPE": "One of the sales types is not set up for this business.",
+    "DUPLICATE_NAME": "An item with that name already exists.",
+    "MODULE_OFF": "This part of the app is switched off for your business.",
+    "UNKNOWN_ROLE": "Pick one of your business's roles.",
+}

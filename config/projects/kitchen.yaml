@@ -1,0 +1,6 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+# Settings for the kitchen product's own services and its BFF. Overrides config/common.yaml.
+catalog: product-services/kitchen/catalog   # permissions, roles, message templates (seeded by `run.sh seed`)

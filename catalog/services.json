@@ -1,0 +1,695 @@
+[
+  {
+    "name": "audit-log-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/audit-log-service",
+    "request_table": "audit_log",
+    "actions": [
+      "RECORD"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Append-only audit trail of business decisions. Keywords: audit, compliance, history",
+    "routes": [
+      "record"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "booking-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/booking-service",
+    "request_table": "booking_requests",
+    "actions": [
+      "BOOK",
+      "CANCEL",
+      "CHECK_IN",
+      "INTEREST",
+      "MARK",
+      "MOVE"
+    ],
+    "reasons": [
+      "ALREADY_ATTENDED",
+      "EVENT_CLOSED",
+      "INVALID_STATE",
+      "MISSING_FIELD",
+      "NOT_EVENT_DAY",
+      "NOT_REGISTERED",
+      "SLOT_FULL",
+      "SLOT_REQUIRED",
+      "UNKNOWN_EVENT",
+      "UNKNOWN_SLOT"
+    ],
+    "other_tables": [
+      "bookings"
+    ],
+    "summary": "Interest, bookings, cancel, move, check-in, attendance (attended / no-show / not eligible); event reminders; closes events. Keywords: rsvp, attendance, kiosk, walk-in",
+    "routes": [
+      "book",
+      "cancel",
+      "check_in",
+      "interest",
+      "mark",
+      "move"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "campaign-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/campaign-service",
+    "request_table": "campaign_requests",
+    "actions": [
+      "ANNOUNCE",
+      "BROADCAST",
+      "INVITE",
+      "PUBLISH_SOCIAL",
+      "TEST_SOCIAL"
+    ],
+    "reasons": [],
+    "other_tables": [
+      "social_posts"
+    ],
+    "summary": "Announcements, filtered invitations, broadcasts and social posts to audiences. Keywords: campaign, marketing, broadcast, audience",
+    "routes": [
+      "announce",
+      "broadcast",
+      "invite",
+      "publish_social",
+      "test_social"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "checklist-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/checklist-service",
+    "request_table": "checklist_requests",
+    "actions": [
+      "APPLY",
+      "REMOVE",
+      "SEED_TEMPLATE"
+    ],
+    "reasons": [
+      "MISSING_FIELD",
+      "UNKNOWN_TEMPLATE"
+    ],
+    "other_tables": [
+      "checklist_templates"
+    ],
+    "summary": "Reusable checklists (playbooks) applied to any target as dated tasks; idempotent. Keywords: playbook, template tasks",
+    "routes": [
+      "apply",
+      "remove",
+      "seed_template"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "event-report-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/event-report-service",
+    "request_table": "event_report_requests",
+    "actions": [
+      "SAVE_RETRO",
+      "SNAPSHOT"
+    ],
+    "reasons": [],
+    "other_tables": [
+      "event_reports"
+    ],
+    "summary": "Event outcome stats (funnel, fill and show rate, optional breakdown) and retrospectives. Keywords: report, retro, analytics",
+    "routes": [
+      "save_retro",
+      "snapshot"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "event-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/event-service",
+    "request_table": "event_requests",
+    "actions": [
+      "CLONE",
+      "COMPLETE",
+      "CREATE",
+      "REOPEN",
+      "SET_IMAGES",
+      "UPDATE"
+    ],
+    "reasons": [
+      "ALREADY_COMPLETED",
+      "INVALID_CAPACITY",
+      "INVALID_DATE",
+      "MISSING_FIELD",
+      "NOT_COMPLETED",
+      "TOO_EARLY",
+      "TOO_MANY_IMAGES",
+      "UNKNOWN_EVENT"
+    ],
+    "other_tables": [
+      "events"
+    ],
+    "summary": "Events: create/edit/clone, pictures, complete/reopen; optional time slots and checklist. Keywords: event, session, workshop, class, camp",
+    "routes": [
+      "clone",
+      "complete",
+      "create",
+      "reopen",
+      "set_images",
+      "update"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "access-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/identity/access-service",
+    "request_table": "access_requests",
+    "actions": [
+      "DELETE_ROLE",
+      "REGISTER_PERMISSION",
+      "SAVE_ROLE",
+      "SET_PERMISSION",
+      "SET_ROLE",
+      "SET_STAFF_ROLE"
+    ],
+    "reasons": [
+      "LAST_ADMIN",
+      "MISSING_FIELD",
+      "SELF_DEMOTION",
+      "UNKNOWN_PERMISSION",
+      "UNKNOWN_ROLE",
+      "UNKNOWN_STAFF_ROLE"
+    ],
+    "other_tables": [],
+    "summary": "Role ladder (from config roles:), volunteer roles, permission catalogue, personal permissions, effective permissions. Keywords: rbac, authorization, staff",
+    "routes": [
+      "delete_role",
+      "register_permission",
+      "save_role",
+      "set_permission",
+      "set_role",
+      "set_staff_role"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "auth-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/identity/auth-service",
+    "request_table": "auth_requests",
+    "actions": [
+      "CHANGE_PASSWORD",
+      "LINK_EXTERNAL",
+      "LOGIN",
+      "LOGIN_EXTERNAL",
+      "REGISTER",
+      "RESET_CONFIRM",
+      "RESET_REQUEST",
+      "SET_PASSWORD"
+    ],
+    "reasons": [
+      "EMAIL_TAKEN",
+      "INVALID_CREDENTIALS",
+      "INVALID_TOKEN",
+      "MISSING_FIELD",
+      "PROVIDER_NOT_CONFIGURED",
+      "UNKNOWN_PROVIDER",
+      "UNKNOWN_USER",
+      "WEAK_PASSWORD"
+    ],
+    "other_tables": [],
+    "summary": "Login credentials, sessions (JWT), password change/reset links. Keywords: login, password, token, authentication",
+    "routes": [
+      "change_password",
+      "link_external",
+      "login",
+      "login_external",
+      "register",
+      "reset_confirm",
+      "reset_request",
+      "set_password"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "media-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/media-service",
+    "request_table": "media_requests",
+    "actions": [
+      "DELETE",
+      "PROCESS"
+    ],
+    "reasons": [
+      "MISSING_FILE",
+      "NOT_AN_IMAGE",
+      "TOO_LARGE",
+      "UNKNOWN_KIND",
+      "UNKNOWN_MEDIA"
+    ],
+    "other_tables": [
+      "media"
+    ],
+    "summary": "Image uploads \u2192 resized WebP in local/S3 storage. Keywords: image, photo, upload, picture, avatar",
+    "routes": [
+      "delete",
+      "process"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "notification-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/notification-service",
+    "request_table": "notifications",
+    "actions": [
+      "SEND",
+      "TEST_CHANNEL"
+    ],
+    "reasons": [
+      "CHECK_FAILED",
+      "MISSING_RECIPIENT",
+      "NOT_CONFIGURED",
+      "UNKNOWN_TEMPLATE"
+    ],
+    "other_tables": [],
+    "summary": "Sends email/SMS/WhatsApp from templates with admin on/off + channel settings; circuit breaker per channel. Keywords: message, email, sms, whatsapp",
+    "routes": [
+      "send",
+      "test_channel"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "ops-monitor-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/ops-monitor-service",
+    "request_table": "",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Read-only live operations screen: every request and verdict as it happens, traces, service health, headline numbers and a live map of places (all set by the deployment's monitor: section). Keywords: monitor, ops, live, map, wall screen, command centre, dashboard, trace, observability",
+    "routes": [],
+    "reacts_to": []
+  },
+  {
+    "name": "people-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/people-service",
+    "request_table": "people_requests",
+    "actions": [
+      "CREATE",
+      "RESET_CAL_TOKEN",
+      "SET_PHOTO",
+      "UPDATE"
+    ],
+    "reasons": [
+      "EMAIL_TAKEN",
+      "INVALID_EMAIL",
+      "INVALID_NAME",
+      "INVALID_PHONE",
+      "MISSING_FIELD",
+      "UNKNOWN_PERSON"
+    ],
+    "other_tables": [
+      "people"
+    ],
+    "summary": "Generic person records: name, email, phone, photo, invite/referral code, calendar token; product fields via a profile plugin. Keywords: person, profile, contact, member",
+    "routes": [
+      "create",
+      "reset_cal_token",
+      "set_photo",
+      "update"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "questionnaire-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/questionnaire-service",
+    "request_table": "questionnaire_requests",
+    "actions": [
+      "CHAT",
+      "CHECK",
+      "CRITERIA"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Screening questionnaires and chat flows; the rules come from the product. Keywords: screening, chatbot, quiz, eligibility",
+    "routes": [
+      "chat",
+      "check",
+      "criteria",
+      "rules"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "recognition-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/recognition-service",
+    "request_table": "recognition_requests",
+    "actions": [
+      "ISSUE"
+    ],
+    "reasons": [],
+    "other_tables": [
+      "certificates",
+      "vouchers"
+    ],
+    "summary": "Certificates and vouchers for people who attended a completed event. Keywords: certificate, voucher, reward",
+    "routes": [
+      "issue"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "referral-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/referral-service",
+    "request_table": "referral_events",
+    "actions": [
+      "SCORE"
+    ],
+    "reasons": [],
+    "other_tables": [
+      "referral_scores"
+    ],
+    "summary": "Invite-a-friend points (weights in config) and leaderboard. Keywords: referral, leaderboard, invite",
+    "routes": [
+      "score"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "scheduler-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/scheduler-service",
+    "request_table": "schedule_requests",
+    "actions": [
+      "CANCEL",
+      "REGISTER"
+    ],
+    "reasons": [
+      "INVALID_SCHEDULE",
+      "MISSING_FIELD"
+    ],
+    "other_tables": [
+      "schedules",
+      "ticks"
+    ],
+    "summary": "Recurring/daily schedules that emit ticks to target services. Keywords: cron, job, reminder, timer",
+    "routes": [
+      "cancel",
+      "register"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "settings-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/settings-service",
+    "request_table": "settings_requests",
+    "actions": [
+      "DELETE",
+      "SET"
+    ],
+    "reasons": [],
+    "other_tables": [
+      "app_settings"
+    ],
+    "summary": "Admin-editable settings (integrations, message policies, screen options); secrets stay sealed. Keywords: settings, configuration, integrations, credentials, smtp, twilio, api keys",
+    "routes": [
+      "delete",
+      "set"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "slot-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/slot-service",
+    "request_table": "slot_requests",
+    "actions": [
+      "GENERATE",
+      "SET_ALL",
+      "SET_CAPACITY"
+    ],
+    "reasons": [
+      "BELOW_BOOKED",
+      "HAS_BOOKINGS",
+      "INVALID_PLAN",
+      "TOO_HIGH",
+      "UNKNOWN_SLOT"
+    ],
+    "other_tables": [
+      "slots"
+    ],
+    "summary": "Time slots per event with capacity rules. Keywords: booking slots, capacity, appointment",
+    "routes": [
+      "generate",
+      "set_all",
+      "set_capacity"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "task-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/task-service",
+    "request_table": "task_requests",
+    "actions": [
+      "CHANGE_STATUS",
+      "CLAIM",
+      "CREATE",
+      "DELETE",
+      "UPDATE"
+    ],
+    "reasons": [
+      "ALREADY_ASSIGNED",
+      "INVALID_STATE",
+      "MISSING_FIELD",
+      "NOT_ALLOWED",
+      "UNKNOWN_TASK"
+    ],
+    "other_tables": [
+      "tasks",
+      "ticks"
+    ],
+    "summary": "Tasks with owners, due dates, board states, history; due-soon reminders. Keywords: todo, planning, kanban, reminder",
+    "routes": [
+      "change_status",
+      "claim",
+      "create",
+      "delete",
+      "update"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "template-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/template-service",
+    "request_table": "templates",
+    "actions": [
+      "RESET",
+      "SAVE",
+      "SEED"
+    ],
+    "reasons": [
+      "MISSING_FIELD",
+      "UNKNOWN_CHANNEL",
+      "UNKNOWN_PLACEHOLDER",
+      "UNKNOWN_TEMPLATE"
+    ],
+    "other_tables": [
+      "message_settings",
+      "message_templates"
+    ],
+    "summary": "Message templates per product + admin custom wording with safe {placeholders}. Keywords: wording, automatic messages",
+    "routes": [
+      "reset",
+      "save",
+      "seed"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "business-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/business-service",
+    "request_table": "business_requests",
+    "actions": [
+      "CREATE",
+      "SAVE_LOCATION",
+      "UPDATE"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Businesses (each one a separate tenant: currency, time zone, modules on/off, planning and costing settings) and their locations (kitchen, warehouse, store, truck; holding place, days of cover, count frequency). Keywords: tenant, company, site, outlet, store, warehouse, settings, modules",
+    "routes": [
+      "create",
+      "save_location",
+      "update"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "closing-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/closing-service",
+    "request_table": "closing_requests",
+    "actions": [
+      "SUBMIT"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "End-of-day staff closing at a location: staff name, date, issues, counted stock (shown next to what the system expects) and sales by type; a submitted closing replaces system stock with the count. Keywords: end of day, shift close, stocktake, cash-up, daily report",
+    "routes": [
+      "submit"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "costing-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/costing-service",
+    "request_table": "costing_requests",
+    "actions": [
+      "SET_OVERHEAD",
+      "SUMMARY"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Cost of goods sold for every count period (ingredient cost used / sales), costing average with labour, rent and other costs, acceptable COGS range alert, monthly summary with net profit that is never shown while a cost line is missing. Keywords: COGS, food cost, margin, profit and loss, P&L, overheads, labour, rent",
+    "routes": [
+      "set_overhead",
+      "summary"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "item-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/item-service",
+    "request_table": "item_requests",
+    "actions": [
+      "SAVE_ITEM",
+      "SAVE_RECIPE",
+      "SAVE_SUPPLIER"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "What a food business buys, makes and sells: items (ingredient, finished product, supply) with unit and cost, suppliers, simple recipes (output of one batch + optional ingredient list). Keywords: product, ingredient, sku, supplier, vendor, recipe, batch, cost",
+    "routes": [
+      "save_item",
+      "save_recipe",
+      "save_supplier"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "planning-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/planning-service",
+    "request_table": "planning_requests",
+    "actions": [
+      "PRODUCTION_TARGET",
+      "REORDER",
+      "SET_TARGET",
+      "WAREHOUSE_IN",
+      "WAREHOUSE_OUT"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Recommendations from past usage: weekly production target (finished goods, batches, ingredients to buy), warehouse out (what to send each location for its days of cover), warehouse in (what the holding place needs for the week), reorder quantities per supplier with the previous recommendation and large changes flagged; manual targets when there is no history. Keywords: forecast, par level, replenishment, reorder point, production plan, demand",
+    "routes": [
+      "production_target",
+      "reorder",
+      "set_target",
+      "warehouse_in",
+      "warehouse_out"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "purchase-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/purchase-service",
+    "request_table": "purchase_requests",
+    "actions": [
+      "CANCEL",
+      "COPY",
+      "RECEIVE",
+      "SAVE"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Purchase orders to suppliers: save, change, copy, cancel, receive in full or with changed quantities (receipt adds stock at the holding place); ready-to-send text for WhatsApp. Keywords: PO, supplier order, procurement, receiving, goods in",
+    "routes": [
+      "cancel",
+      "copy",
+      "receive",
+      "save"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "stock-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/stock-service",
+    "request_table": "stock_requests",
+    "actions": [
+      "ADJUST",
+      "COUNT",
+      "PRODUCE",
+      "RECEIVE",
+      "SEND",
+      "TRANSFER",
+      "USE"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Stock of every item at every location and the movement history behind it (receive, warehouse out, transfer, production, ingredient use, adjustment with reason, count). Every change records who, when, why and the unit cost; history is append-only. Keywords: inventory, stock level, ledger, transfer, adjustment, stocktake, count",
+    "routes": [
+      "adjust",
+      "count",
+      "produce",
+      "receive",
+      "send",
+      "transfer",
+      "use"
+    ],
+    "reacts_to": []
+  }
+]

@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: purchase-service
+snapshot_table: purchase_requests
+project: kitchen
+description: "Purchase orders to suppliers: save, change, copy, cancel, receive in full or with changed quantities (receipt adds stock at the holding place); ready-to-send text for WhatsApp. Keywords: PO, supplier order, procurement, receiving, goods in"
+owns: [purchase_orders]   # tables this service is the system of record for (kept in its own database)
+tables:                   # created in this service's own database by setup.sh (table: [indexed fields])
+  purchase_orders: [tenant_id, state, supplier_id]

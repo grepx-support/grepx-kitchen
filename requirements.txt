@@ -1,0 +1,31 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+# Every platform library + tooling in one environment (scripts/setup.sh).
+-e platform/libs/grepx-contracts
+-e platform/libs/grepx-config
+-e platform/libs/nexus-client
+-e platform/libs/grepx-audit
+-e platform/libs/grepx-auth
+-e platform/libs/grepx-common
+-e platform/libs/grepx-store
+-e platform/libs/grepx-port-provider
+-e platform/libs/grepx-web-bootstrap
+-e platform/libs/nexus-logging
+-e platform/libs/grepx-service
+-e platform/libs/grepx-storage
+-e platform/libs/grepx-bff
+-e platform/libs/nexus-testkit
+-e platform/libs/grepx-testkit
+pyyaml>=6
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9
+httpx>=0.27
+pillow>=10
+pyjwt>=2.8
+cryptography>=41
+pytest>=8
+pydantic[email]>=2.7
+requests>=2.31

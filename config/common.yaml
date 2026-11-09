@@ -1,0 +1,13 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+# Platform defaults for this deployment (the product's deployment file is laid over them).
+# Kitchen has its own Nexus hub on 7880 so it can run on the same machine as another product (blood donation uses 7878).
+nexus:
+  host: 127.0.0.1
+  port: 7880
+logging:
+  log_dir: logs
+database:
+  url: sqlite:///data/{service}.db

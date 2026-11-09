@@ -1,0 +1,28 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+# What this deployment runs - one product on the shared platform - with the versions it is pinned to.
+# This repo is the workspace: ./workspace.sh links the other repos in (platform/, scripts/, observability/, infra/, web/
+# from grepx-platform; common-services/ from grepx-services; the Nexus binary from grepx-nexus-cpp).
+product: kitchen
+deployment: product-services/kitchen/deployment.yaml     # how the product plugs into the generic services
+
+platform:                     # repo grepx-platform (../grepx-platform): libraries, contracts generator, tools, scripts, web shell
+  version: 0.1.0
+  libs: platform/libs
+  tools: platform/tools
+nexus:                        # repo grepx-nexus-cpp (../grepx-nexus-cpp): the hub
+  version: 0.1.0
+  binary: platform/nexus-server/bin/nexus_server
+  sha256: ""                  # empty = not pinned yet (scripts/run.sh workspace pin)
+services:                     # repo grepx-services (../grepx-services): the generic services, released together
+  version: 0.1.0
+  path: common-services
+product_repo:                 # this repo, grepx-kitchen: everything only this product needs
+  services: product-services/kitchen
+  apps: [apps/kitchen-bff, apps/web, apps/mobile]
+tests:
+  skip: [common-services]     # the generic services' own suites are written against the reference product (blood donation)
+                              # and run in that workspace; here: platform, kitchen services, kitchen-bff (incl. the common
+                              # services it uses, end to end)
