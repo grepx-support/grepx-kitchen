@@ -4,6 +4,6 @@
 
 """Single import door for stock-service vocabulary."""
 from .stock_action import StockAction
-from .vocabulary import MovementKind, ReasonCode, Table
+from .vocabulary import DeliveryState, MovementKind, ReasonCode, Table
 
-__all__ = ["MovementKind", "ReasonCode", "StockAction", "Table"]
+__all__ = ["DeliveryState", "MovementKind", "ReasonCode", "StockAction", "Table"]

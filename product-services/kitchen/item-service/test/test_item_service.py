@@ -53,3 +53,15 @@ def test_items_suppliers_recipes(h):
     assert call(h, action="SAVE_ITEM", tenant_id="ghost", name="Milk", kind="ingredient", unit="l").reason == "UNKNOWN_BUSINESS"
     changed = call(h, action="SAVE_ITEM", tenant_id="hft", item_id=beef_id, cost=13)
     assert changed.ok and changed.fields["item"]["cost"] == 13 and changed.fields["item"]["unit"] == "kg"
+
+
+def test_reorder_sets_the_listing_order_of_own_rows_only(h):
+    ids = [call(h, action="SAVE_ITEM", tenant_id="hft", name=n, kind="ingredient", unit="kg").fields["item"]["item_id"] for n in ("A", "B", "C")]
+    done = call(h, action="REORDER", tenant_id="hft", list="items", ids=[ids[2], ids[0]])
+    assert done.ok and done.fields["count"] == 2
+    rows = {r["_key"]: r for r in h.rows("items")}
+    assert (rows[ids[2]]["sort"], rows[ids[0]]["sort"]) == (0, 1) and "sort" not in rows[ids[1]]
+    assert rows[ids[2]]["name"] == "C" and rows[ids[2]]["unit"] == "kg"          # the rest of the row is kept
+    assert call(h, action="REORDER", tenant_id="cafe", list="items", ids=[ids[0]]).reason == "INVALID_LIST"   # not theirs
+    assert call(h, action="REORDER", tenant_id="hft", list="items", ids=[ids[0], ids[0]]).reason == "INVALID_LIST"
+    assert call(h, action="REORDER", tenant_id="hft", list="recipes", ids=[ids[0]]).reason == "INVALID_LIST"

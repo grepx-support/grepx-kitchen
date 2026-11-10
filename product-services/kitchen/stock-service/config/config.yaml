@@ -6,7 +6,8 @@ service_name: stock-service
 snapshot_table: stock_requests
 project: kitchen
 description: "Stock of every item at every location and the movement history behind it (receive, warehouse out, transfer, production, ingredient use, adjustment with reason, count). Every change records who, when, why and the unit cost; history is append-only. Keywords: inventory, stock level, ledger, transfer, adjustment, stocktake, count"
-owns: [stock_levels, stock_movements]   # tables this service is the system of record for (kept in its own database)
+owns: [stock_levels, stock_movements, deliveries]   # tables this service is the system of record for (kept in its own database)
 tables:                                 # created in this service's own database by setup.sh (table: [indexed fields])
   stock_levels: [tenant_id, location_id, item_id]
   stock_movements: [tenant_id, location_id, item_id, kind, date]
+  deliveries: [tenant_id, state, date]

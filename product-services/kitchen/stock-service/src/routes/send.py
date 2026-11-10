@@ -5,7 +5,7 @@
 """SEND - warehouse out: stock leaves the holding place for a kitchen, store or truck (R1, INV-02/03/06)."""
 from grepx_service import RequestContext
 
-from dto import MovementKind, ReasonCode
+from dto import DeliveryState, MovementKind, ReasonCode, Table
 from .common import Stop, run
 
 
@@ -24,5 +24,10 @@ def handle(ctx: RequestContext) -> None:
                           "delta": -l["qty"], "other_location_id": target["_key"]})
             steps.append({"location_id": target["_key"], "item_id": l["item_id"], "kind": MovementKind.SEND_IN.value,
                           "delta": l["qty"], "other_location_id": source["_key"]})
-        return book.record(steps, items)
+        moves = book.record(steps, items)
+        book.ctx.emitter.submit(Table.DELIVERIES.value, book.ctx.key, "ACCEPTED", {
+            "delivery_id": book.ctx.key, "tenant_id": book.tenant, "state": DeliveryState.SENT.value,
+            "from_location_id": source["_key"], "to_location_id": target["_key"], "date": moves[0]["date"],
+            "sent_at": moves[0]["at"], "sent_by": book.ctx.text("actor_name"), "lines": len(lines)})
+        return moves
     run(ctx, body)

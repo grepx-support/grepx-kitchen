@@ -86,3 +86,14 @@ def test_rules_at_the_edges(h):
 def test_a_closing_without_counts_still_closes_the_day(h):
     v = call(h, action="COUNT", tenant_id="hft", location_id="s1", lines=[], ref="closing-2")
     assert v.ok and v.fields["movements"] == 0
+
+
+def test_a_warehouse_out_is_a_delivery_until_the_destination_confirms_it(h):
+    call(h, action="RECEIVE", tenant_id="hft", location_id="wh", lines=[{"item_id": "beef", "qty": 10}])
+    sent = call(h, action="SEND", tenant_id="hft", from_location_id="wh", to_location_id="s1", lines=[{"item_id": "beef", "qty": 4}])
+    trip = h.rows("deliveries")[0]
+    assert sent.ok and (trip["state"], trip["to_location_id"], trip["lines"], trip["sent_by"]) == ("sent", "s1", 1, "Sam")
+    done = call(h, action="DELIVERED", tenant_id="hft", delivery_id=trip["_key"])
+    assert done.ok and h.rows("deliveries")[0]["state"] == "delivered" and qty(h, "s1", "beef") == 4   # stock moved once
+    assert call(h, action="DELIVERED", tenant_id="hft", delivery_id=trip["_key"]).reason == "ALREADY_DELIVERED"
+    assert call(h, action="DELIVERED", tenant_id="cafe", delivery_id=trip["_key"]).reason == "UNKNOWN_DELIVERY"

@@ -9,6 +9,7 @@ from enum import Enum
 class Table(str, Enum):
     STOCK_LEVELS = "stock_levels"
     STOCK_MOVEMENTS = "stock_movements"
+    DELIVERIES = "deliveries"        # one per warehouse-out: sent -> delivered
 
 
 class MovementKind(str, Enum):
@@ -23,6 +24,11 @@ class MovementKind(str, Enum):
     COUNT = "count"                  # counted at closing: replaces system stock, difference kept (Q6)
 
 
+class DeliveryState(str, Enum):
+    SENT = "sent"
+    DELIVERED = "delivered"
+
+
 class ReasonCode(str, Enum):
     MISSING_TENANT = "MISSING_TENANT"
     UNKNOWN_BUSINESS = "UNKNOWN_BUSINESS"
@@ -35,3 +41,5 @@ class ReasonCode(str, Enum):
     NOT_A_KITCHEN = "NOT_A_KITCHEN"
     NOT_FINISHED_GOOD = "NOT_FINISHED_GOOD"
     REASON_REQUIRED = "REASON_REQUIRED"
+    UNKNOWN_DELIVERY = "UNKNOWN_DELIVERY"
+    ALREADY_DELIVERED = "ALREADY_DELIVERED"

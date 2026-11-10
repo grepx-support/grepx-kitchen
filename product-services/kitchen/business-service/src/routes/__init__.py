@@ -6,12 +6,13 @@
 from grepx_service import ActionDispatcher
 
 from dto import BusinessAction
-from . import create, save_location, update
+from . import create, reorder_locations, save_location, update
 
 TABLE = "business_requests"
 ROUTES = {
     BusinessAction.CREATE: create.handle,
     BusinessAction.UPDATE: update.handle,
     BusinessAction.SAVE_LOCATION: save_location.handle,
+    BusinessAction.REORDER_LOCATIONS: reorder_locations.handle,
 }
 handle = ActionDispatcher(ROUTES, BusinessAction, TABLE)

@@ -63,3 +63,14 @@ def test_locations_need_a_holding_place_and_stay_in_their_business(h):
     assert call(h, action="SAVE_LOCATION", tenant_id="cafe", location_id=wid, name="Mine now").reason == "UNKNOWN_LOCATION"
     assert call(h, action="SAVE_LOCATION", tenant_id="hft", name="Boat", kind="boat").reason == "INVALID_KIND"
     assert len(h.rows("locations", tenant_id="hft")) == 2
+
+
+def test_reorder_locations_of_own_business_only(h):
+    for t in ("hft", "cafe"):
+        call(h, action="CREATE", tenant_id=t, name=f"{t} Co", currency="AUD", timezone="Australia/Sydney")
+    ids = [call(h, action="SAVE_LOCATION", tenant_id="hft", name=n, kind=k).fields["location"]["location_id"]
+           for n, k in (("Central", "warehouse"), ("Shop", "store"))]
+    assert call(h, action="REORDER_LOCATIONS", tenant_id="hft", ids=[ids[1], ids[0]]).ok
+    rows = {r["_key"]: r for r in h.rows("locations")}
+    assert (rows[ids[1]]["sort"], rows[ids[0]]["sort"]) == (0, 1) and rows[ids[0]]["kind"] == "warehouse"
+    assert call(h, action="REORDER_LOCATIONS", tenant_id="cafe", ids=ids).reason == "INVALID_LIST"

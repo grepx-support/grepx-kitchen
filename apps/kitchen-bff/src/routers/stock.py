@@ -10,7 +10,7 @@ import grepx_contracts as gc
 from fastapi import APIRouter, Depends
 
 from grepx_bff.errors import ApiError
-from kitchen import Kitchen, allow, named
+from kitchen import Kitchen, allow, listed, named
 
 router = APIRouter(prefix="/stock", tags=["stock"])
 INV = "inventory"
@@ -32,8 +32,8 @@ def levels(location_id: str = "", k: Kitchen = Depends(allow("view_stock", "ware
 def items(k: Kitchen = Depends(allow())):
     """Every active item of the business (name, unit, kind) - for adding a line on any stock screen. No costs here."""
     rows = [r for r in k.rows(gc.item.ITEMS) if r.get("active", True)]
-    return {"items": sorted(({"id": r["_key"], "name": r.get("name", ""), "unit": r.get("unit", ""), "kind": r.get("kind", "")} for r in rows),
-                            key=lambda r: r["name"].lower())}
+    return {"items": [{"id": r["_key"], "name": r.get("name", ""), "unit": r.get("unit", ""), "kind": r.get("kind", ""),
+                       "category": r.get("category", "")} for r in listed(rows, "name")]}
 
 
 @router.get("/movements")
@@ -90,19 +90,33 @@ def adjust(body: dict, k: Kitchen = Depends(allow("adjust_stock", module=INV))):
                                                        "note": body.get("note", "")})
 
 
+DELIVERY = allow("delivery", "warehouse_out", module=INV)
+
+
 @router.get("/deliveries")
-def deliveries(date: str = "", k: Kitchen = Depends(allow("delivery", "warehouse_out", module=INV))):
-    """What left the warehouse (by day and destination) - the delivery person's list, never the production plan."""
+def deliveries(date: str = "", k: Kitchen = Depends(DELIVERY)):
+    """What left the warehouse (by day and destination) - the delivery person's list, never the production plan.
+    Each trip is `sent` until the destination confirms it (`delivered`); trips from before tracking show as delivered."""
     rows = [r for r in k.rows(gc.stock.STOCK_MOVEMENTS, kind="send_out") if not date or r.get("date") == date]
     places, items = {r["_key"]: r for r in k.rows(gc.business.LOCATIONS)}, k.items()
+    tracked = {r["_key"]: r for r in k.rows(gc.stock.DELIVERIES)}
     trips: dict = defaultdict(list)
     for r in sorted(rows, key=lambda r: r.get("at", ""), reverse=True)[:500]:
         trips[(r.get("date"), r.get("request_id"))].append(r)
     out = []
-    for (day, _), moves in trips.items():
-        first = moves[0]
-        out.append({"date": day, "at": first.get("at"), "from": places.get(first["location_id"], {}).get("name", ""),
+    for (day, request_id), moves in trips.items():
+        first, track = moves[0], tracked.get(request_id) or {}
+        out.append({"id": request_id, "date": day, "at": first.get("at"), "from": places.get(first["location_id"], {}).get("name", ""),
                     "to": places.get(first.get("other_location_id", ""), {}).get("name", ""), "by": first.get("user_name", ""),
+                    "state": track.get("state", "delivered"), "delivered_by": track.get("delivered_by", ""),
+                    "delivered_at": track.get("delivered_at", ""), "tracked": bool(track),
                     "lines": [{"item_name": items.get(m["item_id"], {}).get("name", m["item_id"]), "unit": items.get(m["item_id"], {}).get("unit", ""),
                                "qty": -m["qty"]} for m in moves]})
     return {"deliveries": out}
+
+
+@router.post("/deliveries/{delivery_id}/delivered")
+def delivered(delivery_id: str, body: dict | None = None, k: Kitchen = Depends(DELIVERY)):
+    """The delivery board: a trip arrived (moved from Sent to Delivered)."""
+    return k.cmd(gc.stock.REQUESTS, gc.stock.SERVICE, {"action": "DELIVERED", "delivery_id": delivery_id,
+                                                       "note": (body or {}).get("note", "")})["delivery"]

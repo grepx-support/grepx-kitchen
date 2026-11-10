@@ -76,6 +76,11 @@ def allow(*perms: str, module: str = ""):
     return check
 
 
+def listed(rows, *then: str) -> list[dict]:
+    """Rows in the order the owner dragged them into (`sort`), unsorted ones after, then by the given fields."""
+    return sorted(rows, key=lambda r: (r.get("sort") is None, r.get("sort") or 0, *(str(r.get(f, "")) for f in then)))
+
+
 def named(rows: list[dict], items: dict[str, dict], places: dict[str, dict] | None = None) -> list[dict]:
     """Rows with the item (and location) names a screen shows."""
     out = []

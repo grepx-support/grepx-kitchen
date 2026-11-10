@@ -10,3 +10,4 @@ class BusinessAction(str, Enum):
     CREATE = "CREATE"
     UPDATE = "UPDATE"
     SAVE_LOCATION = "SAVE_LOCATION"
+    REORDER_LOCATIONS = "REORDER_LOCATIONS"   # the order locations are listed in (drag and drop in setup)

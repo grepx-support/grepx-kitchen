@@ -1,0 +1,73 @@
+/*
+ * Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+ * This file is part of the GrepX platform and is proprietary and confidential.
+ * Unauthorised copying, use, modification or distribution is strictly prohibited.
+ */
+
+/* Kitchen-only pieces (the kit has the rest): home tiles, feeds, target cards, closing wizard, recipe and setup lists. */
+.pick { margin: 0; min-width: 220px; }
+.k-hello { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: 20px; align-items: center; }
+.k-hello h2 { font-size: 1.6rem; margin: 2px 0; }
+.k-date { margin: 0; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .06em; font-size: 12px; }
+.k-jobs { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.k-job { display: grid; gap: 2px; padding: 12px; border-radius: 14px; color: var(--ink); border: 1px solid var(--line);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--area) 14%, var(--card)), var(--card) 70%); transition: transform .15s, box-shadow .2s; }
+.k-job:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.k-job span { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: #fff; margin-bottom: 6px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--area) 60%, #fff), var(--area)); box-shadow: 0 8px 16px -8px var(--area); }
+.k-job small { color: var(--muted); }
+.k-figs { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; font-size: 13px; color: var(--muted); }
+.k-figs b { font-size: 1.25rem; color: var(--ink); }
+.k-figs .bad b { color: var(--bad); } .k-figs .ok b { color: var(--good); }
+.k-big { font-size: 2.2rem; font-weight: 800; margin: 0 0 8px; letter-spacing: -.03em; } .k-big small { font-size: 14px; color: var(--muted); font-weight: 600; }
+.k-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px dashed var(--line); color: var(--ink); font-size: 14px; }
+.k-row span:nth-child(2) { flex: 1; color: var(--ink-2); } .k-row:last-child { border-bottom: 0; }
+.k-net { margin: 10px 0 0; } .k-issue { margin: 2px 0 6px; font-size: 13px; color: var(--warn); }
+.k-dots { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.k-dots span { padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; background: var(--bg-2); color: var(--muted); }
+.k-dots span.on { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+.k-dots span.on::before { content: "✓ "; }
+.k-feed { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.k-feed li { display: grid; grid-template-columns: 12px 1fr auto auto; gap: 10px; align-items: center; padding: 6px 0; font-size: 14px; }
+.k-feed i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent); }
+.k-feed-what { display: grid; } .k-feed-what b { text-transform: capitalize; } .k-feed small { color: var(--muted); }
+.k-feed time { color: var(--muted); font-size: 12px; }
+
+/* page toolbars */
+.k-bar { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 16px; }
+.k-bar .grow { flex: 1; }
+.k-section { margin-top: 22px; }
+.k-section > h2 { display: flex; align-items: center; gap: 8px; }
+
+/* kitchen target cards */
+.k-targets { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.k-target { padding: 16px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow);
+  border-top: 4px solid var(--area); display: grid; gap: 8px; animation: kit-fade .3s ease-out both; }
+.k-target h3 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.k-target .num { font-size: 2rem; font-weight: 800; letter-spacing: -.03em; }
+.k-target .num small { font-size: 13px; color: var(--muted); font-weight: 600; }
+.k-target .meta { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* closing wizard */
+.k-count { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.k-count label { display: grid; grid-template-columns: 1fr 110px; gap: 4px 10px; align-items: center; margin: 0; padding: 10px 12px; border-radius: 14px;
+  background: var(--card); border: 1px solid var(--line); color: var(--ink); font-size: 14px; }
+.k-count label small { grid-column: 1; color: var(--muted); font-weight: 500; }
+.k-count label input { grid-row: 1 / span 2; grid-column: 2; text-align: center; font-weight: 700; }
+.k-count label.done { border-color: var(--good); background: color-mix(in srgb, var(--good) 6%, var(--card)); }
+.k-diff { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px dashed var(--line); }
+.k-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }
+.k-done { text-align: center; padding: 40px 16px; } .k-done .kit-icon { color: var(--good); }
+
+/* setup lists (drag to reorder) */
+.k-sort { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.k-sort li { display: grid; grid-template-columns: auto auto 1fr auto; gap: 10px; align-items: center; padding: 8px 10px 8px 4px; border-radius: 14px;
+  background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.k-sort li .tag { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--area, var(--primary)) 14%, transparent); }
+.k-sort li .who { display: grid; } .k-sort li .who small { color: var(--muted); }
+.k-perms { display: grid; gap: 4px 14px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+@media (max-width: 760px) {
+  .k-hello { grid-template-columns: 1fr; }
+  .k-count { grid-template-columns: 1fr; }
+}

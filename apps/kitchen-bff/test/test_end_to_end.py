@@ -111,6 +111,13 @@ def test_the_weekly_and_daily_cycle(env):
     ok(api.post("/api/v1/stock/send", headers=wes, json={"from_location_id": wh, "to_location_id": truck, "lines": [{"item_id": birria, "qty": 30}]}))
     trips = ok(api.get("/api/v1/stock/deliveries", headers=dan))["deliveries"]
     assert trips[0]["to"] == "Events truck" and trips[0]["lines"][0]["qty"] == 30
+    assert trips[0]["state"] == "sent" and trips[0]["tracked"]                                         # delivery board
+    assert ok(api.post(f"/api/v1/stock/deliveries/{trips[0]['id']}/delivered", headers=dan, json={}))["state"] == "delivered"
+    assert ok(api.get("/api/v1/stock/deliveries", headers=dan))["deliveries"][0]["delivered_by"]
+    places = [l["id"] for l in ok(api.get("/api/v1/setup", headers=owner))["locations"]]
+    ok(api.post("/api/v1/setup/order", headers=owner, json={"list": "locations", "ids": places[::-1]}))  # dragged in setup
+    assert [l["id"] for l in ok(api.get("/api/v1/setup", headers=owner))["locations"]] == places[::-1]
+    assert api.post("/api/v1/setup/order", headers=wes, json={"list": "items", "ids": []}).status_code == 403
     assert api.get(f"/api/v1/kitchen/target?location_id={kit}", headers=dan).status_code == 403            # not the production plan
 
     form = ok(api.get(f"/api/v1/closing/form?location_id={truck}", headers=tia))

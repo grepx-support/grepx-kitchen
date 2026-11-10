@@ -10,3 +10,4 @@ class ItemAction(str, Enum):
     SAVE_ITEM = "SAVE_ITEM"
     SAVE_SUPPLIER = "SAVE_SUPPLIER"
     SAVE_RECIPE = "SAVE_RECIPE"
+    REORDER = "REORDER"          # the order items or suppliers are listed in (drag and drop in setup)

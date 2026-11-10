@@ -1,12 +1,45 @@
 {
   "name": "Kitchen Stock & Costing",
   "logo": "🍳",
-  "tagline": "Stock, kitchen, orders and daily cost - on every phone.",
-  "theme": { "primary": "#0f766e", "primary-ink": "#ffffff" },
+  "tagline": "Stock, kitchen, orders and daily cost",
+  "theme": {
+    "primary": "#0d9488",
+    "primary-ink": "#ffffff"
+  },
+  "areas": {
+    "home": "#0d9488",
+    "kitchen": "#f97316",
+    "stock": "#0ea5e9",
+    "out": "#06b6d4",
+    "in": "#14b8a6",
+    "move": "#8b5cf6",
+    "deliveries": "#0891b2",
+    "orders": "#7c3aed",
+    "closing": "#2563eb",
+    "costs": "#16a34a",
+    "setup": "#475569",
+    "platform": "#6366f1"
+  },
   "member_role": "member",
-  "roles": ["staff", "admin"],
+  "roles": [
+    "staff",
+    "admin"
+  ],
   "signup": false,
   "home_after_login": "#/",
-  "modules": ["core/auth", "kitchen/today", "kitchen/kitchen", "kitchen/stock", "kitchen/orders", "kitchen/closing", "kitchen/costs",
-              "kitchen/setup", "kitchen/platform", "core/admin"]
+  "modules": [
+    "core/auth",
+    "kitchen/today",
+    "kitchen/kitchen",
+    "kitchen/stock",
+    "kitchen/orders",
+    "kitchen/closing",
+    "kitchen/costs",
+    "kitchen/setup",
+    "kitchen/platform",
+    "core/admin"
+  ],
+  "styles": [
+    "kitchen/kitchen.css"
+  ]
 }

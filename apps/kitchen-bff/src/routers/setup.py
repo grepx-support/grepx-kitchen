@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 from grepx_bff.errors import ApiError
 from grepx_bff.views import clean
-from kitchen import Kitchen, allow
+from kitchen import Kitchen, allow, listed
 
 router = APIRouter(prefix="/setup", tags=["setup"])
 owner = allow("manage_business")
@@ -25,9 +25,9 @@ def everything(k: Kitchen = Depends(owner)):
         if person:
             users.append({"id": access["_key"], "name": person.get("name", ""), "email": person.get("email", ""), "phone": person.get("phone", ""),
                           "staff_role_id": access.get("staff_role_id", ""), "perms": access.get("effective") or []})
-    return {"business": clean(k.business), "locations": [clean(r) for r in k.rows(gc.business.LOCATIONS)],
-            "items": sorted((clean(r) for r in k.rows(gc.item.ITEMS)), key=lambda r: (r.get("kind", ""), r.get("name", ""))),
-            "suppliers": [clean(r) for r in k.rows(gc.item.SUPPLIERS)], "recipes": [clean(r) for r in k.rows(gc.item.RECIPES)],
+    return {"business": clean(k.business), "locations": listed([clean(r) for r in k.rows(gc.business.LOCATIONS)], "name"),
+            "items": listed([clean(r) for r in k.rows(gc.item.ITEMS)], "kind", "name"),
+            "suppliers": listed([clean(r) for r in k.rows(gc.item.SUPPLIERS)], "name"), "recipes": [clean(r) for r in k.rows(gc.item.RECIPES)],
             "roles": roles, "users": sorted(users, key=lambda u: u["name"]), "overheads": [clean(r) for r in k.rows(gc.costing.OVERHEADS)],
             "permissions": [clean(r) for r in k.gw.rows(gc.access.PERMISSION_CATALOG)]}
 
@@ -56,6 +56,20 @@ def supplier(body: dict, k: Kitchen = Depends(owner)):
 @router.post("/recipes")
 def recipe(body: dict, k: Kitchen = Depends(owner)):
     return k.cmd(gc.item.REQUESTS, gc.item.SERVICE, {"action": "SAVE_RECIPE", **body})["recipe"]
+
+
+ORDERED = {"items": (gc.item.REQUESTS, gc.item.SERVICE, "REORDER"), "suppliers": (gc.item.REQUESTS, gc.item.SERVICE, "REORDER"),
+           "locations": (gc.business.REQUESTS, gc.business.SERVICE, "REORDER_LOCATIONS")}
+
+
+@router.post("/order")
+def order(body: dict, k: Kitchen = Depends(owner)):
+    """The order items, suppliers or locations are listed in, as the owner dragged them: {list, ids}."""
+    target = ORDERED.get(str(body.get("list")))
+    if target is None:
+        raise ApiError("INVALID_LIST", 400)
+    table, service, action = target
+    return k.cmd(table, service, {"action": action, "list": body["list"], "ids": list(body.get("ids") or [])})
 
 
 @router.post("/overheads")
