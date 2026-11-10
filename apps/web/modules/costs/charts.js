@@ -7,12 +7,13 @@
 // The cost charts: COGS / costing by count period (with the target band), sales by period, where the money went.
 import { columnChart, donut, html, lineChart } from "/assets/kit/index.js";
 import { area } from "../lib/areas.js";
+import { byDay } from "../lib/days.js";
 import { fmt } from "../lib/format.js";
 
-export const trend = (days, s) => lineChart({ labels: days.map((x) => x.date.slice(5)), unit: "%", band: s.cogs_range, label: "COGS and costing by day",
+export const trend = (all, s, days = byDay(all)) => lineChart({ labels: days.map((x) => x.date.slice(5)), unit: "%", band: s.cogs_range, label: "COGS and costing by day",
   series: [{ name: "COGS %", color: area("costs"), values: days.map((x) => x.cogs_pct) }, { name: "Costing %", color: "#f59e0b", values: days.map((x) => x.costing_pct) }] });
 
-export const sales = (days) => columnChart({ labels: days.map((x) => x.date.slice(5)), values: days.map((x) => x.sales || 0), color: "#0ea5e9", label: "Sales by day" });
+export const sales = (all, days = byDay(all)) => columnChart({ labels: days.map((x) => x.date.slice(5)), values: days.map((x) => x.sales || 0), color: "#0ea5e9", label: "Sales by day" });
 
 export const split = (s, b) => donut({ centre: fmt(s.sales, 0), caption: `sales ${b.business?.currency || ""}`, label: "Where the money went", parts: [
   { label: "Ingredients", value: s.ingredient_cost, color: "#f97316" }, { label: "Labour", value: s.labour, color: "#8b5cf6" },

@@ -9,6 +9,7 @@ import { api } from "/assets/app.js";
 import { html, lineChart } from "/assets/kit/index.js";
 import { area } from "../lib/areas.js";
 import { has, on } from "../lib/business.js";
+import { byDay } from "../lib/days.js";
 import { pct, thisMonth } from "../lib/format.js";
 
 export default {
@@ -16,7 +17,7 @@ export default {
   allowed: ({ b }) => has("view_costs") && on(b, "costing"),
   load: async () => {
     const [d, s] = await Promise.all([api(`/costs/days?month=${thisMonth()}`), api(`/costs/month?month=${thisMonth()}`)]);
-    return { days: d.days, s };
+    return { days: byDay(d.days), s };
   },
   render: ({ days, s }) => days.length ? html`<div class="k-figs"><span><b>${pct(s.cogs_pct)}</b> COGS</span><span><b>${pct(s.costing_pct)}</b> costing avg</span>
       <span class="${s.days_out_of_range ? "bad" : "ok"}"><b>${s.days_out_of_range}</b> day(s) outside ${s.cogs_range[0]}–${s.cogs_range[1]}%</span></div>

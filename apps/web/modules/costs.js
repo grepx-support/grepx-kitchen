@@ -9,6 +9,7 @@ import { api } from "/assets/app.js";
 import { DataTable, html, icon, kpiRow, pageHead } from "/assets/kit/index.js";
 import { area, head } from "./lib/areas.js";
 import { biz } from "./lib/business.js";
+import { byDay } from "./lib/days.js";
 import { fmt, money, pct, thisMonth } from "./lib/format.js";
 import * as chart from "./costs/charts.js";
 
@@ -19,14 +20,15 @@ async function costs(el, q) {
   const qs = `month=${month}${loc ? `&location_id=${loc}` : ""}`;
   const [d, s] = await Promise.all([api(`/costs/days?${qs}`), api(`/costs/month?${qs}`)]);
   el.style.setProperty("--area", area("costs"));
+  const daily = byDay(d.days);
   const profitTone = s.net_profit === null ? "" : s.net_profit < 0 ? "bad" : "good";
   el.innerHTML = String(html`${pageHead({ ...head("costs"), title: "Costs", subtitle: "Ingredient cost against sales, and what is left after labour and rent.",
       actions: html`<label class="pick">Month<input type="month" id="m" value="${month}"></label><label class="pick">Location<select id="l"><option value="">Whole business</option>
         ${b.locations.map((x) => html`<option value="${x.id}" ${x.id === loc ? "selected" : ""}>${x.name}</option>`)}</select></label>` })}
-    ${kpiRow([{ label: "Sales", value: money(b, s.sales), icon: "coin", area: "#0ea5e9", trend: d.days.map((x) => x.sales) },
+    ${kpiRow([{ label: "Sales", value: money(b, s.sales), icon: "coin", area: "#0ea5e9", trend: daily.map((x) => x.sales) },
       { label: "COGS", value: pct(s.cogs_pct), icon: "trend", area: area("costs"), note: `target ${s.cogs_range[0]}–${s.cogs_range[1]}% · ${s.days_out_of_range} day(s) outside`,
-        tone: s.days_out_of_range ? "bad" : "good", trend: d.days.map((x) => x.cogs_pct) },
-      { label: "Costing average", value: pct(s.costing_pct), icon: "chart", area: "#f59e0b", trend: d.days.map((x) => x.costing_pct) },
+        tone: s.days_out_of_range ? "bad" : "good", trend: daily.map((x) => x.cogs_pct) },
+      { label: "Costing average", value: pct(s.costing_pct), icon: "chart", area: "#f59e0b", trend: daily.map((x) => x.costing_pct) },
       { label: "Net profit", value: s.net_profit === null ? "Not yet" : money(b, s.net_profit), icon: "sparkle", area: "#16a34a", tone: profitTone, note: `${s.overheads_days} day(s) of overheads` }])}
     ${chart.missing(s)}
     <div class="grid two"><section class="card accent"><h2>${icon("trend")} COGS by count period</h2>${d.days.length ? chart.trend(d.days, s) : html`<p class="muted">No closings this month.</p>`}</section>
