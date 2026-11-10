@@ -7,7 +7,8 @@
 R7  COGS % = cost of ingredients used in the count period / sales in the same period. "Used" = what the count showed was
     consumed (system stock - counted, valued at the item's cost when it moved) plus ingredients recorded as used at a
     location that is not a kitchen. A kitchen's recorded use turns ingredients into finished goods, whose cost is counted
-    where they are consumed - counting both would count the same food twice.
+    where they are consumed - counting both would count the same food twice. Waste (thrown away, with a reason) is used
+    stock at any location: it never reaches a sale, so it is always part of the cost.
 R8 / Q9  costing average % = (ingredient cost + labour + rent + other) / sales.
 Q10 labour, rent and other are monthly amounts per location, spread equally over the days of the month.
 COS-06 the monthly summary never shows a profit while a cost line is missing (QR-04: the old system did).
@@ -46,7 +47,7 @@ def cost_day(closing: dict, previous_date: str | None, moves: list[dict], is_kit
     period_days = max(1, (day - start).days)
     used, zero_cost = 0.0, set()
     for m in moves:
-        if m.get("kind") == "count" or (m.get("kind") == "use" and not is_kitchen):
+        if m.get("kind") in ("count", "waste") or (m.get("kind") == "use" and not is_kitchen):
             used -= float(m.get("value") or 0)
             if not float(m.get("unit_cost") or 0) and float(m.get("qty") or 0):
                 zero_cost.add(m.get("item_id"))

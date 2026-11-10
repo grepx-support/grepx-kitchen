@@ -11,3 +11,4 @@ class PurchaseAction(str, Enum):
     COPY = "COPY"
     CANCEL = "CANCEL"
     RECEIVE = "RECEIVE"
+    SEND = "SEND"                # the order goes to the supplier by email / WhatsApp / SMS (logged until a provider is set)

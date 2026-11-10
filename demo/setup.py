@@ -26,10 +26,12 @@ def create(site, ops_email: str, ops_password: str, say) -> dict:
         ids["place"][key] = site.post("/setup/locations", {"name": name, "kind": kind, "holding": holding, "address": address,
                                                             "days_of_cover": 3, "count_every_days": 1}, "owner")["location_id"]
     for key, name, phone, contact in data.SUPPLIERS:
-        ids["supplier"][key] = site.post("/setup/suppliers", {"name": name, "phone": phone, "contact": contact}, "owner")["supplier_id"]
+        ids["supplier"][key] = site.post("/setup/suppliers", {"name": name, "phone": phone, "contact": contact,
+                                                                  "email": data.SUPPLIER_EMAIL.format(key=key)}, "owner")["supplier_id"]
     for key, name, kind, unit, cost, sup, category in data.ITEMS:
         ids["item"][key] = site.post("/setup/items", {"name": name, "kind": kind, "unit": unit, "cost": cost, "category": category,
-                                                      "supplier_id": ids["supplier"].get(sup, "")}, "owner")["item_id"]
+                                                      "supplier_id": ids["supplier"].get(sup, ""),
+                                                      "shelf_life_days": data.SHELF_LIFE.get(key), "barcode": data.BARCODE.get(key, "")}, "owner")["item_id"]
     for product, (output, parts) in data.RECIPES.items():
         site.post("/setup/recipes", {"item_id": ids["item"][product], "batch_output": output,
                                      "ingredients": [{"item_id": ids["item"][k], "qty": q} for k, q in parts.items()]}, "owner")

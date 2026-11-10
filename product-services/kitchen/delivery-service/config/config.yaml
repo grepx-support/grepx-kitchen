@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: delivery-service
+snapshot_table: delivery_requests
+project: kitchen
+description: "Delivery runs: a driver's warehouse-out trips in stop order with estimated arrival times, on-the-road status, proof of delivery (receiver name and signature) and failed stops that go back to be planned again. Keywords: delivery, route, run, driver, stop, ETA, proof of delivery, POD, signature, dispatch"
+owns: [runs]          # a run holds its stops (one owner for the whole route)
+tables:
+  runs: [tenant_id, date, state, driver_id]

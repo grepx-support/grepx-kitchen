@@ -8,7 +8,8 @@
 import { state } from "/assets/app.js";
 
 const ICONS = { home: "home", kitchen: "pot", stock: "box", out: "outbox", in: "inbox", move: "swap", deliveries: "truck",
-  orders: "cart", closing: "clipboard", costs: "chart", setup: "settings", platform: "building" };
+  orders: "cart", closing: "clipboard", costs: "chart", setup: "settings", platform: "building",
+  floor: "layout", runs: "truck", driver: "map", inventory: "alert", outbox: "send" };
 
 export const area = (name) => state.product?.areas?.[name] || "var(--primary)";
 export const areaIcon = (name) => ICONS[name] || "dot";

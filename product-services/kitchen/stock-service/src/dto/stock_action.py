@@ -14,4 +14,5 @@ class StockAction(str, Enum):
     USE = "USE"
     ADJUST = "ADJUST"
     COUNT = "COUNT"
-    DELIVERED = "DELIVERED"      # the destination confirms a warehouse-out delivery arrived
+    DELIVERED = "DELIVERED"
+    WASTE = "WASTE"              # thrown away with a reason (expired, spoiled, damaged, overproduced, other)      # the destination confirms a warehouse-out delivery arrived

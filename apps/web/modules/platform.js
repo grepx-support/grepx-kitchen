@@ -4,10 +4,12 @@
  * Unauthorised copying, use, modification or distribution is strictly prohibited.
  */
 
-// Platform operator (GrepX): every business on the platform, and setting up a new one with its owner's login (Q2).
+// Platform operator (GrepX): every business on the platform, setting up a new one with its owner's login (Q2),
+// and the demo requests from the public page.
 import { api, enterSupport, run } from "/assets/app.js";
-import { confirm, html, icon, kpiRow, pageHead } from "/assets/kit/index.js";
+import { confirm, DataTable, empty, html, icon, kpiRow, pageHead } from "/assets/kit/index.js";
 import { area, head } from "./lib/areas.js";
+import { stamp } from "./lib/format.js";
 
 async function platform(el) {
   const list = await api("/platform/businesses");
@@ -40,6 +42,28 @@ async function platform(el) {
   };
 }
 
+const STAGES = [["new", "New", "warn"], ["contacted", "Contacted", "info"], ["won", "Won", "good"], ["lost", "Lost", ""]];
+
+async function leads(el) {
+  const { leads: list } = await api("/platform/leads");
+  el.style.setProperty("--area", area("platform"));
+  el.innerHTML = String(html`${pageHead({ ...head("platform"), title: "Demo requests", subtitle: "From the public page. Each one is also emailed to the sales address." })}
+    ${kpiRow(STAGES.map(([k, t]) => ({ label: t, value: list.filter((l) => (l.stage || "new") === k).length, icon: k === "won" ? "check" : "user", area: area("platform") })))}
+    <section class="card k-section">${list.length ? html`<div class="t"></div>` : empty({ icon: "user", title: "No requests yet", text: "They appear here when someone fills in the form on the public page." })}</section>`);
+  if (!list.length) return;
+  new DataTable({ rows: list, columns: [
+    { key: "created_at", label: "When", render: (l) => html`${stamp(l.created_at)}` },
+    { key: "name", label: "Who", render: (l) => html`<b>${l.name}</b><br><span class="muted small">${l.company || ""}${l.size ? ` · ${l.size} locations` : ""}</span>` },
+    { key: "email", label: "Contact", render: (l) => html`<a href="mailto:${l.email}">${l.email}</a>${l.phone ? html`<br><span class="small">${l.phone}</span>` : ""}` },
+    { key: "message", label: "Message", render: (l) => html`<span class="small">${l.message || ""}</span>` },
+    { key: "stage", label: "Stage", render: (l) => html`<select data-lead="${l.id}" aria-label="Stage">${STAGES.map(([k, t]) => html`<option value="${k}" ${(l.stage || "new") === k ? "selected" : ""}>${t}</option>`)}</select>` }] }).mount(el.querySelector(".t"));
+  el.querySelector(".t").addEventListener("change", (e) => {
+    const id = e.target.dataset?.lead;
+    if (id) run(() => api(`/platform/leads/${encodeURIComponent(id)}`, { method: "POST", body: { stage: e.target.value } }), "Saved");
+  });
+}
+
 export const routes = [
   { path: "/platform", nav: "Businesses", icon: "building", area: "platform", group: "Platform", auth: "admin", platform: true, render: platform },
+  { path: "/platform/leads", nav: "Demo requests", icon: "user", area: "platform", group: "Platform", auth: "admin", platform: true, render: leads },
 ];

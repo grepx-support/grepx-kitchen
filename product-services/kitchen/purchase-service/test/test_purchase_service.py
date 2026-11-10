@@ -63,3 +63,13 @@ def test_orders_arrive_at_a_holding_place(h):
     assert call(h, action="SAVE", supplier_id="nobody", location_id="wh", lines=[{"item_id": "bread", "qty": 1}]).reason == "UNKNOWN_SUPPLIER"
     assert call(h, action="SAVE", tenant_id="other", supplier_id="bakery", location_id="wh",
                 lines=[{"item_id": "bread", "qty": 1}]).reason == "UNKNOWN_BUSINESS"
+
+
+def test_an_order_is_sent_to_its_supplier(h):
+    po = call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "bread", "qty": 40}]).fields["order"]["po_id"]
+    assert call(h, action="SEND", po_id=po, channels=["fax"]).reason == "INVALID_CHANNEL"
+    assert call(h, action="SEND", po_id=po, channels=["email"]).reason == "NO_CONTACT"          # the bakery has a phone, no email
+    done = call(h, action="SEND", po_id=po, channels=["whatsapp", "sms"])
+    assert done.ok and done.fields["order"]["sent"][0]["channels"] == ["whatsapp", "sms"]
+    msgs = h.rows("notifications")
+    assert {m["channel"] for m in msgs} == {"whatsapp", "sms"} and msgs[0]["template"] == "purchase_order" and "Bread" in msgs[0]["values"]["text"]

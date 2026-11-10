@@ -6,7 +6,7 @@
 
 // One purchase order: the text for WhatsApp, its lines, and change / copy / cancel / receive.
 import { api, esc, run, toast } from "/assets/app.js";
-import { Basket, confirm, html, icon, pageHead, pill } from "/assets/kit/index.js";
+import { Basket, confirm, html, icon, openDialog, pageHead, pill } from "/assets/kit/index.js";
 import { head } from "../lib/areas.js";
 import { biz, has } from "../lib/business.js";
 import { fmt, money, stamp } from "../lib/format.js";
@@ -21,7 +21,9 @@ export async function detail(el, id) {
   el.innerHTML = String(html`${pageHead({ ...head("orders"), title: o.number, subtitle: `${o.supplier_name} · ${stamp(o.created_at)}`,
     actions: html`${pill(o.state, TONE[o.state])}<a class="btn small" href="#/orders">${icon("board", { size: 15 })} Board</a>` })}
     <div class="grid two"><section class="card accent"><h2>${icon("send")} Message for the supplier</h2><pre>${o.text}</pre>
-      <div class="row"><button class="btn" data-copy>${icon("copy", { size: 15 })} Copy</button>
+      ${(o.sent || []).map((x) => html`<p class="muted small">${icon("check", { size: 14 })} Sent by ${x.channels.join(", ")} · ${stamp(x.at)} · ${x.by}</p>`)}
+      <div class="row">${open && has("orders") ? html`<button class="btn primary" data-send>${icon("send", { size: 15 })} Send to supplier…</button>` : ""}
+        <button class="btn" data-copy>${icon("copy", { size: 15 })} Copy</button>
         ${wa ? html`<a class="btn" target="_blank" rel="noopener" href="${wa}">${icon("message", { size: 15 })} WhatsApp</a>` : ""}
         ${has("orders") ? html`<button class="btn" data-dup>${icon("copy", { size: 15 })} Copy to new order</button>` : ""}
         ${open && has("orders") ? html`<button class="btn danger" data-cancel>${icon("x", { size: 15 })} Cancel</button>` : ""}</div>
@@ -38,6 +40,14 @@ export async function detail(el, id) {
   el.querySelector("[data-dup]")?.addEventListener("click", async () => { const n = await run(() => api(`/orders/${o.id}/copy`, { method: "POST" }), "New order saved"); if (n) location.hash = `#/orders/${n.po_id}`; });
   el.querySelector("[data-cancel]")?.addEventListener("click", async () => {
     if (await confirm({ title: `Cancel ${o.number}?`, ok: "Cancel order", cancel: "Keep it", danger: true }) && await run(() => api(`/orders/${o.id}/cancel`, { method: "POST" }), "Cancelled")) again();
+  });
+  el.querySelector("[data-send]")?.addEventListener("click", async () => {
+    const form = document.createElement("div");
+    form.innerHTML = String(html`<p class="muted">The order goes to ${o.supplier_name} on each channel ticked. Without a provider set up it is only written to the outbox.</p>
+      ${[["email", "Email"], ["whatsapp", "WhatsApp"], ["sms", "SMS"]].map(([k, t], n) => html`<label class="check"><input type="checkbox" value="${k}" ${n < 2 ? "checked" : ""}> ${t}</label>`)}`);
+    if (await openDialog({ title: `Send ${o.number}`, body: form, actions: [{ label: "Back", value: "" }, { label: "Send", value: "send", primary: true }] }) !== "send") return;
+    const channels = [...form.querySelectorAll("input:checked")].map((i) => i.value);
+    if (channels.length && await run(() => api(`/orders/${o.id}/send`, { method: "POST", body: { channels } }), "Sent")) again();
   });
   el.querySelector("[data-receive]")?.addEventListener("click", async () => { if (await receive({ ...o, lines: o.lines.map((l) => ({ ...l, qty: basket.lines(true).find((x) => x.item_id === l.item_id)?.qty ?? l.qty })) })) again(); });
   el.querySelector("[data-save]")?.addEventListener("click", async () => { if (await run(() => api(`/orders/${o.id}`, { method: "POST", body: { lines: basket.lines() } }), "Saved")) again(); });

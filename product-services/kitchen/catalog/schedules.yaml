@@ -4,3 +4,4 @@
 
 schedules:
   - {schedule_id: task-reminders, job: task-reminders, target_service: task-service, kind: EVERY_MINUTES, every_minutes: 15}
+  - {schedule_id: inventory-alerts, job: inventory-alerts, target_service: inventory-service, kind: EVERY_MINUTES, every_minutes: 60}

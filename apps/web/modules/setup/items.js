@@ -15,7 +15,9 @@ const form = (i = {}, suppliers) => html`<form class="card accent k-section"><h2
   <div class="row"><label>Name<input name="name" required value="${i.name || ""}"></label><label>Type<select name="kind">${option(["ingredient", "finished", "supply"], i.kind || "ingredient")}</select></label>
     <label>Unit<input name="unit" required placeholder="kg, box, each" value="${i.unit || ""}"></label><label>Cost per unit<input name="cost" type="number" min="0" step="0.0001" value="${i.cost ?? ""}"></label>
     <label>Supplier<select name="supplier"><option value="">-</option>${suppliers.map((x) => html`<option value="${x.id}" ${x.id === i.supplier_id ? "selected" : ""}>${x.name}</option>`)}</select></label>
-    <label>Category<input name="category" value="${i.category || ""}" placeholder="e.g. Meat, Dry goods"></label></div>
+    <label>Category<input name="category" value="${i.category || ""}" placeholder="e.g. Meat, Dry goods"></label>
+    <label>Shelf life (days)<input name="shelf_life_days" type="number" min="0" step="1" value="${i.shelf_life_days ?? ""}" placeholder="sets expiry when received"></label>
+    <label>Barcode<input name="barcode" value="${i.barcode || ""}" placeholder="for the scanner" maxlength="40"></label></div>
   ${i.id ? html`<label class="check"><input type="checkbox" name="archived" ${i.active === false ? "checked" : ""}> Archived</label>` : ""}
   <p><button class="btn primary">Save</button> ${i.id ? html`<a class="btn" href="#/setup?tab=items">New instead</a>` : ""}</p></form>`;
 
@@ -32,7 +34,8 @@ export default {
       e.preventDefault();
       const v = values(e.target);
       if (await post("/setup/items", { item_id: v.id || undefined, name: v.name, kind: v.kind, unit: v.unit, cost: Number(v.cost || 0),
-        supplier_id: v.supplier, category: v.category, active: !v.archived }, "Item saved")) location.hash = "#/setup?tab=items";
+        supplier_id: v.supplier, category: v.category, active: !v.archived,
+        shelf_life_days: v.shelf_life_days === "" ? null : Number(v.shelf_life_days), barcode: v.barcode }, "Item saved")) location.hash = "#/setup?tab=items";
     };
   },
 };

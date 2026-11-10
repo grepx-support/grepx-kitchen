@@ -6,6 +6,7 @@
 -e ../../platform/libs/grepx-contracts
 -e ../../platform/libs/grepx-config
 -e ../../platform/libs/nexus-client
+-e ../../platform/libs/grepx-audit
 -e ../../platform/libs/grepx-auth
 -e ../../platform/libs/grepx-common
 -e ../../platform/libs/grepx-store

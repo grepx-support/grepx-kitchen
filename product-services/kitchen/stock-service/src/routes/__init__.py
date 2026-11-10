@@ -6,7 +6,7 @@
 from grepx_service import ActionDispatcher
 
 from dto import StockAction
-from . import adjust, count, delivered, produce, receive, send, transfer, use
+from . import adjust, count, delivered, produce, receive, send, transfer, use, waste
 
 TABLE = "stock_requests"
 ROUTES = {
@@ -18,5 +18,6 @@ ROUTES = {
     StockAction.ADJUST: adjust.handle,
     StockAction.COUNT: count.handle,
     StockAction.DELIVERED: delivered.handle,
+    StockAction.WASTE: waste.handle,
 }
 handle = ActionDispatcher(ROUTES, StockAction, TABLE)

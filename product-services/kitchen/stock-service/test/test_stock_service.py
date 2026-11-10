@@ -97,3 +97,11 @@ def test_a_warehouse_out_is_a_delivery_until_the_destination_confirms_it(h):
     assert done.ok and h.rows("deliveries")[0]["state"] == "delivered" and qty(h, "s1", "beef") == 4   # stock moved once
     assert call(h, action="DELIVERED", tenant_id="hft", delivery_id=trip["_key"]).reason == "ALREADY_DELIVERED"
     assert call(h, action="DELIVERED", tenant_id="cafe", delivery_id=trip["_key"]).reason == "UNKNOWN_DELIVERY"
+
+
+def test_waste_leaves_stock_with_its_reason(h):
+    call(h, action="RECEIVE", tenant_id="hft", location_id="s1", lines=[{"item_id": "birria", "qty": 10}])
+    done = call(h, action="WASTE", tenant_id="hft", location_id="s1", reason="expired", lines=[{"item_id": "birria", "qty": 3}])
+    move = [m for m in h.rows("stock_movements") if m["kind"] == "waste"][0]
+    assert done.ok and qty(h, "s1", "birria") == 7 and move["waste_reason"] == "expired" and move["value"] == -18
+    assert call(h, action="WASTE", tenant_id="hft", location_id="s1", reason="bored", lines=[{"item_id": "birria", "qty": 1}]).reason == "INVALID_WASTE_REASON"

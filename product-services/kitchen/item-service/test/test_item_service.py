@@ -65,3 +65,13 @@ def test_reorder_sets_the_listing_order_of_own_rows_only(h):
     assert call(h, action="REORDER", tenant_id="cafe", list="items", ids=[ids[0]]).reason == "INVALID_LIST"   # not theirs
     assert call(h, action="REORDER", tenant_id="hft", list="items", ids=[ids[0], ids[0]]).reason == "INVALID_LIST"
     assert call(h, action="REORDER", tenant_id="hft", list="recipes", ids=[ids[0]]).reason == "INVALID_LIST"
+
+
+def test_shelf_life_barcode_and_listing_order_survive_an_edit(h):
+    item = call(h, action="SAVE_ITEM", tenant_id="hft", name="Milk", kind="ingredient", unit="l", shelf_life_days=7, barcode="9300 633 1")
+    iid = item.fields["item"]["item_id"]
+    call(h, action="REORDER", tenant_id="hft", list="items", ids=[iid])
+    call(h, action="SAVE_ITEM", tenant_id="hft", item_id=iid, cost=1.5)
+    row = {r["_key"]: r for r in h.rows("items")}[iid]
+    assert (row["shelf_life_days"], row["barcode"], row["sort"], row["cost"]) == (7, "93006331", 0, 1.5)
+    assert call(h, action="SAVE_ITEM", tenant_id="hft", name="Bad", kind="ingredient", unit="kg", shelf_life_days=-1).reason == "INVALID_SHELF_LIFE"

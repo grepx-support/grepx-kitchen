@@ -4,7 +4,8 @@
  * Unauthorised copying, use, modification or distribution is strictly prohibited.
  */
 
-// Warehouse in: orders to receive (one tap opens the quantities), what the week needs, and receiving without an order.
+// Warehouse in: orders to receive (one tap opens the quantities), what the week needs, and receiving without an order
+// (with expiry, batch and bin per line - the warehouse files it as a lot).
 import { api, run, toast } from "/assets/app.js";
 import { barList, Builder, html, icon, pill } from "/assets/kit/index.js";
 import { biz } from "../lib/business.js";
@@ -30,7 +31,10 @@ export async function warehouseIn(el) {
       ${barList({ empty: "Nothing needed (or no history yet).", rows: needed.map((l) => ({ label: l.name, value: l.needed, note: `use ${fmt(l.weekly_usage)}/wk · here ${fmt(l.at_holding)} · elsewhere ${fmt(l.elsewhere)} ${l.unit}`, color: "#f43f5e" })) })}</section></div>
     <section class="card accent k-section"><h2>${icon("inbox")} Receive without an order</h2><div class="k-bar">${picker(b.locations, place.id, () => true, "at", "At")}
       <label class="grow">Note<input name="note" placeholder="e.g. bought at the market"></label><button class="btn primary" data-add>Add to stock</button></div><div class="slot"></div></section>`);
-  const builder = new Builder({ items, title: "Items", label: "Received" });
+  const bins = await api(`/warehouse?location_id=${place.id}`).then((f) => f.bins).catch(() => []);
+  const builder = new Builder({ items, title: "Items", label: "Received", scan: true, extras: [
+    { name: "expiry", label: "Expiry", type: "date" }, { name: "lot_code", label: "Batch", type: "text" },
+    ...(bins.length ? [{ name: "bin_id", label: "Bin", type: "select", options: [["", "-"], ...bins.map((x) => [x.id, x.code])] }] : [])] });
   builder.mount(body.querySelector(".slot"));
   body.querySelectorAll("[data-receive]").forEach((btn) => btn.onclick = async () => {
     if (await receive(open.orders.find((o) => o.id === btn.dataset.receive))) warehouseIn(el);

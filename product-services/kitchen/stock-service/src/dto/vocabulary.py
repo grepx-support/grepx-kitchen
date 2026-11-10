@@ -22,6 +22,15 @@ class MovementKind(str, Enum):
     USE = "use"                      # ingredients used by a kitchen (KIT-09)
     ADJUST = "adjust"                # correction with a reason (R3)
     COUNT = "count"                  # counted at closing: replaces system stock, difference kept (Q6)
+    WASTE = "waste"                  # thrown away (expired, spoiled, damaged...) with its reason - part of the cost of goods
+
+
+class WasteReason(str, Enum):
+    EXPIRED = "expired"
+    SPOILED = "spoiled"
+    DAMAGED = "damaged"
+    OVERPRODUCED = "overproduced"
+    OTHER = "other"
 
 
 class DeliveryState(str, Enum):
@@ -41,5 +50,6 @@ class ReasonCode(str, Enum):
     NOT_A_KITCHEN = "NOT_A_KITCHEN"
     NOT_FINISHED_GOOD = "NOT_FINISHED_GOOD"
     REASON_REQUIRED = "REASON_REQUIRED"
+    INVALID_WASTE_REASON = "INVALID_WASTE_REASON"
     UNKNOWN_DELIVERY = "UNKNOWN_DELIVERY"
     ALREADY_DELIVERED = "ALREADY_DELIVERED"

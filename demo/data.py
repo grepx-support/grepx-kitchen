@@ -35,6 +35,17 @@ SUPPLIERS = [
     ("dry", "Golden Bakery & Dry Goods", "+61400555666", "Leo"),
     ("pack", "Pack & Co", "+61400777888", "Mia"),
 ]
+SUPPLIER_EMAIL = "orders@{key}.demo-taco.test"     # demo addresses (.test never delivers)
+
+# days an item keeps once received (dates its lots) and a made-up barcode for the scanner
+SHELF_LIFE = {"beef": 5, "chicken": 4, "tortilla": 10, "onion": 14, "coriander": 4, "cheese": 21, "chilli": 180}
+BARCODE = {"beef": "9300000000011", "chicken": "9300000000028", "tortilla": "9300000000035", "cheese": "9300000000042", "box": "9300000000059"}
+
+# warehouse floor: bins of the central warehouse (code, zone) and minimum / maximum per item there
+BINS = [("C-01", "chilled"), ("C-02", "chilled"), ("D-01", "dry"), ("D-02", "dry"), ("F-01", "frozen")]
+BIN_OF = {"beef": "C-01", "chicken": "C-01", "cheese": "C-02", "coriander": "C-02", "tortilla": "D-01", "chilli": "D-02", "onion": "D-02", "box": "D-01"}
+PAR = {"beef": (25, 60), "chicken": (20, 50), "tortilla": (30, 80), "chilli": (2, 5), "onion": (10, 30), "coriander": (12, 40),
+       "cheese": (8, 20), "box": (15, 40)}
 
 # (key, name, kind, unit, cost, supplier key, category)
 ITEMS = [

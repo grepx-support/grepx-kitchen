@@ -72,3 +72,10 @@ def test_count_reaction_overheads_and_summary(h):
     assert h.read.accepted_one("cost_days", "s1:2026-10-09")["labour"] == round(3000 / 31, 2)   # recosted when the overhead arrived (October: 31 days)
     assert h.call(T, "costing-service", {"action": "SET_OVERHEAD", "tenant_id": "hft", "location_id": "s1", "month": "2026-13",
                                          "labour": 1, "rent": 1, "other": 1}).reason == "INVALID_MONTH"
+
+
+def test_waste_is_part_of_the_cost_of_goods_everywhere():
+    moves = [{"kind": "waste", "qty": -2, "unit_cost": 5, "value": -10, "item_id": "beef"},
+             {"kind": "use", "qty": -1, "unit_cost": 5, "value": -5, "item_id": "beef"}]
+    assert cost_day({"date": "2026-11-09", "total_sales": 100}, None, moves, True, None, SETTINGS)["ingredient_cost"] == 10    # kitchen: waste only
+    assert cost_day({"date": "2026-11-09", "total_sales": 100}, None, moves, False, None, SETTINGS)["ingredient_cost"] == 15

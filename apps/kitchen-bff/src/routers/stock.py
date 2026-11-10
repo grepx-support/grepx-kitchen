@@ -16,8 +16,11 @@ router = APIRouter(prefix="/stock", tags=["stock"])
 INV = "inventory"
 
 
+LOT_FIELDS = ("expiry", "lot_code", "bin_id", "lot_id")      # optional: warehouse-service files the stock under these lots
+
+
 def lines(body: dict) -> list[dict]:
-    return [{"item_id": l.get("item_id"), "qty": l.get("qty")} for l in body.get("lines") or []]
+    return [{"item_id": l.get("item_id"), "qty": l.get("qty"), **{f: l[f] for f in LOT_FIELDS if l.get(f)}} for l in body.get("lines") or []]
 
 
 @router.get("")
@@ -33,7 +36,8 @@ def items(k: Kitchen = Depends(allow())):
     """Every active item of the business (name, unit, kind) - for adding a line on any stock screen. No costs here."""
     rows = [r for r in k.rows(gc.item.ITEMS) if r.get("active", True)]
     return {"items": [{"id": r["_key"], "name": r.get("name", ""), "unit": r.get("unit", ""), "kind": r.get("kind", ""),
-                       "category": r.get("category", "")} for r in listed(rows, "name")]}
+                       "category": r.get("category", ""), "barcode": r.get("barcode", ""),
+                       "shelf_life_days": r.get("shelf_life_days")} for r in listed(rows, "name")]}
 
 
 @router.get("/movements")
@@ -75,6 +79,13 @@ def send(body: dict, k: Kitchen = Depends(allow("warehouse_out", module=INV))):
 def receive(body: dict, k: Kitchen = Depends(allow("warehouse_in", module=INV))):
     return k.cmd(gc.stock.REQUESTS, gc.stock.SERVICE, {"action": "RECEIVE", "location_id": body.get("location_id"), "lines": lines(body),
                                                        "note": body.get("note", "")})
+
+
+@router.post("/waste")
+def waste(body: dict, k: Kitchen = Depends(allow("adjust_stock", "warehouse_in", "kitchen", "closing", module=INV))):
+    """Thrown away, with the reason (expired, spoiled, damaged, overproduced, other) - counts in the cost of goods."""
+    return k.cmd(gc.stock.REQUESTS, gc.stock.SERVICE, {"action": "WASTE", "location_id": body.get("location_id"), "lines": lines(body),
+                                                       "reason": body.get("reason", ""), "note": body.get("note", "")})
 
 
 @router.post("/transfer")

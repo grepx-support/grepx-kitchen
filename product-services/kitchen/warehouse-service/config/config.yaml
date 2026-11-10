@@ -1,0 +1,16 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: warehouse-service
+snapshot_table: warehouse_requests
+project: kitchen
+description: "Warehouse floor: bins and zones, lots with expiry dates that follow every stock movement first-expiry-first-out, pick lists that become a warehouse-out when picked, putaway. Keywords: bin, zone, lot, batch, expiry, FEFO, pick list, putaway, shelf life"
+owns: [bins, lots, picks, followed]   # followed = stock requests already applied to lots (each once)
+tables:
+  bins: [tenant_id, location_id]
+  lots: [tenant_id, location_id, item_id, open]
+  picks: [tenant_id, state]
+  followed: [tenant_id]
+subscriptions:                        # every accepted stock change moves the lots it touched
+  - {table: stock_requests, handler: jobs.follow_stock, when: "status = 'ACCEPTED'"}

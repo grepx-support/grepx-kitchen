@@ -243,6 +243,19 @@
     "reacts_to": []
   },
   {
+    "name": "lead-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/lead-service",
+    "request_table": "lead_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Enquiries from a product's public website (request a demo, contact us): kept as leads the platform operator follows up (new, contacted, won, lost) and announced by email to the addresses the deployment names. Keywords: lead, enquiry, demo request, contact form, sales, CRM",
+    "routes": [],
+    "reacts_to": []
+  },
+  {
     "name": "media-service",
     "layer": "common",
     "product": "",
@@ -545,6 +558,7 @@
     "request_table": "business_requests",
     "actions": [
       "CREATE",
+      "REORDER_LOCATIONS",
       "SAVE_LOCATION",
       "UPDATE"
     ],
@@ -553,6 +567,7 @@
     "summary": "Businesses (each one a separate tenant: currency, time zone, modules on/off, planning and costing settings) and their locations (kitchen, warehouse, store, truck; holding place, days of cover, count frequency). Keywords: tenant, company, site, outlet, store, warehouse, settings, modules",
     "routes": [
       "create",
+      "reorder_locations",
       "save_location",
       "update"
     ],
@@ -595,12 +610,53 @@
     "reacts_to": []
   },
   {
+    "name": "delivery-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/delivery-service",
+    "request_table": "delivery_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Delivery runs: a driver's warehouse-out trips in stop order with estimated arrival times, on-the-road status, proof of delivery (receiver name and signature) and failed stops that go back to be planned again. Keywords: delivery, route, run, driver, stop, ETA, proof of delivery, POD, signature, dispatch",
+    "routes": [
+      "arrive",
+      "cancel_run",
+      "deliver",
+      "fail_stop",
+      "plan_run",
+      "set_stops",
+      "start_run",
+      "stop_change"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "inventory-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/inventory-service",
+    "request_table": "inventory_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Inventory control: minimum and maximum (par) levels per item and location, daily alerts for low, negative, expiring and expired stock sent to the owners, full stock takes with variance, stock valuation (current cost and by lot), ABC analysis, days of cover and waste by reason. Keywords: par level, reorder point, min max, low stock alert, expiry alert, stock take, cycle count, variance, shrinkage, valuation, FIFO, ABC analysis, days of cover, waste report",
+    "routes": [
+      "alerts",
+      "reports",
+      "set_par",
+      "takes"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "item-service",
     "layer": "product",
     "product": "kitchen",
     "path": "product-services/kitchen/item-service",
     "request_table": "item_requests",
     "actions": [
+      "REORDER",
       "SAVE_ITEM",
       "SAVE_RECIPE",
       "SAVE_SUPPLIER"
@@ -609,6 +665,7 @@
     "other_tables": [],
     "summary": "What a food business buys, makes and sells: items (ingredient, finished product, supply) with unit and cost, suppliers, simple recipes (output of one batch + optional ingredient list). Keywords: product, ingredient, sku, supplier, vendor, recipe, batch, cost",
     "routes": [
+      "reorder",
       "save_item",
       "save_recipe",
       "save_supplier"
@@ -650,7 +707,8 @@
       "CANCEL",
       "COPY",
       "RECEIVE",
-      "SAVE"
+      "SAVE",
+      "SEND"
     ],
     "reasons": [],
     "other_tables": [],
@@ -659,7 +717,8 @@
       "cancel",
       "copy",
       "receive",
-      "save"
+      "save",
+      "send"
     ],
     "reacts_to": []
   },
@@ -672,11 +731,13 @@
     "actions": [
       "ADJUST",
       "COUNT",
+      "DELIVERED",
       "PRODUCE",
       "RECEIVE",
       "SEND",
       "TRANSFER",
-      "USE"
+      "USE",
+      "WASTE"
     ],
     "reasons": [],
     "other_tables": [],
@@ -684,11 +745,33 @@
     "routes": [
       "adjust",
       "count",
+      "delivered",
       "produce",
       "receive",
       "send",
       "transfer",
-      "use"
+      "use",
+      "waste"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "warehouse-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/warehouse-service",
+    "request_table": "warehouse_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Warehouse floor: bins and zones, lots with expiry dates that follow every stock movement first-expiry-first-out, pick lists that become a warehouse-out when picked, putaway. Keywords: bin, zone, lot, batch, expiry, FEFO, pick list, putaway, shelf life",
+    "routes": [
+      "cancel_pick",
+      "complete_pick",
+      "create_pick",
+      "move_lot",
+      "pick",
+      "save_bin"
     ],
     "reacts_to": []
   }

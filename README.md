@@ -32,7 +32,17 @@ uses 7878 / 88xx-91xx / 8851).
 | purchase-service | purchase_orders | save, change, copy, cancel, receive (adds stock at the holding place); WhatsApp text |
 | planning-service | plans | production target, warehouse out / in suggestions, reorder recommendation (previous one shown, large changes flagged), manual targets |
 | closing-service | closings | the staff closing; its count replaces system stock |
-| costing-service | cost_days, overheads | COGS per count period, costing average, COGS range alert, monthly summary (no profit while a cost is missing) |
+| costing-service | cost_days, overheads | COGS per count period, costing average, COGS range alert, monthly summary (no profit while a cost is missing); waste counts |
+| warehouse-service | bins, lots, picks | bins and zones; lots with expiry that follow every stock change; first-expiry-first-out pick lists that become a send |
+| delivery-service | runs | delivery runs: stops in order, ETA, driver's phone screen, proof of delivery (receiver + signature), failed stops |
+| inventory-service | par_levels, stock_takes, alerts | minimum / maximum, hourly alerts (expired, below zero, expiring, low) to the owners, blind stock takes, valuation, ABC, days of cover, waste by reason |
+
+Common service added for the public page: **lead-service** (grepx-services) keeps "request a demo" leads and emails
+them to `LEADS_NOTIFY_EMAIL`.
+
+Messages (purchase orders, alerts, demo requests) go out by email, WhatsApp or SMS through notification-service. Until
+the provider keys are in `.env` it runs in **test mode**: each message is logged and shown in the business's **Outbox**,
+nothing leaves the server.
 
 Reused common services: identity (auth, access), people, notification, template, scheduler, task, audit-log, settings,
 ops-monitor (live screen at `/ops/`).

@@ -22,7 +22,7 @@ from main import create_app
 ROOT = Path(__file__).resolve().parents[3]
 COMMON = ["common-services/identity", "common-services/people-service", "common-services/notification-service",
           "common-services/template-service", "common-services/task-service", "common-services/audit-log-service",
-          "common-services/settings-service", "common-services/scheduler-service"]
+          "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service"]
 MONTH = date.today().isoformat()[:7]
 
 
@@ -184,3 +184,99 @@ def test_web_shell_and_product_screens(env):
     assert api.get("/product.json").json()["name"]
     assert api.get("/assets/modules/kitchen/today.js").status_code == 200
     assert api.get("/assets/modules/core/auth.js").status_code == 200
+
+
+def test_warehouse_floor_runs_inventory_and_messages(env, monkeypatch):
+    """Lots with expiry -> FEFO pick list -> delivery run with proof of delivery -> stock take, alerts, valuation,
+    waste in cost, purchase order sent (test mode: logged in the outbox), and the public demo form."""
+    stack, api = env
+    ops = login(api, "ops@grepx.sg", "operator-pw")
+    ok(api.post("/api/v1/platform/businesses", headers=ops, json={
+        "name": "Green Bowl", "currency": "SGD", "timezone": "Asia/Singapore",
+        "owner": {"name": "Gail Bowl", "email": "owner@bowl.sg", "phone": "+6591110000", "password": "bowl-pass"}}))
+    owner = login(api, "owner@bowl.sg", "bowl-pass")
+    loc = lambda **b: ok(api.post("/api/v1/setup/locations", headers=owner, json=b))["location_id"]  # noqa: E731
+    wh, shop = loc(name="Store", kind="warehouse"), loc(name="Shop", kind="store")
+    sup = ok(api.post("/api/v1/setup/suppliers", headers=owner, json={"name": "Dairy Co", "phone": "+6590001111", "email": "orders@dairy.example"}))["supplier_id"]
+    milk = ok(api.post("/api/v1/setup/items", headers=owner, json={"name": "Milk", "kind": "ingredient", "unit": "l", "cost": 2,
+                                                                    "supplier_id": sup, "shelf_life_days": 5, "barcode": "9555 0001"}))["item_id"]
+    found = {i["id"]: i for i in ok(api.get("/api/v1/stock/items", headers=owner))["items"]}[milk]
+    assert (found["barcode"], found["shelf_life_days"]) == ("95550001", 5)
+
+    # --- warehouse floor: bins, lots with expiry (FEFO) ---
+    bin_a = ok(api.post("/api/v1/warehouse/bins", headers=owner, json={"location_id": wh, "code": "A-01", "zone": "chilled"}))["bin_id"]
+    soon, later = date.fromordinal(date.today().toordinal() + 1).isoformat(), date.fromordinal(date.today().toordinal() + 9).isoformat()
+    ok(api.post("/api/v1/stock/receive", headers=owner, json={"location_id": wh, "lines": [{"item_id": milk, "qty": 10, "expiry": later, "bin_id": bin_a}]}))
+    ok(api.post("/api/v1/stock/receive", headers=owner, json={"location_id": wh, "lines": [{"item_id": milk, "qty": 6, "expiry": soon, "lot_code": "B7"}]}))
+    stack.settle()
+    floor = ok(api.get(f"/api/v1/warehouse?location_id={wh}", headers=owner))
+    assert [(l["qty"], l["expiry"]) for l in floor["lots"]] == [(6, soon), (10, later)]                 # soonest first
+    assert floor["lots"][1]["bin_code"] == "A-01"
+
+    pick = ok(api.post("/api/v1/warehouse/picks", headers=owner, json={"from_location_id": wh, "to_location_id": shop, "lines": [{"item_id": milk, "qty": 8}]}))
+    sheet = ok(api.get(f"/api/v1/warehouse/picks/{pick['pick_id']}", headers=owner))
+    assert [x["qty"] for x in sheet["lines"][0]["lots"]] == [6, 2]                                      # first expiry, first out
+    ok(api.post(f"/api/v1/warehouse/picks/{pick['pick_id']}/pick", headers=owner, json={"item_id": milk, "qty": 8}))
+    ok(api.post(f"/api/v1/warehouse/picks/{pick['pick_id']}/complete", headers=owner))
+    stack.settle()
+    lots = ok(api.get(f"/api/v1/warehouse?location_id={wh}", headers=owner))["lots"]
+    assert [(l["qty"], l["expiry"]) for l in lots] == [(8, later)]
+
+    # --- delivery run with proof of delivery ---
+    board = ok(api.get("/api/v1/runs", headers=owner))
+    assert board["waiting"][0]["to"] == "Shop"
+    run = ok(api.post("/api/v1/runs", headers=owner, json={"date": date.today().isoformat(), "start_time": "09:00", "name": "Morning",
+                                                           "delivery_ids": [board["waiting"][0]["id"]], "drive_minutes": 20}))
+    assert run["stops"][0]["eta"] and not ok(api.get("/api/v1/runs", headers=owner))["waiting"]
+    ok(api.post(f"/api/v1/runs/{run['run_id']}/start", headers=owner))
+    stop = run["stops"][0]["stop_id"]
+    done = ok(api.post(f"/api/v1/runs/{run['run_id']}/stops/{stop}/deliver", headers=owner,
+                       json={"receiver": "Sam at the shop", "signature": "data:image/png;base64,AAAA"}))
+    assert done["state"] == "done" and done["stops"][0]["receiver"] == "Sam at the shop"
+    stack.settle()
+    assert ok(api.get("/api/v1/stock/deliveries", headers=owner))["deliveries"][0]["state"] == "delivered"
+
+    # --- inventory control: par -> alert, stock take, valuation, analysis with waste ---
+    ok(api.post("/api/v1/inventory/par", headers=owner, json={"location_id": wh, "item_id": milk, "min": 20, "max": 40}))
+    ok(api.post("/api/v1/inventory/alerts/check", headers=owner))
+    stack.settle()
+    alerts = ok(api.get("/api/v1/inventory/alerts", headers=owner))["alerts"]
+    assert [(a["kind"], a["fill_to"]) for a in alerts if a["location_id"] == wh] == [("low", 40)]
+    assert {(a["kind"], a["location_id"]) for a in alerts} == {("low", wh), ("expiring", shop)}       # the 6 l moved there expire tomorrow
+    low = next(a for a in alerts if a["kind"] == "low")
+    ok(api.post(f"/api/v1/inventory/alerts/{low['id']}/done", headers=owner))
+    stack.settle()
+    assert [a["kind"] for a in ok(api.get("/api/v1/inventory/alerts", headers=owner))["alerts"]] == ["expiring"]
+
+    take = ok(api.post("/api/v1/inventory/takes", headers=owner, json={"location_id": wh, "blind": True}))
+    ok(api.post(f"/api/v1/inventory/takes/{take['take_id']}/count", headers=owner, json={"lines": [{"item_id": milk, "qty": 7}]}))
+    take = ok(api.post(f"/api/v1/inventory/takes/{take['take_id']}/finish", headers=owner))
+    assert (take["state"], take["lines_changed"], take["variance_value"]) == ("done", 1, -2)            # 1 l short at 2
+    stack.settle()
+    ok(api.post("/api/v1/stock/waste", headers=owner, json={"location_id": wh, "reason": "spoiled", "lines": [{"item_id": milk, "qty": 2}]}))
+    stack.settle()
+    assert ok(api.get(f"/api/v1/inventory/valuation?location_id={wh}", headers=owner))["total"] == 10   # 5 l at 2 (the shop has 8 more)
+    analysis = ok(api.get("/api/v1/inventory/analysis?days=30", headers=owner))
+    assert analysis["waste"]["spoiled"] == 4
+
+    # --- messages: purchase order to the supplier, logged in the outbox (test mode) ---
+    po = ok(api.post("/api/v1/orders", headers=owner, json={"supplier_id": sup, "location_id": wh, "lines": [{"item_id": milk, "qty": 30}]}))
+    sent = ok(api.post(f"/api/v1/orders/{po['po_id']}/send", headers=owner, json={"channels": ["email", "whatsapp"]}))
+    assert sent["sent"][0]["channels"] == ["email", "whatsapp"]
+    stack.settle()
+    box = ok(api.get("/api/v1/outbox", headers=owner))["messages"]
+    assert {m["channel"] for m in box if m["template"] == "purchase_order"} == {"email", "whatsapp"}
+    ok(api.post("/api/v1/platform/businesses", headers=ops, json={"name": "Other Bowl", "currency": "SGD", "timezone": "Asia/Singapore",
+        "owner": {"name": "Otto Other", "email": "owner@other.sg", "phone": "+6591110001", "password": "other-pass"}}))
+    other = login(api, "owner@other.sg", "other-pass")
+    assert not [m for m in ok(api.get("/api/v1/outbox", headers=other))["messages"] if m["template"] == "purchase_order"]
+
+    # --- public demo form (no login) -> the operator's list ---
+    monkeypatch.setenv("LEADS_NOTIFY_EMAIL", "sales@grepx.sg")
+    ok(api.post("/api/v1/public/demo", json={"name": "Lee Chef", "email": "lee@example.com", "company": "Noodle Bar", "size": "2-5"}))
+    stack.settle()
+    lead = ok(api.get("/api/v1/platform/leads", headers=ops))["leads"][0]
+    assert (lead["name"], lead["stage"]) == ("Lee Chef", "new")
+    assert ok(api.post(f"/api/v1/platform/leads/{lead['id']}", headers=ops, json={"stage": "contacted"}))["stage"] == "contacted"
+    assert api.get("/api/v1/platform/leads", headers=owner).status_code == 403
+    assert api.post("/api/v1/public/demo", json={"name": "Bot", "email": "bot@example.com", "website": "http://spam"}).status_code != 500

@@ -14,3 +14,21 @@ templates:
     placeholders: [first_name, name, org, link, text]
     subject: "{org}"
     text: "Hi {first_name},\n\n{text}"
+  stock_alert:
+    label: Stock alerts for the owner (low, below zero, expiring, expired)
+    placeholders: [first_name, org, count, summary, link]
+    channels: [email, sms, whatsapp]
+    subject: "{org}: {count} stock alert(s)"
+    text: "Hi {first_name},\n\n{count} new stock alert(s) today:\n{summary}\n\nSee them all: {link}"
+  purchase_order:
+    label: Purchase order sent to a supplier
+    placeholders: [org, supplier, number, text, link]
+    channels: [email, sms, whatsapp]
+    subject: "{org} order {number}"
+    text: "{text}"
+  demo_request:
+    label: A demo was requested on the website (to the platform operator)
+    placeholders: [org, name, company, email, phone, size, message]
+    channels: [email]
+    subject: "Demo request: {company}"
+    text: "{name} from {company} ({size}) asked for a demo.\nEmail: {email}\nPhone: {phone}\n\n{message}"

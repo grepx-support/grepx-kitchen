@@ -95,7 +95,8 @@ def clean_location(raw: dict, current: dict | None = None) -> dict:
         raise ValueError("INVALID_SETTING")
     return {"name": _name(merged.get("name")), "kind": kind, "holding": holding, "makes_goods": kind == LocationKind.KITCHEN.value,
             "days_of_cover": cover, "count_every_days": every, "active": bool(merged.get("active", True)),
-            "address": " ".join(str(merged.get("address") or "").split())[:200]}
+            "address": " ".join(str(merged.get("address") or "").split())[:200],
+            **({"sort": merged["sort"]} if isinstance(merged.get("sort"), int) else {})}   # listing order (REORDER_LOCATIONS)
 
 
 def holding_left(locations: list[dict], changed_id: str, changed: dict) -> bool:

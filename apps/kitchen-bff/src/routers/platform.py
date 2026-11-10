@@ -56,6 +56,18 @@ def support(tenant_id: str, body: dict | None = None, user: Principal = Depends(
     return {**open_support(gw, user, tenant_id, edit=bool((body or {}).get("edit"))), "business_name": business.get("name", "")}
 
 
+@router.get("/leads")
+def leads(user: Principal = Depends(operator), gw=Depends(gateway)):
+    """Demo requests from the website, newest first."""
+    return {"leads": sorted((clean(r) for r in gw.rows(gc.lead.LEADS)), key=lambda r: r.get("created_at", ""), reverse=True)}
+
+
+@router.post("/leads/{lead_id}")
+def follow_up(lead_id: str, body: dict, user: Principal = Depends(operator), gw=Depends(gateway)):
+    return gw.command(gc.lead.REQUESTS, gc.lead.SERVICE, {"action": "SET_STATUS", "lead_id": lead_id, "stage": body.get("stage", ""),
+                                                           "note": body.get("note", ""), "actor_id": user.user_id}).fields["lead"]
+
+
 def role_steps(gw, tenant: str) -> list[Step]:
     """A copy of each staff-role template for the new business (ACC-01..03: its owner can then change them)."""
     names = (gw.cfg.get("kitchen") or {}).get("staff_roles") or []

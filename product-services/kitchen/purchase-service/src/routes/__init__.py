@@ -6,7 +6,7 @@
 from grepx_service import ActionDispatcher
 
 from dto import PurchaseAction
-from . import cancel, copy, receive, save
+from . import cancel, copy, receive, save, send
 
 TABLE = "purchase_requests"
 ROUTES = {
@@ -14,5 +14,6 @@ ROUTES = {
     PurchaseAction.COPY: copy.handle,
     PurchaseAction.CANCEL: cancel.handle,
     PurchaseAction.RECEIVE: receive.handle,
+    PurchaseAction.SEND: send.handle,
 }
 handle = ActionDispatcher(ROUTES, PurchaseAction, TABLE)

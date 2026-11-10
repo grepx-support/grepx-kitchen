@@ -85,6 +85,26 @@ finished goods whose cost counts where they are consumed, so it is not counted t
 | QR-03 | measured on the ops screen (`/ops/`, request → answer p95) |
 | QR-07 | `scripts/run.sh backup` (every service database + Nexus) |
 
+## Enterprise round - warehouse, delivery, inventory control, messages, public page
+
+| ID | What | Where |
+|---|---|---|
+| WH-01 | bins per location (code, zone), lots put away into bins | warehouse-service `SAVE_BIN`, `MOVE_LOT`; Warehouse floor → Bins, Lots |
+| WH-02 | every stock change is filed as lots (expiry from the line, else the item's shelf life; send / transfer carry the expiry) | warehouse-service `jobs.follow_stock` (follows ACCEPTED stock requests; replays history on first start) |
+| WH-03 | pick lists: first expiry, first out, walked in bin order; completing one sends the stock | warehouse-service `CREATE_PICK`, `PICK`, `COMPLETE_PICK` → stock SEND; Warehouse floor → Pick lists |
+| WH-04 | receive with expiry, batch and bin; barcode scanning of items | Warehouse in (line extras), kit `ItemPalette` scan button; item `barcode`, `shelf_life_days` |
+| WH-05 | waste with a reason (expired, spoiled, damaged, made too much, other); in the cost of goods everywhere | stock-service `WASTE`; costing-service; Transfer & adjust → Throw away, lot "Throw away" |
+| DEL-01 | delivery runs: the day's trips onto runs, driver, vehicle, stop order, ETA (drive + service minutes) | delivery-service `PLAN_RUN`, `SET_STOPS`; Delivery runs board and run page (drag to reorder) |
+| DEL-02 | the driver's phone screen: start, arrive, proof of delivery (receiver + signature) or a problem | delivery-service `START_RUN`, `ARRIVE`, `DELIVER` (→ stock DELIVERED), `FAIL_STOP`; My deliveries |
+| INC-01 | minimum / maximum per item and location; below minimum raises an alert with what to fill to | inventory-service `SET_PAR`; Inventory control → Min / max |
+| INC-02 | alerts: expired, below zero, expiring in 2 days, below minimum; checked hourly; owners get one email + WhatsApp a day with the new ones | inventory-service `jobs.handle_tick` (schedule `inventory-alerts`), template `stock_alert` |
+| INC-03 | stock takes, optionally blind; finishing corrects stock (ADJUST) and keeps the variance and its value | inventory-service `START_TAKE` … `FINISH_TAKE`; Inventory control → Stock take |
+| INC-04 | valuation at item cost and by lot cost; ABC by usage value (80 / 95 %), days of cover, waste by reason | inventory-service `VALUATION`, `ANALYSIS`; Valuation, ABC & cover |
+| MSG-01 | purchase order sent to the supplier by email, WhatsApp and / or SMS | purchase-service `SEND`, template `purchase_order`; order page → Send to supplier |
+| MSG-02 | the business's outbox; test mode = no provider keys, messages are logged (delivery LOGGED) and shown, not sent | notification-service; Outbox |
+| WEB-01 | public product page at `#/welcome` (visitors to `/` land there) with a "request a demo" form | `landing.js`; BFF `/public/demo` (3 per 10 minutes per address, hidden bot field) → lead-service |
+| WEB-02 | demo requests for the operator, with a stage (new, contacted, won, lost); emailed to `LEADS_NOTIFY_EMAIL` | lead-service (common); Platform → Demo requests |
+
 ## Future scope (section 12) - not built
-F1 Square, F2 AI entry, F3 full recipe use and batch cost, F4 forecasts from sales, F5 partner stock sharing, F6 expiry,
+F1 Square, F2 AI entry, F3 full recipe use and batch cost, F4 forecasts from sales, F5 partner stock sharing, ~~F6 expiry~~ (built: WH-02, INC-02),
 F7 HR / scheduling, F8 supplier bidding, F9 delivery apps, F10 analytics, F11 margin per product, F12 customer features.
