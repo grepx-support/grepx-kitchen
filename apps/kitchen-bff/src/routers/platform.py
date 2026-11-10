@@ -12,6 +12,7 @@ from grepx_service import Saga, SagaRunner, Step, new_key
 from grepx_bff.errors import ApiError
 from grepx_bff.gateway import CURRENT_TRACE
 from grepx_bff.security import Principal, admin, gateway
+from grepx_bff.support import open_support
 from grepx_bff.views import clean
 
 router = APIRouter(prefix="/platform", tags=["platform"])
@@ -44,6 +45,15 @@ def businesses(user: Principal = Depends(operator), gw=Depends(gateway)):
         places = gw.rows(gc.business.LOCATIONS, tenant_id=b["_key"])
         rows.append({**clean(b, ("name", "currency", "timezone", "modules")), "locations": len(places)})
     return sorted(rows, key=lambda r: r.get("name", ""))
+
+
+@router.post("/businesses/{tenant_id}/support")
+def support(tenant_id: str, body: dict | None = None, user: Principal = Depends(operator), gw=Depends(gateway)):
+    """Open a business as platform support: see everything its owner sees, for an hour (read only unless edit: true)."""
+    business = gw.one(gc.business.BUSINESSES, tenant_id)
+    if business is None:
+        raise ApiError("UNKNOWN_BUSINESS", 404)
+    return {**open_support(gw, user, tenant_id, edit=bool((body or {}).get("edit"))), "business_name": business.get("name", "")}
 
 
 def role_steps(gw, tenant: str) -> list[Step]:

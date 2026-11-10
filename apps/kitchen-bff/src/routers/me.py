@@ -16,7 +16,8 @@ router = APIRouter(tags=["me"])
 def me(user: Principal = Depends(current_user), gw=Depends(gateway)):
     person = gw.one(gc.people.PEOPLE, user.user_id) or {}
     out = {"user_id": user.user_id, "name": person.get("name", ""), "email": person.get("email", ""), "role": user.role,
-           "is_staff": user.is_staff, "perms": user.perms, "tenant": user.tenant, "operator": user.is_admin and not user.tenant}
+           "is_staff": user.is_staff, "perms": user.perms, "tenant": user.tenant, "operator": user.is_admin and not user.tenant,
+           "support": user.support, "read_only": user.read_only}
     if user.tenant:
         business = gw.one(gc.business.BUSINESSES, user.tenant)
         if business and business.get("tenant_id") == user.tenant:

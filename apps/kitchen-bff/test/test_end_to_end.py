@@ -73,6 +73,21 @@ def test_the_weekly_and_daily_cycle(env):
         ok(api.post("/api/v1/setup/locations", headers=owner, json=b))["location_id"]  # noqa: E731
     wh = loc(name="Central warehouse", kind="warehouse", days_of_cover=3)
     kit = loc(name="Kitchen", kind="kitchen")
+
+    # --- platform support: the operator opens a business (read only by default, audited), never the other way round ---
+    tok = lambda r: {"Authorization": f"Bearer {r['token']}"}  # noqa: E731
+    look = ok(api.post(f"/api/v1/platform/businesses/{hft['business_id']}/support", headers=ops, json={}))
+    assert look["read_only"] and look["business_name"] == "Halal Fusion Taco"
+    seen = ok(api.get("/api/v1/me/business", headers=tok(look)))
+    assert seen["support"] and seen["read_only"] and {l["id"] for l in seen["locations"]} == {wh, kit}
+    assert len(ok(api.get("/api/v1/setup", headers=tok(look)))["locations"]) == 2                   # sees the owner's screens
+    refused = api.post("/api/v1/setup/locations", headers=tok(look), json={"name": "Nope", "kind": "store"})
+    assert refused.status_code == 403 and refused.json()["detail"]["reason"] == "READ_ONLY_SUPPORT"
+    fix = ok(api.post(f"/api/v1/platform/businesses/{hft['business_id']}/support", headers=ops, json={"edit": True}))
+    assert not fix["read_only"]
+    assert api.post(f"/api/v1/platform/businesses/{hft['business_id']}/support", headers=tok(fix), json={}).status_code == 403   # no nesting
+    assert api.post(f"/api/v1/platform/businesses/{hft['business_id']}/support", headers=owner, json={}).status_code == 403
+    assert api.post("/api/v1/platform/businesses/nope/support", headers=ops, json={}).status_code == 404
     truck = loc(name="Events truck", kind="truck", days_of_cover=2)
     sup = ok(api.post("/api/v1/setup/suppliers", headers=owner, json={"name": "Fresh Meats", "phone": "+61400111222"}))["supplier_id"]
     item = lambda **b: ok(api.post("/api/v1/setup/items", headers=owner, json=b))["item_id"]  # noqa: E731
