@@ -7,6 +7,7 @@ from . import approve_bill
 from . import record_payment
 from . import void_bill
 from . import summary
+from . import monthly
 
 TABLE = "payables_requests"
 ROUTES = {
@@ -15,5 +16,6 @@ ROUTES = {
     PayablesAction.RECORD_PAYMENT: record_payment.handle,
     PayablesAction.VOID_BILL: void_bill.handle,
     PayablesAction.SUMMARY: summary.handle,
+    PayablesAction.MONTHLY: monthly.handle,
 }
 handle = ActionDispatcher(ROUTES, PayablesAction, TABLE)

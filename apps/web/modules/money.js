@@ -8,6 +8,7 @@
 import { bill, bills, newBill } from "./money/bills.js";
 import { detail, editor } from "./money/invoice.js";
 import { customers, sales } from "./money/sales.js";
+import { report } from "./money/report.js";
 import { statementPage } from "./money/statement.js";
 
 const SELL = { auth: "staff", tenant: true, area: "money", group: "Money", perm: ["billing", "manage_business"] };
@@ -23,4 +24,6 @@ export const routes = [
   { path: "/bills", nav: "Supplier bills", key: "b", icon: "inbox", ...PAY, keywords: "payable ap supplier invoice", render: bills },
   { path: "/bills/new", ...PAY, render: newBill },
   { path: "/bills/:id", ...PAY, render: (el, { args }) => bill(el, args[0]) },
+  { path: "/money/report", nav: "Money summary", icon: "chart", auth: "staff", tenant: true, area: "money", group: "Money", perm: "manage_business",
+    keywords: "profit loss p&l gst vat tax month sales purchases", render: report },
 ];

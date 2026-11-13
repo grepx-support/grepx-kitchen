@@ -12,3 +12,4 @@ class PayablesAction(str, Enum):
     RECORD_PAYMENT = "RECORD_PAYMENT"
     VOID_BILL = "VOID_BILL"
     SUMMARY = "SUMMARY"
+    MONTHLY = "MONTHLY"

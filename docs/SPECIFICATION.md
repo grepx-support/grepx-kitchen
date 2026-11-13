@@ -105,6 +105,22 @@ finished goods whose cost counts where they are consumed, so it is not counted t
 | WEB-01 | public product page at `#/welcome` (visitors to `/` land there) with a "request a demo" form | `landing.js`; BFF `/public/demo` (3 per 10 minutes per address, hidden bot field) → lead-service |
 | WEB-02 | demo requests for the operator, with a stage (new, contacted, won, lost); emailed to `LEADS_NOTIFY_EMAIL` | lead-service (common); Platform → Demo requests |
 
+## Money round - invoices, supplier bills, statements, monthly summary
+
+PDFs use fpdf2 (LGPL, github.com/py-pdf/fpdf2) in kitchen-bff `src/documents/`; amounts are whole cents rounded half-up by `grepx-money`.
+
+| ID | What | Where |
+|---|---|---|
+| MON-01 | customers (email, address, payment terms) | billing-service `SAVE_CUSTOMER`; Invoices → Customers |
+| MON-02 | invoices: draft, then issued with a gapless number per year (INV-YYYY-NNNN), due date from the terms, emailed with a PDF | billing-service `SAVE_INVOICE`, `ISSUE_INVOICE`, template `customer_invoice`; BFF `/sales/invoices/{id}/pdf` |
+| MON-03 | sales prices on items prefill invoice lines | item-service `price` ("Sells for" in Setup → Items) |
+| MON-04 | an invoice issued from a location takes the goods out of its stock, counted as used (cost of goods, inventory) | billing-service → stock-service `SELL` (movement `sale`); costing, inventory count `sale` |
+| MON-05 | payments (part or full), void, credit notes (CN-YYYY-NNNN, full or by line); ageing of what customers owe | billing-service `RECORD_PAYMENT`, `VOID_INVOICE`, `CREDIT_NOTE`, `SUMMARY` |
+| MON-06 | customer statement: invoices, credit notes and payments with a running balance, ageing, open invoices; print / PDF | billing-service `STATEMENT`; Customers → Statement (`#/sales/customer/:id`) |
+| MON-07 | payment reminders: by hand from an invoice, or automatically at 1, 7, 14 and 30 days late (once each, latest step only) when the business turns it on | billing-service `SEND_REMINDER`, `jobs.tick` (schedule `billing-reminders`, 01:00 UTC), template `payment_reminder`; Setup → Business |
+| MON-08 | supplier bills from a received order, three-way matched (ordered / received / billed, price within 2 %); a mismatch needs a note to approve; duplicate supplier refs refused | payables-service `SAVE_BILL`, `APPROVE_BILL`, `RECORD_PAYMENT`, `VOID_BILL`, `SUMMARY`; Supplier bills |
+| MON-09 | monthly money summary for the owner: sales and purchases before tax, gross profit (sales less purchases), tax charged / paid / to pay, money in and out; CSV | billing-service and payables-service `MONTHLY`; BFF `/money/report`; Money → Summary (`#/money/report`) |
+
 ## Future scope (section 12) - not built
 F1 Square, F2 AI entry, F3 full recipe use and batch cost, F4 forecasts from sales, F5 partner stock sharing, ~~F6 expiry~~ (built: WH-02, INC-02),
 F7 HR / scheduling, F8 supplier bidding, F9 delivery apps, F10 analytics, F11 margin per product, F12 customer features.

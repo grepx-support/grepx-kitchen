@@ -3,9 +3,10 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """billing-service rules (pure)."""
+from .months import monthly
 from .customers import clean_customer
 from .statements import REMIND_AFTER, reminder_stage, statement
 from .invoices import ageing, balance, clean_lines, credit_against, due_on, next_number, pay, priced, settle, status, void
 
-__all__ = ["REMIND_AFTER", "reminder_stage", "statement", "ageing", "balance", "clean_customer", "clean_lines", "credit_against", "due_on", "next_number", "pay", "priced", "settle",
+__all__ = ["monthly", "REMIND_AFTER", "reminder_stage", "statement", "ageing", "balance", "clean_customer", "clean_lines", "credit_against", "due_on", "next_number", "pay", "priced", "settle",
            "status", "void"]

@@ -150,3 +150,22 @@ def test_the_daily_job_reminds_only_businesses_that_asked(h):
                                  "billing": {"auto_reminders": True}})
     assert handle_tick(app, Row("t2", {"job": "billing-reminders", "status": "NEW"}), cfg) == 1
     assert handle_tick(app, Row("t3", {"job": "billing-reminders", "status": "NEW"}), cfg) == 0          # once per stage
+
+
+def test_months_count_issued_sales_less_credits_and_payments():
+    from domain import monthly
+    rows = [{"state": "issued", "kind": "invoice", "issued": "2026-03-04", "taxable": 1000, "tax": 90, "total": 1090, "payments": [{"date": "2026-04-01", "amount": 500}]},
+            {"state": "paid", "kind": "credit", "issued": "2026-03-20", "taxable": 200, "tax": 18, "total": 218},
+            {"state": "draft", "kind": "invoice", "issued": "2026-03-05", "taxable": 999, "tax": 0, "total": 999},
+            {"state": "void", "kind": "invoice", "issued": "2026-03-06", "taxable": 999, "tax": 0, "total": 999},
+            {"state": "issued", "kind": "invoice", "issued": "2025-12-31", "taxable": 5, "tax": 0, "total": 5}]
+    months = monthly(rows, 2026)
+    assert len(months) == 12 and months[0]["month"] == "2026-01"
+    assert {k: months[2][k] for k in ("sales", "tax", "total", "invoices", "credits")} == {"sales": 800, "tax": 72, "total": 872, "invoices": 1, "credits": 1}
+    assert months[3]["received"] == 500 and sum(m["sales"] for m in months) == 800
+
+
+def test_monthly_action_defaults_to_this_year(h):
+    got = call(h, action="MONTHLY", year="nonsense").fields
+    assert len(got["months"]) == 12 and str(got["year"]) == got["months"][0]["month"][:4]
+    assert str(call(h, action="MONTHLY", year=2024).fields["year"]) == "2024"

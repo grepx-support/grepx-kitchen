@@ -343,3 +343,10 @@ def test_invoices_and_supplier_bills(env):
     stack.settle()
     level = {(l["location_id"], l["item_id"]): l["qty"] for l in ok(api.get("/api/v1/stock", headers=owner))["levels"]}
     assert level[(wh, rice)] == 31
+
+    # --- the monthly money summary joins both sides ---
+    rep = ok(api.get("/api/v1/money/report", headers=owner))
+    year = rep["year_total"]
+    assert len(rep["months"]) == 12 and (year["purchases"], year["tax_paid"], year["paid"], year["bills"]) == (9000, 810, 9810, 1)
+    assert year["received"] == 18530 and year["invoices"] == 2 and year["gross"] == year["sales"] - 9000 and year["sales"] >= 17000
+    assert ok(api.get("/api/v1/money/report?year=2001", headers=owner))["year_total"]["sales"] == 0

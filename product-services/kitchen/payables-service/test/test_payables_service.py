@@ -94,3 +94,17 @@ def test_summary_lists_what_is_due(h):
     bill(h, po_id="po1", due="2020-01-01")
     s = call(h, action="SUMMARY").fields
     assert (s["to_approve"], s["due"]["overdue"], s["bills"][0]["overdue"]) == (1, 15369, True)
+
+
+def test_months_count_bills_by_bill_date_and_payments():
+    from domain import monthly
+    rows = [{"state": "approved", "bill_date": "2026-02-10", "taxable": 3000, "tax": 270, "total": 3270, "payments": [{"date": "2026-03-01", "amount": 1000}]},
+            {"state": "void", "bill_date": "2026-02-11", "taxable": 50, "tax": 0, "total": 50}]
+    months = monthly(rows, 2026)
+    assert (months[1]["purchases"], months[1]["tax"], months[1]["bills"], months[2]["paid"]) == (3000, 270, 1, 1000)
+
+
+def test_monthly_action(h):
+    bill(h)
+    got = call(h, action="MONTHLY").fields
+    assert sum(m["bills"] for m in got["months"]) == 1
