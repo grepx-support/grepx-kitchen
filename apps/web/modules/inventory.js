@@ -13,7 +13,7 @@ import { take, takes } from "./inventory/takes.js";
 const INV = { auth: "staff", tenant: true, area: "inventory", group: "Warehouse" };
 
 export const routes = [
-  { path: "/inventory", nav: "Inventory control", icon: "alert", perm: "view_stock", ...INV, render: alerts },
+  { path: "/inventory", nav: "Inventory control", key: "v", icon: "alert", perm: "view_stock", ...INV, render: alerts },
   { path: "/inventory/par", perm: "view_stock", ...INV, render: par },
   { path: "/inventory/takes", perm: "adjust_stock", ...INV, render: takes },
   { path: "/inventory/take/:id", perm: "adjust_stock", ...INV, render: (el, { args }) => take(el, args[0]) },

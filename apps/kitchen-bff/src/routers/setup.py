@@ -24,6 +24,7 @@ def everything(k: Kitchen = Depends(owner)):
         person = k.one(gc.people.PEOPLE, access["_key"])
         if person:
             users.append({"id": access["_key"], "name": person.get("name", ""), "email": person.get("email", ""), "phone": person.get("phone", ""),
+                          "photo_id": person.get("photo_id", ""),
                           "staff_role_id": access.get("staff_role_id", ""), "perms": access.get("effective") or []})
     return {"business": clean(k.business), "locations": listed([clean(r) for r in k.rows(gc.business.LOCATIONS)], "name"),
             "items": listed([clean(r) for r in k.rows(gc.item.ITEMS)], "kind", "name"),
@@ -34,7 +35,7 @@ def everything(k: Kitchen = Depends(owner)):
 
 @router.patch("/business")
 def business(body: dict, k: Kitchen = Depends(owner)):
-    keep = {f: body[f] for f in ("name", "currency", "timezone", "modules", "settings") if f in body}
+    keep = {f: body[f] for f in ("name", "currency", "timezone", "modules", "settings", "billing") if f in body}
     return k.cmd(gc.business.REQUESTS, gc.business.SERVICE, {"action": "UPDATE", **keep})["business"]
 
 

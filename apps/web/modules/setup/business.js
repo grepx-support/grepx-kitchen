@@ -15,7 +15,7 @@ const MODULES = { kitchen: "Kitchen", inventory: "Inventory", orders: "Reorder a
 export default {
   id: "business", label: "Business", icon: "building",
   render(el, s, q, { redraw }) {
-    const b = s.business, st = b.settings || {};
+    const b = s.business, st = b.settings || {}, bl = b.billing || {};
     el.innerHTML = String(html`<form class="card accent"><div class="row"><label>Name<input name="name" value="${b.name}"></label>
         <label>Currency<input name="currency" value="${b.currency}" maxlength="3"></label><label>Time zone<input name="timezone" value="${b.timezone}"></label></div>
       <h2 class="k-section">Modules</h2><div class="k-perms">${Object.entries(MODULES).map(([k, v]) => html`<label class="check"><input type="checkbox" name="m_${k}" ${b.modules?.[k] !== false ? "checked" : ""}> ${v}</label>`)}</div>
@@ -26,13 +26,22 @@ export default {
         <label>COGS range from %<input name="cogs_min" type="number" min="0" max="100" value="${st.cogs_min}"></label>
         <label>to %<input name="cogs_max" type="number" min="0" max="100" value="${st.cogs_max}"></label></div>
       <label>Sales types at closing (comma separated)<input name="sales_types" value="${(st.sales_types || []).join(", ")}"></label>
+      <h2 class="k-section">Invoicing details <span class="muted small">(printed on invoices)</span></h2><div class="row">
+        <label>Legal name<input name="legal_name" value="${bl.legal_name || ""}" placeholder="${b.name}"></label>
+        <label>Tax name<input name="tax_label" value="${bl.tax_label || ""}" placeholder="GST" maxlength="12"></label>
+        <label>Tax registration no.<input name="tax_number" value="${bl.tax_number || ""}"></label>
+        <label>Tax rate %<input name="tax_rate" type="number" min="0" max="50" step="any" value="${bl.tax_rate ?? ""}"></label></div>
+      <div class="row"><label class="grow">Address<textarea name="address" rows="2">${bl.address || ""}</textarea></label>
+        <label class="grow">How to pay (bank, PayNow ...)<textarea name="payment_note" rows="2">${bl.payment_note || ""}</textarea></label></div>
+      <label class="check"><input type="checkbox" name="auto_reminders" ${bl.auto_reminders ? "checked" : ""}> Email customers a reminder when an invoice is 1, 7, 14 and 30 days overdue</label>
       <p><button class="btn primary">Save</button></p></form>`);
     el.querySelector("form").onsubmit = async (e) => {
       e.preventDefault();
       const v = values(e.target);
       const body = { name: v.name, currency: v.currency, timezone: v.timezone, modules: Object.fromEntries(Object.keys(MODULES).map((k) => [k, v[`m_${k}`]])),
         settings: { target_weeks: v.target_weeks, safety_pct: v.safety_pct, large_change_pct: v.large_change_pct, cogs_min: v.cogs_min, cogs_max: v.cogs_max,
-          sales_types: v.sales_types.split(",").map((x) => x.trim()).filter(Boolean) } };
+          sales_types: v.sales_types.split(",").map((x) => x.trim()).filter(Boolean) },
+        billing: { legal_name: v.legal_name, tax_label: v.tax_label, tax_number: v.tax_number, tax_rate: v.tax_rate || 0, address: v.address, payment_note: v.payment_note, auto_reminders: !!v.auto_reminders } };
       if (await run(() => api("/setup/business", { method: "PATCH", body }), "Saved")) { resetBiz(); redraw(); }
     };
   },

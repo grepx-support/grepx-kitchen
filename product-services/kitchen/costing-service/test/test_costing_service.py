@@ -79,3 +79,11 @@ def test_waste_is_part_of_the_cost_of_goods_everywhere():
              {"kind": "use", "qty": -1, "unit_cost": 5, "value": -5, "item_id": "beef"}]
     assert cost_day({"date": "2026-11-09", "total_sales": 100}, None, moves, True, None, SETTINGS)["ingredient_cost"] == 10    # kitchen: waste only
     assert cost_day({"date": "2026-11-09", "total_sales": 100}, None, moves, False, None, SETTINGS)["ingredient_cost"] == 15
+
+
+def test_goods_sold_on_invoices_are_part_of_the_cost_of_goods():
+    from domain.costs import cost_day
+    moves = [{"kind": "sale", "item_id": "birria", "qty": -4, "value": -24, "unit_cost": 6},
+             {"kind": "receive", "item_id": "birria", "qty": 10, "value": 60, "unit_cost": 6}]
+    day = cost_day({"date": "2026-11-13", "total_sales": 100}, None, moves, False, None, {})
+    assert (day["ingredient_cost"], day["cogs_pct"]) == (24, 24.0)

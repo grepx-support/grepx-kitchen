@@ -37,6 +37,7 @@ def clean_item(raw: dict, current: dict | None = None) -> dict:
         raise ValueError("INVALID_UNIT")
     return {"name": _name(merged.get("name")), "kind": kind, "unit": unit,
             "cost": quantity(merged.get("cost", 0), "INVALID_COST", allow_zero=True),
+            "price": quantity(merged.get("price") or 0, "INVALID_PRICE", allow_zero=True),   # what it sells for (invoices)
             "supplier_id": str(merged.get("supplier_id") or ""), "active": bool(merged.get("active", True)),
             "category": " ".join(str(merged.get("category") or "").split())[:40],
             "shelf_life_days": _days(merged.get("shelf_life_days")),           # warehouse-service dates new lots with it

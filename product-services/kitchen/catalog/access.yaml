@@ -16,8 +16,10 @@ permissions:
   closing: Staff closing - count, issues, sales
   view_costs: See cost, COGS and profit figures
   delivery: Deliveries - the driver's runs, proof of delivery (what leaves the warehouse, never the production plan)
+  billing: Customers and invoices - issue, credit notes, record what customers paid
+  payables: Supplier bills - enter, match to orders, approve, record payments
 roles:
-  - {role_id: owner, name: Owner, perms: [manage_business, view_stock, warehouse_out, warehouse_in, orders, transfer, adjust_stock, kitchen, closing, view_costs, delivery]}
+  - {role_id: owner, name: Owner, perms: [manage_business, view_stock, warehouse_out, warehouse_in, orders, transfer, adjust_stock, kitchen, closing, view_costs, delivery, billing, payables]}
   - {role_id: warehouse, name: Warehouse staff, perms: [view_stock, warehouse_out, warehouse_in, orders, transfer]}
   - {role_id: kitchen, name: Kitchen staff, perms: [kitchen]}
   - {role_id: closing, name: Store or truck staff, perms: [closing]}

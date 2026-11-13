@@ -21,7 +21,7 @@ def me(user: Principal = Depends(current_user), gw=Depends(gateway)):
     if user.tenant:
         business = gw.one(gc.business.BUSINESSES, user.tenant)
         if business and business.get("tenant_id") == user.tenant:
-            out["business"] = clean(business, ("name", "currency", "timezone", "modules", "settings"))
+            out["business"] = clean(business, ("name", "currency", "timezone", "modules", "settings", "billing"))
             out["locations"] = sorted((clean(r) for r in gw.rows(gc.business.LOCATIONS, tenant_id=user.tenant) if r.get("active", True)),
                                       key=lambda r: (r.get("sort") is None, r.get("sort") or 0, not r.get("holding"), r.get("name", "")))
     return out

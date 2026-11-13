@@ -26,6 +26,18 @@ templates:
     channels: [email, sms, whatsapp]
     subject: "{org} order {number}"
     text: "{text}"
+  customer_invoice:
+    label: An invoice emailed to a customer
+    placeholders: [org, customer, number, total, due, link]
+    channels: [email]
+    subject: "Invoice {number} from {org}"
+    text: "Dear {customer},\n\nPlease find invoice {number} for {total}, due on {due}.\n\nThank you for your business.\n{org}"
+  payment_reminder:
+    label: A reminder to a customer that an invoice is unpaid
+    placeholders: [org, customer, number, due, owed, late, how, link]
+    channels: [email]
+    subject: "Reminder: invoice {number} from {org}"
+    text: "Dear {customer},\n\nOur records show {owed} still owing on invoice {number}, which was due on {due}.\nIf you have already paid, thank you - please ignore this email.\n\n{how}\n\n{org}"
   demo_request:
     label: A demo was requested on the website (to the platform operator)
     placeholders: [org, name, company, email, phone, size, message]

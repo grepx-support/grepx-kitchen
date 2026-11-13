@@ -28,5 +28,5 @@ async function setup(el, q) {
 }
 
 export const routes = [
-  { path: "/setup", nav: "Setup", icon: "settings", area: "setup", group: "Business", auth: "staff", tenant: true, perm: "manage_business", render: setup },
+  { path: "/setup", nav: "Setup", key: "u", icon: "settings", area: "setup", group: "Business", auth: "staff", tenant: true, perm: "manage_business", render: setup },
 ];

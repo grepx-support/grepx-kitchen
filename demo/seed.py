@@ -21,6 +21,7 @@ import data  # noqa: E402
 import history  # noqa: E402
 import setup  # noqa: E402
 import floor  # noqa: E402
+import money  # noqa: E402
 import today  # noqa: E402
 from api import ApiFailed, Site  # noqa: E402
 
@@ -54,6 +55,7 @@ def main(args: list[str]) -> int:
         history.run(site, ids, days, say)
         today.run(site, ids, say)
         floor.run(site, ids, say)
+        money.run(site, ids, say)
     except (ApiFailed, RuntimeError) as e:
         print(f"demo stopped: {e}")
         return 1

@@ -14,9 +14,9 @@ import { warehouseOut } from "./stock/out.js";
 const STOCK = { auth: "staff", tenant: true, group: "Stock" };
 
 export const routes = [
-  { path: "/stock", nav: "Stock levels", icon: "box", area: "stock", perm: "view_stock", ...STOCK, render: levels },
-  { path: "/stock/out", nav: "Warehouse out", icon: "outbox", area: "out", perm: "warehouse_out", ...STOCK, render: warehouseOut },
-  { path: "/stock/in", nav: "Warehouse in", icon: "inbox", area: "in", perm: "warehouse_in", ...STOCK, render: warehouseIn },
-  { path: "/stock/move", nav: "Transfer", icon: "swap", area: "move", perm: "transfer", ...STOCK, render: move },
-  { path: "/stock/deliveries", nav: "Deliveries", icon: "truck", area: "deliveries", perm: "delivery", ...STOCK, render: deliveries },
+  { path: "/stock", nav: "Stock levels", key: "s", icon: "box", area: "stock", perm: "view_stock", ...STOCK, render: levels },
+  { path: "/stock/out", nav: "Warehouse out", key: "o", icon: "outbox", area: "out", perm: "warehouse_out", ...STOCK, render: warehouseOut },
+  { path: "/stock/in", nav: "Warehouse in", key: "i", icon: "inbox", area: "in", perm: "warehouse_in", ...STOCK, render: warehouseIn },
+  { path: "/stock/move", nav: "Transfer", key: "t", icon: "swap", area: "move", perm: "transfer", ...STOCK, render: move },
+  { path: "/stock/deliveries", nav: "Deliveries", key: "d", icon: "truck", area: "deliveries", perm: "delivery", ...STOCK, render: deliveries },
 ];

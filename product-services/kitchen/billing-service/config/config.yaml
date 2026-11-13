@@ -1,0 +1,14 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: billing-service
+snapshot_table: billing_requests
+project: kitchen
+description: "Customer billing (accounts receivable): customers with payment terms, invoices (draft, issue with a gapless number, due date), credit notes, payments with partial payment, void, ageing and overdue. Money in whole cents with half-up rounding; tax rate per invoice from the business. Keywords: invoice, accounts receivable, AR, customer, credit note, payment, receipt, overdue, ageing, GST, tax invoice, dunning"
+owns: [customers, invoices]
+tables:
+  customers: [tenant_id, active]
+  invoices: [tenant_id, customer_id, state, kind]
+subscriptions:                        # the scheduler's daily tick: payment reminders for overdue invoices
+  - {table: ticks, handler: jobs.handle_tick, when: "to_service = '{service}' AND status = 'NEW'"}

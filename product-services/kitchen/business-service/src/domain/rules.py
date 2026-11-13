@@ -58,6 +58,25 @@ def clean_settings(raw: dict, current: dict) -> dict:
     return out
 
 
+def clean_billing(raw: dict, current: dict) -> dict:
+    """What invoices print about the business: legal name, address, tax label / number / rate (%), how to pay."""
+    out = dict(current or {})
+    for key, limit in (("legal_name", 120), ("address", 400), ("tax_label", 12), ("tax_number", 40), ("payment_note", 600)):
+        if key in (raw or {}):
+            out[key] = str(raw.get(key) or "").strip()[:limit]
+    if "auto_reminders" in (raw or {}):
+        out["auto_reminders"] = bool(raw.get("auto_reminders"))
+    if "tax_rate" in (raw or {}):
+        try:
+            rate = float(raw.get("tax_rate") or 0)
+        except (TypeError, ValueError):
+            raise ValueError("INVALID_SETTING")
+        if not 0 <= rate <= 50:
+            raise ValueError("INVALID_SETTING")
+        out["tax_rate"] = int(rate) if rate.is_integer() else rate
+    return out
+
+
 def clean_business(raw: dict, current: dict | None = None) -> dict:
     """The business row from a request (CREATE: everything; UPDATE: only what was sent changes)."""
     cur = dict(current or {})
@@ -75,7 +94,8 @@ def clean_business(raw: dict, current: dict | None = None) -> dict:
         if key in MODULES:
             modules[key] = bool(value)
     out.update({"currency": currency, "timezone": timezone, "modules": modules,
-                "settings": clean_settings(raw.get("settings") or {}, cur.get("settings") or {})})
+                "settings": clean_settings(raw.get("settings") or {}, cur.get("settings") or {}),
+                "billing": clean_billing(raw.get("billing") or {}, cur.get("billing") or {})})
     return out
 
 

@@ -52,3 +52,6 @@ class Site:
 
     def post(self, path, body, who):
         return self.call("POST", path, body, who=who)
+
+    def patch(self, path, body, who):
+        return self.call("PATCH", path, body, who=who)

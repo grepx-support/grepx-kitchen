@@ -14,6 +14,7 @@ const TAG = { ingredient: "🥩", finished: "🌮", supply: "📦" };
 const form = (i = {}, suppliers) => html`<form class="card accent k-section"><h2>${i.id ? `Edit ${i.name}` : "Add an item"}</h2><input type="hidden" name="id" value="${i.id || ""}">
   <div class="row"><label>Name<input name="name" required value="${i.name || ""}"></label><label>Type<select name="kind">${option(["ingredient", "finished", "supply"], i.kind || "ingredient")}</select></label>
     <label>Unit<input name="unit" required placeholder="kg, box, each" value="${i.unit || ""}"></label><label>Cost per unit<input name="cost" type="number" min="0" step="0.0001" value="${i.cost ?? ""}"></label>
+    <label>Sells for (per unit)<input name="price" type="number" min="0" step="0.01" value="${i.price || ""}" placeholder="for invoices"></label>
     <label>Supplier<select name="supplier"><option value="">-</option>${suppliers.map((x) => html`<option value="${x.id}" ${x.id === i.supplier_id ? "selected" : ""}>${x.name}</option>`)}</select></label>
     <label>Category<input name="category" value="${i.category || ""}" placeholder="e.g. Meat, Dry goods"></label>
     <label>Shelf life (days)<input name="shelf_life_days" type="number" min="0" step="1" value="${i.shelf_life_days ?? ""}" placeholder="sets expiry when received"></label>
@@ -33,7 +34,7 @@ export default {
     el.querySelector("form").onsubmit = async (e) => {
       e.preventDefault();
       const v = values(e.target);
-      if (await post("/setup/items", { item_id: v.id || undefined, name: v.name, kind: v.kind, unit: v.unit, cost: Number(v.cost || 0),
+      if (await post("/setup/items", { item_id: v.id || undefined, name: v.name, kind: v.kind, unit: v.unit, cost: Number(v.cost || 0), price: Number(v.price || 0),
         supplier_id: v.supplier, category: v.category, active: !v.archived,
         shelf_life_days: v.shelf_life_days === "" ? null : Number(v.shelf_life_days), barcode: v.barcode }, "Item saved")) location.hash = "#/setup?tab=items";
     };

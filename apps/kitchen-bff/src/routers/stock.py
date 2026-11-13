@@ -36,7 +36,7 @@ def items(k: Kitchen = Depends(allow())):
     """Every active item of the business (name, unit, kind) - for adding a line on any stock screen. No costs here."""
     rows = [r for r in k.rows(gc.item.ITEMS) if r.get("active", True)]
     return {"items": [{"id": r["_key"], "name": r.get("name", ""), "unit": r.get("unit", ""), "kind": r.get("kind", ""),
-                       "category": r.get("category", ""), "barcode": r.get("barcode", ""),
+                       "category": r.get("category", ""), "barcode": r.get("barcode", ""), "price": r.get("price") or 0,
                        "shelf_life_days": r.get("shelf_life_days")} for r in listed(rows, "name")]}
 
 

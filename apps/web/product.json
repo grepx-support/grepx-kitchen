@@ -23,7 +23,9 @@
     "runs": "#0891b2",
     "driver": "#0e7490",
     "inventory": "#e11d48",
-    "outbox": "#2563eb"
+    "outbox": "#2563eb",
+    "terminal": "#f97316",
+    "money": "#7c3aed"
   },
   "member_role": "member",
   "roles": [
@@ -43,10 +45,14 @@
     "kitchen/runs",
     "kitchen/inventory",
     "kitchen/costs",
+    "kitchen/money",
     "kitchen/setup",
     "kitchen/outbox",
     "kitchen/landing",
     "kitchen/platform",
+    "core/profile",
+    "kitchen/find",
+    "kitchen/terminal",
     "core/admin"
   ],
   "styles": [

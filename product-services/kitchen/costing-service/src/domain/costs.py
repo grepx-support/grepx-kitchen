@@ -47,7 +47,7 @@ def cost_day(closing: dict, previous_date: str | None, moves: list[dict], is_kit
     period_days = max(1, (day - start).days)
     used, zero_cost = 0.0, set()
     for m in moves:
-        if m.get("kind") in ("count", "waste") or (m.get("kind") == "use" and not is_kitchen):
+        if m.get("kind") in ("count", "waste", "sale") or (m.get("kind") == "use" and not is_kitchen):
             used -= float(m.get("value") or 0)
             if not float(m.get("unit_cost") or 0) and float(m.get("qty") or 0):
                 zero_cost.add(m.get("item_id"))

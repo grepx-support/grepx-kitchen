@@ -33,5 +33,5 @@ async function closing(el, q) {
 }
 
 export const routes = [
-  { path: "/closing", nav: "Closing", icon: "clipboard", area: "closing", group: "Daily", auth: "staff", tenant: true, perm: "closing", render: closing },
+  { path: "/closing", nav: "Closing", key: "c", icon: "clipboard", area: "closing", group: "Daily", auth: "staff", tenant: true, perm: "closing", render: closing },
 ];

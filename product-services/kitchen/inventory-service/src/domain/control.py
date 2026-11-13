@@ -16,7 +16,7 @@ Consumption  count drops, waste and use outside kitchens (the same rule as cost 
 from __future__ import annotations
 
 EXPIRY_DAYS = 2
-CONSUMED = ("count", "waste", "use")
+CONSUMED = ("count", "waste", "use", "sale")
 
 
 def clean_par(raw: dict) -> dict:

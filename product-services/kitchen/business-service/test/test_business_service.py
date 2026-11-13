@@ -74,3 +74,12 @@ def test_reorder_locations_of_own_business_only(h):
     rows = {r["_key"]: r for r in h.rows("locations")}
     assert (rows[ids[1]]["sort"], rows[ids[0]]["sort"]) == (0, 1) and rows[ids[0]]["kind"] == "warehouse"
     assert call(h, action="REORDER_LOCATIONS", tenant_id="cafe", ids=ids).reason == "INVALID_LIST"
+
+
+def test_invoicing_details_are_kept_and_checked():
+    from domain.rules import clean_billing
+    got = clean_billing({"legal_name": " Demo Taco Pte Ltd ", "tax_label": "GST", "tax_rate": "9", "payment_note": "PayNow UEN 123"}, {"address": "1 Road"})
+    assert got == {"address": "1 Road", "legal_name": "Demo Taco Pte Ltd", "tax_label": "GST", "tax_rate": 9, "payment_note": "PayNow UEN 123"}
+    for bad in ({"tax_rate": "x"}, {"tax_rate": 80}):
+        with pytest.raises(ValueError, match="INVALID_SETTING"):
+            clean_billing(bad, {})

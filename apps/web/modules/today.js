@@ -11,7 +11,7 @@ import { widgets } from "./dashboard/registry.js";
 import { biz } from "./lib/business.js";
 
 export const routes = [
-  { path: "/", nav: "Home", icon: "home", area: "home", auth: "user", tenant: true, render: async (el) => {
+  { path: "/", nav: "Home", key: "h", icon: "home", area: "home", auth: "user", tenant: true, render: async (el) => {
     const b = await biz(true);
     new DashboardGrid({ registry: widgets, store, key: `kitchen.dashboard.${state.me?.user_id || state.me?.id || ""}`, ctx: { b } }).mount(el);
   } },

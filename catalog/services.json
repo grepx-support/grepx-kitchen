@@ -551,6 +551,35 @@
     "reacts_to": []
   },
   {
+    "name": "billing-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/billing-service",
+    "request_table": "billing_requests",
+    "actions": [
+      "CREDIT_NOTE",
+      "ISSUE_INVOICE",
+      "RECORD_PAYMENT",
+      "SAVE_CUSTOMER",
+      "SAVE_INVOICE",
+      "SUMMARY",
+      "VOID_INVOICE"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Customer billing (accounts receivable): customers with payment terms, invoices (draft, issue with a gapless number, due date), credit notes, payments with partial payment, void, ageing and overdue. Money in whole cents with half-up rounding; tax rate per invoice from the business. Keywords: invoice, accounts receivable, AR, customer, credit note, payment, receipt, overdue, ageing, GST, tax invoice, dunning",
+    "routes": [
+      "credit_note",
+      "issue_invoice",
+      "record_payment",
+      "save_customer",
+      "save_invoice",
+      "summary",
+      "void_invoice"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "business-service",
     "layer": "product",
     "product": "kitchen",
@@ -669,6 +698,31 @@
       "save_item",
       "save_recipe",
       "save_supplier"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "payables-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/payables-service",
+    "request_table": "payables_requests",
+    "actions": [
+      "APPROVE_BILL",
+      "RECORD_PAYMENT",
+      "SAVE_BILL",
+      "SUMMARY",
+      "VOID_BILL"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Supplier bills (accounts payable): enter a supplier's invoice against its purchase order, three-way match (ordered, received, billed - quantity and price), duplicate check, approval with a note when it does not match, due dates, part payments, void, what is due when. Money in whole cents. Keywords: accounts payable, AP, supplier invoice, bill, three-way match, 3-way match, purchase order matching, goods received, payment, due date, duplicate invoice",
+    "routes": [
+      "approve_bill",
+      "record_payment",
+      "save_bill",
+      "summary",
+      "void_bill"
     ],
     "reacts_to": []
   },

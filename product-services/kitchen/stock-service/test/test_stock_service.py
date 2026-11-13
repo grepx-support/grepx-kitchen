@@ -105,3 +105,11 @@ def test_waste_leaves_stock_with_its_reason(h):
     move = [m for m in h.rows("stock_movements") if m["kind"] == "waste"][0]
     assert done.ok and qty(h, "s1", "birria") == 7 and move["waste_reason"] == "expired" and move["value"] == -18
     assert call(h, action="WASTE", tenant_id="hft", location_id="s1", reason="bored", lines=[{"item_id": "birria", "qty": 1}]).reason == "INVALID_WASTE_REASON"
+
+
+def test_a_sale_on_an_invoice_leaves_stock_with_the_invoice(h):
+    call(h, action="RECEIVE", tenant_id="hft", location_id="s1", lines=[{"item_id": "birria", "qty": 10}])
+    done = call(h, action="SELL", tenant_id="hft", location_id="s1", invoice_id="inv1", invoice_number="INV-2026-0001",
+                lines=[{"item_id": "birria", "qty": 4}])
+    move = [m for m in h.rows("stock_movements") if m["kind"] == "sale"][0]
+    assert done.ok and qty(h, "s1", "birria") == 6 and (move["invoice_number"], move["value"]) == ("INV-2026-0001", -24)

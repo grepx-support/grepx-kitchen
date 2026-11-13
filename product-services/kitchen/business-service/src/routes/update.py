@@ -15,7 +15,7 @@ def handle(ctx: RequestContext) -> None:
         return
     current = business(ctx, tenant)
     try:
-        row = clean_business({k: ctx.get(k) for k in ("name", "currency", "timezone", "modules", "settings") if ctx.get(k) is not None},
+        row = clean_business({k: ctx.get(k) for k in ("name", "currency", "timezone", "modules", "settings", "billing") if ctx.get(k) is not None},
                              current)
     except ValueError as exc:
         return ctx.reject(str(exc))

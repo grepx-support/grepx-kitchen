@@ -75,3 +75,11 @@ def test_shelf_life_barcode_and_listing_order_survive_an_edit(h):
     row = {r["_key"]: r for r in h.rows("items")}[iid]
     assert (row["shelf_life_days"], row["barcode"], row["sort"], row["cost"]) == (7, "93006331", 0, 1.5)
     assert call(h, action="SAVE_ITEM", tenant_id="hft", name="Bad", kind="ingredient", unit="kg", shelf_life_days=-1).reason == "INVALID_SHELF_LIFE"
+
+
+def test_an_item_keeps_its_selling_price():
+    from domain import clean_item
+    assert clean_item({"name": "Birria tacos", "kind": "finished", "unit": "box", "cost": 21.5, "price": "38.50"})["price"] == 38.5
+    assert clean_item({"name": "Beef", "kind": "ingredient", "unit": "kg"})["price"] == 0
+    with pytest.raises(ValueError, match="INVALID_PRICE"):
+        clean_item({"name": "Beef", "kind": "ingredient", "unit": "kg", "price": -1})

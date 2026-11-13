@@ -43,5 +43,5 @@ async function outbox(el, q) {
 }
 
 export const routes = [
-  { path: "/outbox", nav: "Outbox", icon: "mail", area: "outbox", group: "Setup", auth: "staff", tenant: true, perm: "manage_business", render: outbox },
+  { path: "/outbox", nav: "Outbox", key: "x", icon: "mail", area: "outbox", group: "Setup", auth: "staff", tenant: true, perm: "manage_business", render: outbox },
 ];

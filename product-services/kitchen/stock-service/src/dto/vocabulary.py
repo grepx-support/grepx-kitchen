@@ -23,6 +23,7 @@ class MovementKind(str, Enum):
     ADJUST = "adjust"                # correction with a reason (R3)
     COUNT = "count"                  # counted at closing: replaces system stock, difference kept (Q6)
     WASTE = "waste"                  # thrown away (expired, spoiled, damaged...) with its reason - part of the cost of goods
+    SALE = "sale"                    # sold to a customer on an invoice (billing-service) - part of the cost of goods
 
 
 class WasteReason(str, Enum):

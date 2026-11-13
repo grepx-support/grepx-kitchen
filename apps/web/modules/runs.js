@@ -12,7 +12,7 @@ import { runPage } from "./runs/run.js";
 const RUNS = { auth: "staff", tenant: true };
 
 export const routes = [
-  { path: "/runs", nav: "Delivery runs", icon: "truck", area: "runs", group: "Warehouse", perm: "warehouse_out", ...RUNS, render: board },
+  { path: "/runs", nav: "Delivery runs", key: "r", icon: "truck", area: "runs", group: "Warehouse", perm: "warehouse_out", ...RUNS, render: board },
   { path: "/runs/:id", area: "runs", perm: "warehouse_out", ...RUNS, render: (el, { args }) => runPage(el, args[0]) },
   { path: "/driver", nav: "My deliveries", icon: "truck", area: "driver", group: "Daily", perm: "delivery", ...RUNS, render: driver },
 ];

@@ -70,6 +70,7 @@ RECIPES = {
 }
 
 PRICE = {"birria": 18.0, "pollo": 15.0, "consomme": 4.5}       # sale price, for the closing's sales figure
+WHOLESALE = {"birria": 38.5, "pollo": 36.0, "consomme": 4.5}   # what a box / cup sells for on an invoice to cafes and caterers
 DAILY_SALES = {"bondi": {"birria": 14, "pollo": 10, "consomme": 12},   # usual units sold a day (varied by the seed)
                "parra": {"birria": 10, "pollo": 9, "consomme": 8},
                "truck": {"birria": 18, "pollo": 6, "consomme": 15}}

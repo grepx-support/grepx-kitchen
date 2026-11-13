@@ -8,5 +8,5 @@
 import { kitchen } from "./kitchen/page.js";
 
 export const routes = [
-  { path: "/kitchen", nav: "Kitchen", icon: "pot", area: "kitchen", group: "Daily", auth: "staff", tenant: true, perm: "kitchen", render: kitchen },
+  { path: "/kitchen", nav: "Kitchen", key: "k", icon: "pot", area: "kitchen", group: "Daily", auth: "staff", tenant: true, perm: "kitchen", render: kitchen },
 ];

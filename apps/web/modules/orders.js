@@ -13,7 +13,7 @@ import { recommend } from "./orders/recommend.js";
 const ORDERS = { auth: "staff", tenant: true, area: "orders" };
 
 export const routes = [
-  { path: "/orders", nav: "Orders", icon: "cart", group: "Buying", perm: "orders", ...ORDERS, render: (el) => board(el) },
+  { path: "/orders", nav: "Orders", key: "p", icon: "cart", group: "Buying", perm: "orders", ...ORDERS, render: (el) => board(el) },
   { path: "/orders/recommended", perm: "orders", ...ORDERS, render: (el) => recommend(el) },
   { path: "/orders/new", perm: "orders", ...ORDERS, render: (el) => newOrder(el) },
   { path: "/orders/:id", ...ORDERS, render: (el, { args }) => detail(el, args[0]) },

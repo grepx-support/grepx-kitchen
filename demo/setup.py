@@ -31,7 +31,8 @@ def create(site, ops_email: str, ops_password: str, say) -> dict:
     for key, name, kind, unit, cost, sup, category in data.ITEMS:
         ids["item"][key] = site.post("/setup/items", {"name": name, "kind": kind, "unit": unit, "cost": cost, "category": category,
                                                       "supplier_id": ids["supplier"].get(sup, ""),
-                                                      "shelf_life_days": data.SHELF_LIFE.get(key), "barcode": data.BARCODE.get(key, "")}, "owner")["item_id"]
+                                                      "shelf_life_days": data.SHELF_LIFE.get(key), "barcode": data.BARCODE.get(key, ""),
+                                                      "price": data.WHOLESALE.get(key, 0)}, "owner")["item_id"]
     for product, (output, parts) in data.RECIPES.items():
         site.post("/setup/recipes", {"item_id": ids["item"][product], "batch_output": output,
                                      "ingredients": [{"item_id": ids["item"][k], "qty": q} for k, q in parts.items()]}, "owner")

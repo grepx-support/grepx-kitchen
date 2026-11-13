@@ -5,6 +5,7 @@
 """End to end: kitchen-bff over the kitchen services and the common services it reuses, on an in-memory Nexus.
 
 The weekly and daily cycle of the BRD (section 9) for one business, with a second business that must never see it."""
+import os
 from calendar import monthrange
 from datetime import date
 from pathlib import Path
@@ -22,15 +23,18 @@ from main import create_app
 ROOT = Path(__file__).resolve().parents[3]
 COMMON = ["common-services/identity", "common-services/people-service", "common-services/notification-service",
           "common-services/template-service", "common-services/task-service", "common-services/audit-log-service",
-          "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service"]
+          "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service",
+          "common-services/media-service"]
 MONTH = date.today().isoformat()[:7]
 
 
 @pytest.fixture(scope="module")
 def env(tmp_path_factory):
+    uploads = tmp_path_factory.mktemp("media")
+    os.environ["UPLOAD_DIR"] = str(uploads)              # the BFF stages pictures where media-service reads them
     stack = start_stack(ROOT, layers=(*COMMON, "product-services/kitchen"))
     assert all(seed_catalog(stack.requests, ROOT / "product-services/kitchen/catalog").values())
-    gw = Gateway(stack.client, load_config(ROOT / "apps/kitchen-bff/config"), storage=LocalStorage(tmp_path_factory.mktemp("media")))
+    gw = Gateway(stack.client, load_config(ROOT / "apps/kitchen-bff/config"), storage=LocalStorage(uploads))
     api = TestClient(create_app(gw))
     op = stack.call("people_requests", "people-service", {"action": "CREATE", "name": "Gina Operator", "email": "ops@grepx.sg",
                                                            "phone": "+6591234567", "source": "staff"})
@@ -200,6 +204,12 @@ def test_warehouse_floor_runs_inventory_and_messages(env, monkeypatch):
     sup = ok(api.post("/api/v1/setup/suppliers", headers=owner, json={"name": "Dairy Co", "phone": "+6590001111", "email": "orders@dairy.example"}))["supplier_id"]
     milk = ok(api.post("/api/v1/setup/items", headers=owner, json={"name": "Milk", "kind": "ingredient", "unit": "l", "cost": 2,
                                                                     "supplier_id": sup, "shelf_life_days": 5, "barcode": "9555 0001"}))["item_id"]
+    # --- profile picture: staged by the BFF, made an avatar by media-service, linked by people-service ---
+    pixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    photo = ok(api.post("/api/v1/me/photo", headers=owner, json={"image": pixel}))["photo_id"]
+    assert ok(api.get("/api/v1/me", headers=owner))["photo_id"] == photo
+    assert api.get(f"/api/v1/media/{photo}").headers["content-type"] == "image/webp"
+    assert api.post("/api/v1/me/photo", headers=owner, json={"image": "data:text/html;base64,PGgxPg=="}).status_code == 400
     found = {i["id"]: i for i in ok(api.get("/api/v1/stock/items", headers=owner))["items"]}[milk]
     assert (found["barcode"], found["shelf_life_days"]) == ("95550001", 5)
 
@@ -280,3 +290,56 @@ def test_warehouse_floor_runs_inventory_and_messages(env, monkeypatch):
     assert ok(api.post(f"/api/v1/platform/leads/{lead['id']}", headers=ops, json={"stage": "contacted"}))["stage"] == "contacted"
     assert api.get("/api/v1/platform/leads", headers=owner).status_code == 403
     assert api.post("/api/v1/public/demo", json={"name": "Bot", "email": "bot@example.com", "website": "http://spam"}).status_code != 500
+
+
+def test_invoices_and_supplier_bills(env):
+    """A customer invoice from draft to paid (with its PDF), and a supplier bill matched to a received order."""
+    stack, api = env
+    ops = login(api, "ops@grepx.sg", "operator-pw")
+    ok(api.post("/api/v1/platform/businesses", headers=ops, json={"name": "Money Kitchen", "currency": "SGD", "timezone": "Asia/Singapore",
+        "owner": {"name": "Mo Money", "email": "owner@money.sg", "phone": "+6591110002", "password": "money-pass"}}))
+    owner = login(api, "owner@money.sg", "money-pass")
+    ok(api.patch("/api/v1/setup/business", headers=owner, json={"billing": {"legal_name": "Money Kitchen Pte Ltd", "tax_label": "GST", "tax_number": "2020X",
+                                                                           "tax_rate": 9, "payment_note": "PayNow UEN 2020X"}}))
+    assert ok(api.get("/api/v1/me/business", headers=owner))["business"]["billing"]["tax_rate"] == 9
+    wh = ok(api.post("/api/v1/setup/locations", headers=owner, json={"name": "Store", "kind": "warehouse"}))["location_id"]
+    sup = ok(api.post("/api/v1/setup/suppliers", headers=owner, json={"name": "Fresh Co", "email": "ar@fresh.example"}))["supplier_id"]
+    rice = ok(api.post("/api/v1/setup/items", headers=owner, json={"name": "Rice", "kind": "ingredient", "unit": "kg", "cost": 2.5, "supplier_id": sup}))["item_id"]
+
+    # --- customer invoice ---
+    cust = ok(api.post("/api/v1/sales/customers", headers=owner, json={"name": "Cafe Uno", "email": "pay@uno.example", "terms_days": 7}))["customer_id"]
+    inv = ok(api.post("/api/v1/sales/invoices", headers=owner, json={"customer_id": cust, "tax_rate": 9,
+              "lines": [{"description": "Lunch boxes", "qty": 20, "unit_price": "8.50"}]}))["invoice_id"]
+    issued = ok(api.post(f"/api/v1/sales/invoices/{inv}/issue", headers=owner, json={"send": True}))["invoice"]
+    assert (issued["number"][:4], issued["total"]) == ("INV-", 18530)
+    pdf = api.get(f"/api/v1/sales/invoices/{inv}/pdf", headers=owner)
+    assert pdf.status_code == 200 and pdf.content[:4] == b"%PDF"
+    ok(api.post(f"/api/v1/sales/invoices/{inv}/pay", headers=owner, json={"amount": "185.30", "method": "paynow"}))
+    over = ok(api.get("/api/v1/sales", headers=owner))
+    assert (over["invoices"][0]["status"], over["owed"], over["received_month"]) == ("paid", 0, 18530)
+    stack.settle()
+    assert any(m["template"] == "customer_invoice" for m in ok(api.get("/api/v1/outbox", headers=owner))["messages"])
+
+    # --- supplier bill, three-way matched to the received order ---
+    po = ok(api.post("/api/v1/orders", headers=owner, json={"supplier_id": sup, "location_id": wh, "lines": [{"item_id": rice, "qty": 40}]}))["po_id"]
+    ok(api.post(f"/api/v1/orders/{po}/receive", headers=owner, json={"lines": [{"item_id": rice, "qty": 36}]}))
+    stack.settle()
+    assert ok(api.get("/api/v1/bills", headers=owner))["to_bill"][0]["po_id"] == po
+    start = ok(api.get(f"/api/v1/bills/from-order/{po}", headers=owner))
+    assert [(l["qty"], l["unit_price"]) for l in start["lines"]] == [(36, 2.5)]
+    bill = ok(api.post("/api/v1/bills", headers=owner, json={"supplier_id": sup, "supplier_ref": "F-100", "po_id": po, "tax_rate": 9, "lines": start["lines"]}))
+    assert bill["bill"]["match"] == "matched"
+    assert api.post("/api/v1/bills", headers=owner, json={"supplier_id": sup, "supplier_ref": "f-100", "lines": start["lines"]}).status_code == 409   # duplicate
+    key = bill["bill_id"]
+    ok(api.post(f"/api/v1/bills/{key}/approve", headers=owner, json={}))
+    paid = ok(api.post(f"/api/v1/bills/{key}/pay", headers=owner, json={"amount": "98.10"}))["bill"]
+    assert paid["state"] == "paid"
+    assert api.get(f"/api/v1/bills/{key}/pdf", headers=owner).content[:4] == b"%PDF"
+
+    # --- an invoice sent from the store takes the goods out of its stock ---
+    sold = ok(api.post("/api/v1/sales/invoices", headers=owner, json={"customer_id": cust, "location_id": wh,
+              "lines": [{"item_id": rice, "qty": 5, "unit_price": "4"}]}))["invoice_id"]
+    ok(api.post(f"/api/v1/sales/invoices/{sold}/issue", headers=owner, json={}))
+    stack.settle()
+    level = {(l["location_id"], l["item_id"]): l["qty"] for l in ok(api.get("/api/v1/stock", headers=owner))["levels"]}
+    assert level[(wh, rice)] == 31

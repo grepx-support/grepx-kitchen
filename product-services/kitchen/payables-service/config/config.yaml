@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: payables-service
+snapshot_table: payables_requests
+project: kitchen
+description: "Supplier bills (accounts payable): enter a supplier's invoice against its purchase order, three-way match (ordered, received, billed - quantity and price), duplicate check, approval with a note when it does not match, due dates, part payments, void, what is due when. Money in whole cents. Keywords: accounts payable, AP, supplier invoice, bill, three-way match, 3-way match, purchase order matching, goods received, payment, due date, duplicate invoice"
+owns: [bills]
+tables:
+  bills: [tenant_id, supplier_id, state, po_id]

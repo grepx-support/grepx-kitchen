@@ -16,6 +16,7 @@
 -e platform/libs/grepx-service
 -e platform/libs/grepx-storage
 -e platform/libs/grepx-bff
+-e platform/libs/grepx-money
 -e platform/libs/nexus-testkit
 -e platform/libs/grepx-testkit
 pyyaml>=6

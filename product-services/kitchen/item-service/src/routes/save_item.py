@@ -9,7 +9,7 @@ from domain import clean_item
 from dto import ReasonCode, Table
 from .common import guard, mine
 
-FIELDS = ("name", "kind", "unit", "cost", "supplier_id", "active", "category", "shelf_life_days", "barcode")
+FIELDS = ("name", "kind", "unit", "cost", "price", "supplier_id", "active", "category", "shelf_life_days", "barcode")
 
 
 def handle(ctx: RequestContext) -> None:

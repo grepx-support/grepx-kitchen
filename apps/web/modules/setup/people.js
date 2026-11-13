@@ -11,7 +11,7 @@ import { post, values } from "./common.js";
 export const users = {
   id: "users", label: "Users", icon: "users",
   render(el, s, q, { redraw }) {
-    el.innerHTML = String(html`<section class="card"><ul class="k-sort">${s.users.map((u) => html`<li><span></span>${avatar(u.name)}<span class="who"><b>${u.name}</b><small>${u.email}</small></span>
+    el.innerHTML = String(html`<section class="card"><ul class="k-sort">${s.users.map((u) => html`<li><span></span>${avatar(u.name, { photo: u.photo_id, size: 40 })}<span class="who"><b>${u.name}</b><small>${u.email}</small></span>
         <select data-user="${u.id}" aria-label="Role of ${u.name}"><option value="">-</option>${s.roles.map((r) => html`<option value="${r.id}" ${r.id === u.staff_role_id ? "selected" : ""}>${r.name}</option>`)}</select></li>`)}</ul></section>
       <form class="card accent k-section"><h2>Add a user</h2><div class="row"><label>Name<input name="name" required></label><label>Email (login)<input name="email" type="email" required></label>
         <label>Phone<input name="phone" required placeholder="+61 412 345 678"></label><label>Password (8+)<input name="password" type="password" minlength="8" required></label>
