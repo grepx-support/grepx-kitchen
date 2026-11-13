@@ -3,10 +3,13 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """Step 5 - money: invoicing details, three wholesale customers, invoices in every state (paid, part paid, overdue,
-draft) sent from the kitchen (so the food leaves its stock) and supplier bills for the received orders (one matched and paid, one waiting for approval)."""
+draft) - the kitchen cooks the catering orders first and they leave its stock - and supplier bills for the received
+orders (one matched and paid, one waiting for approval)."""
 from __future__ import annotations
 
 from datetime import date, timedelta
+
+from catering import cook_for
 
 
 def run(site, d, ids, say) -> None:
@@ -15,6 +18,12 @@ def run(site, d, ids, say) -> None:
         return say("money: customers already there - skipped")
     site.patch("/setup/business", {"billing": d.BILLING}, "owner")
     cust = [site.post("/sales/customers", {"name": n, "email": e, "terms_days": t, "address": a}, "owner")["customer_id"] for n, e, t, a in d.CUSTOMERS]
+    catering: dict[str, float] = {}
+    for _, _, rows, paid in d.INVOICES:                       # what the issued invoices take
+        for k, q, _ in rows:
+            if paid is not None and k in item:
+                catering[k] = catering.get(k, 0) + q
+    cook_for(site, d, ids, catering)
     for who, ago, rows, paid in d.INVOICES:
         lines = [{"item_id": item[k], "qty": q, "unit_price": p} if k in item else {"description": k, "qty": q, "unit_price": p} for k, q, p in rows]
         inv = site.post("/sales/invoices", {"customer_id": cust[who], "tax_rate": d.BILLING["tax_rate"], "lines": lines,

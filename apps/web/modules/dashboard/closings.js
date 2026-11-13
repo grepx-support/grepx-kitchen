@@ -12,7 +12,7 @@ import { has, on } from "../lib/business.js";
 import { fmt, today } from "../lib/format.js";
 
 export default {
-  id: "closings", title: "Closings", icon: "clipboard", area: area("closing"),
+  id: "closings", title: "Closings", icon: "clipboard", area: area("closing"), href: "#/closing",
   allowed: ({ b }) => (has("manage_business") || has("view_costs")) && on(b, "closing"),
   load: () => api("/closing/history"),
   render: (d, { b }) => {

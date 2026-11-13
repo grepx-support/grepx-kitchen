@@ -30,8 +30,10 @@ def run(site, d, ids: dict, say) -> None:
         product = next(k for k, v in ids["item"].items() if v == line["item_id"])
         for k, q in d.RECIPES[product][1].items():
             used[ids["item"][k]] = used.get(ids["item"][k], 0) + q * line["qty"] / output[line["item_id"]]
-    if used:
-        site.post("/kitchen/use", {"location_id": p["kit"], "lines": [{"item_id": i, "qty": round(q, 2)} for i, q in used.items()]}, kim)
+    if used:                                                     # the ingredients come from the store first
+        lines = [{"item_id": i, "qty": round(q, 2)} for i, q in used.items()]
+        site.post("/stock/send", {"from_location_id": p["wh"], "to_location_id": p["kit"], "lines": lines}, wes)
+        site.post("/kitchen/use", {"location_id": p["kit"], "lines": lines}, kim)
     if made:
         site.post("/kitchen/production", {"location_id": p["kit"], "lines": made}, kim)
     say(f"kitchen: one batch of each product recorded against this week's target")
@@ -43,9 +45,13 @@ def deliveries(site, d, ids: dict, say) -> None:
     p, wes, dan = ids["place"], staff(d, "warehouse")[1], staff(d, "delivery")[1]
     on_way, arrives = d.SELLERS[:2]
     names = {k: name for k, name, *_ in d.PLACES}
-    for place in (on_way, arrives):
+    held = {l["item_id"]: l["qty"] for l in site.get("/stock", wes)["levels"] if l["location_id"] == p["wh"]}
+    for place in (on_way, arrives):                              # never more than the store has
         plan = site.get(f"/stock/warehouse-out?to_location_id={p[place]}", wes)
-        lines = [{"item_id": l["item_id"], "qty": l["suggested"]} for l in plan["lines"] if l.get("suggested")]
+        lines = [{"item_id": l["item_id"], "qty": round(min(l["suggested"], held.get(l["item_id"], 0)), 2)} for l in plan["lines"] if l.get("suggested")]
+        lines = [l for l in lines if l["qty"] > 0]
+        for l in lines:
+            held[l["item_id"]] -= l["qty"]
         if lines:
             site.post("/stock/send", {"from_location_id": p["wh"], "to_location_id": p[place], "lines": lines}, wes)
     trips = site.get("/stock/deliveries", dan)["deliveries"]

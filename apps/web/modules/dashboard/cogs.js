@@ -13,7 +13,7 @@ import { byDay } from "../lib/days.js";
 import { pct, thisMonth } from "../lib/format.js";
 
 export default {
-  id: "cogs", title: "COGS this month", icon: "trend", size: "m", area: area("costs"),
+  id: "cogs", title: "COGS this month", icon: "trend", size: "m", area: area("costs"), href: "#/costs",
   allowed: ({ b }) => has("view_costs") && on(b, "costing"),
   load: async () => {
     const [d, s] = await Promise.all([api(`/costs/days?month=${thisMonth()}`), api(`/costs/month?month=${thisMonth()}`)]);
@@ -21,7 +21,7 @@ export default {
   },
   render: ({ days, s }) => days.length ? html`<div class="k-figs"><span><b>${pct(s.cogs_pct)}</b> COGS</span><span><b>${pct(s.costing_pct)}</b> costing avg</span>
       <span class="${s.days_out_of_range ? "bad" : "ok"}"><b>${s.days_out_of_range}</b> day(s) outside ${s.cogs_range[0]}–${s.cogs_range[1]}%</span></div>
-    ${lineChart({ labels: days.map((x) => x.date.slice(5)), unit: "%", band: s.cogs_range, label: "COGS by day",
+    ${lineChart({ labels: days.map((x) => x.date.slice(5)), unit: "%", band: s.cogs_range, label: "COGS by day", links: days.map((x) => `#/costs?day=${x.date}`),
       series: [{ name: "COGS %", color: area("costs"), values: days.map((x) => x.cogs_pct) }, { name: "Costing %", color: "#f59e0b", values: days.map((x) => x.costing_pct) }] })}`
     : html`<p class="muted">No closings this month yet - COGS appears after the first closing.</p>`,
 };

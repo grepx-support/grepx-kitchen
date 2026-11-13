@@ -15,7 +15,7 @@ const KIND = { receive: ["inbox", "#14b8a6"], send_out: ["outbox", "#06b6d4"], s
   transfer_in: ["swap", "#8b5cf6"], produce: ["pot", "#f97316"], use: ["pot", "#fb923c"], adjust: ["alert", "#f43f5e"], count: ["clipboard", "#2563eb"] };
 
 export default {
-  id: "moves", title: "Latest stock moves", icon: "list", size: "m", area: area("stock"),
+  id: "moves", title: "Latest stock moves", icon: "list", size: "m", area: area("stock"), href: "#/stock",
   allowed: ({ b }) => has("view_stock") && on(b, "inventory"),
   load: () => api("/stock/movements?limit=8"),
   render: (d) => html`<ul class="k-feed">${d.movements.map((m) => {

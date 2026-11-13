@@ -11,7 +11,7 @@ import { area } from "../lib/areas.js";
 import { has, on } from "../lib/business.js";
 
 export default {
-  id: "open-orders", title: "Orders on the way", icon: "cart", area: area("orders"),
+  id: "open-orders", title: "Orders on the way", icon: "cart", area: area("orders"), href: "#/orders",
   allowed: ({ b }) => (has("orders") || has("warehouse_in")) && on(b, "orders"),
   load: () => api("/orders?state=saved"),
   render: (d) => html`<p class="k-big">${d.orders.length}<small> open</small></p>${d.orders.slice(0, 4).map((o) => html`<a class="k-row" href="#/orders/${o.id}">

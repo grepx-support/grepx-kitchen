@@ -28,7 +28,7 @@ export async function warehouseIn(el) {
         <b>${o.number}</b><span>${o.supplier_name} · ${o.lines.length} lines</span><button class="btn small primary" data-receive="${o.id}">Receive</button></div>`)}
       ${open.orders.length ? "" : html`<p class="muted">No open purchase orders.</p>`}</section>
     <section class="card accent"><h2>${icon("alert")} Needed this week ${needed.length ? pill(`${needed.length}`, "bad") : ""}</h2>
-      ${barList({ empty: "Nothing needed (or no history yet).", rows: needed.map((l) => ({ label: l.name, value: l.needed, note: `use ${fmt(l.weekly_usage)}/wk · here ${fmt(l.at_holding)} · elsewhere ${fmt(l.elsewhere)} ${l.unit}`, color: "#f43f5e" })) })}</section></div>
+      ${barList({ empty: "Nothing needed (or no history yet).", rows: needed.map((l) => ({ label: l.name, value: l.needed, note: `use ${fmt(l.weekly_usage)}/wk · here ${fmt(l.at_holding)} · elsewhere ${fmt(l.elsewhere)} ${l.unit}`, color: "#f43f5e", href: `#/stock?item=${l.item_id}` })) })}</section></div>
     <section class="card accent k-section"><h2>${icon("inbox")} Receive without an order</h2><div class="k-bar">${picker(b.locations, place.id, () => true, "at", "At")}
       <label class="grow">Note<input name="note" placeholder="e.g. bought at the market"></label><button class="btn primary" data-add>Add to stock</button></div><div class="slot"></div></section>`);
   const bins = await api(`/warehouse?location_id=${place.id}`).then((f) => f.bins).catch(() => []);

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+from catering import held
 from setup import staff
 
 
@@ -27,9 +28,12 @@ def run(site, d, ids: dict, say) -> None:
     site.post("/stock/receive", {"location_id": p["wh"], "note": "Market run", "lines": [
         {"item_id": item[k], "qty": q, "expiry": expires(days), "lot_code": lot, "bin_id": bins[b]} for k, q, days, lot, b in d.MARKET]}, wes)
     say(f"{len(bins)} bins, {len(floor['lots'])} lots filed, a market delivery that expires tomorrow")
-    for key, qty, why in d.WASTE:
-        site.post("/stock/waste", {"location_id": p["kit"], "reason": why, "lines": [{"item_id": item[key], "qty": qty}]}, staff(d, "kitchen")[1])
-    say("some waste in the kitchen, with reasons")
+    have = held(site, ids, "wh", wes)
+    for key, qty, why in d.WASTE:                                # at the store, never more than it holds
+        qty = min(qty, max(0, have.get(item[key], 0)))
+        if qty > 0:
+            site.post("/stock/waste", {"location_id": p["wh"], "reason": why, "lines": [{"item_id": item[key], "qty": qty}]}, wes)
+    say("some waste at the central store, with reasons")
     for key, (low, high) in d.PAR.items():
         site.post("/inventory/par", {"location_id": p["wh"], "item_id": item[key], "min": low, "max": high}, "owner")
     site.post("/inventory/alerts/check", {}, "owner")

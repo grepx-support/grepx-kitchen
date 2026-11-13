@@ -12,7 +12,7 @@ import { has, on } from "../lib/business.js";
 import { time, today } from "../lib/format.js";
 
 export default {
-  id: "deliveries", title: "Deliveries today", icon: "truck", area: area("deliveries"),
+  id: "deliveries", title: "Deliveries today", icon: "truck", area: area("deliveries"), href: "#/stock/deliveries",
   allowed: ({ b }) => (has("delivery") || has("warehouse_out")) && on(b, "inventory"),
   load: () => api(`/stock/deliveries?date=${today()}`),
   render: (d) => {

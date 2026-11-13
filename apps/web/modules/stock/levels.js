@@ -26,7 +26,7 @@ export async function levels(el, q) {
       { label: "Moves today", value: m.movements.filter((x) => x.date === today()).length, icon: "swap", area: area("move") },
       { label: "Below zero", value: negative, icon: "alert", area: negative ? "#e11d48" : "#16a34a", tone: negative ? "bad" : "good", note: negative ? "count these again" : "all fine" }])}
     <div class="grid">${places.map((p) => html`<section class="card accent"><h2>${p}</h2>${barList({ rows: s.levels.filter((r) => r.location_name === p)
-      .map((r) => ({ label: `${r.item_name}`, value: r.qty, note: r.unit, color: r.qty < 0 ? "#e11d48" : area("stock") })) })}</section>`)}</div>
+      .map((r) => ({ label: `${r.item_name}`, value: r.qty, unit: ` ${r.unit}`, color: r.qty < 0 ? "#e11d48" : area("stock") })) })}</section>`)}</div>
     <section class="card k-section"><h2>History</h2><p class="muted small">Every change with who, when and why. Nobody can edit it.</p><div class="hist"></div></section>`);
   if (!places.length) body.querySelector(".grid").append(h("p", { class: "muted" }, "No stock recorded yet."));
   new DataTable({ rows: m.movements, columns: [
