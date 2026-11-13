@@ -11,7 +11,7 @@ import { head } from "../lib/areas.js";
 import { has } from "../lib/business.js";
 
 export function frame(el, current, subtitle = "") {
-  const list = [{ id: "board", label: "Board", icon: "board", href: "#/orders" }];
+  const list = [{ id: "board", label: "Board", icon: "board", href: "#/orders" }, { id: "list", label: "List", icon: "list", href: "#/orders/list" }];
   if (has("orders")) list.push({ id: "recommend", label: "Recommended", icon: "sparkle", href: "#/orders/recommended" },
     { id: "new", label: "New order", icon: "plus", href: "#/orders/new" });
   el.innerHTML = String(html`${pageHead({ ...head("orders"), title: "Orders", subtitle })}${tabs(list, current)}<div class="k-body"></div>`);

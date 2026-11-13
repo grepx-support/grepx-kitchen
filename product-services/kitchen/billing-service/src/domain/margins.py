@@ -60,7 +60,7 @@ def _blank(**extra) -> dict:
 
 
 def _finish(row: dict) -> dict:
-    out = {**row, "profit": row["revenue"] - row["cost"], "qty": str(row["qty"].normalize()),
+    out = {**row, "profit": row["revenue"] - row["cost"], "qty": format(row["qty"].normalize(), "f"),     # 40, not "4E+1"
            "invoices": len(row["invoices"]), "customers": len(row["customers"])}
     out["margin"] = margin(out["revenue"], out["profit"])
     return out

@@ -1,6 +1,6 @@
 {
   "name": "Kitchen Stock & Costing",
-  "logo": "\ud83c\udf73",
+  "logo": "🍳",
   "tagline": "Stock, kitchen, orders and daily cost",
   "theme": {
     "primary": "#0d9488",
@@ -52,11 +52,16 @@
     "kitchen/platform",
     "core/profile",
     "kitchen/find",
+    "kitchen/assistant",
     "kitchen/terminal",
     "core/admin"
   ],
   "styles": [
     "kitchen/kitchen.css"
   ],
-  "landing": "#/welcome"
+  "landing": "#/welcome",
+  "assistant": {
+    "name": "Kitchen assistant",
+    "greeting": "Hi! I know your stock, orders, money and kitchen - ask me in your own words, or pick a question:"
+  }
 }

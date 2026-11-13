@@ -199,6 +199,8 @@ def test_margins_per_product_and_customer():
     sold = [{"invoice_id": "b", "state": "issued", "kind": "invoice", "issued": "2026-11-03", "customer_id": "uno", "lines": [line("birria", "4", 4000)]}]
     got = margins(sold, items, {}, "2026-11-01", "2026-11-30", recipes)
     assert (got["products"][0]["cost"], got["products"][0]["cost_from"], got["no_cost"]) == (340, "recipe", [])
+    round_qty = [{"invoice_id": "r", "state": "issued", "kind": "invoice", "issued": "2026-11-03", "customer_id": "uno", "lines": [line("birria", "40", 4000)]}]
+    assert margins(round_qty, items, {}, "2026-11-01", "2026-11-30", recipes)["products"][0]["qty"] == "40"
     for bad in (("2026-11-05", "2026-11-01"), ("nope", "")):
         with pytest.raises(ValueError, match="INVALID_DATE"):
             period(*bad, "2026-11-13")

@@ -39,7 +39,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Weekly production target from usage, safety %, event extra | ✅ | Kitchen screen |
 | Record batches made; ingredients used come off stock | ✅ | Kitchen screen, Terminal |
 | Kitchen terminal (big screen, timers) | ✅ | Terminal |
-| Forecast per dish per outlet per day, most accurate method chosen | 🟡 | forecast-service built and tested; page and "use as targets" - **NEXT (now)** |
+| Forecast per dish per outlet per day, most accurate method chosen; "use as targets" | ✅ | forecast-service; Kitchen → Forecast |
 | Prep lists per station / shift | ⬜ | |
 | Food safety records (fridge temperatures, cleaning checks, HACCP) | ⬜ | |
 
@@ -50,8 +50,8 @@ Next up is marked **NEXT** (in the order it will be built).
 | Recommended orders per supplier from usage | ✅ | Orders → Recommended |
 | Purchase orders: save, change, copy, cancel, send by email / WhatsApp / SMS | ✅ | Orders |
 | Purchase order PDF | ⬜ | **NEXT (PDF round)** |
-| Orders list: status tabs, search, supplier and date filters, sort, prev / next, keys | 🟡 | a board exists - **NEXT (orders navigation round)** |
-| Order timeline (made, sent, received, billed, paid) | ⬜ | **NEXT (orders navigation round)** |
+| Orders list: stage tabs, search, supplier and date filters, prev / next, J / K keys; board cards open a side drawer | ✅ | Orders → Board, List |
+| Order timeline (made, sent, received, billed, approved, paid) and ordered-against-received lines | ✅ | order page, drawer, list |
 | Goods receipt: in full or changed, expiry, batch, bin | ✅ | Warehouse in |
 | Supplier bills, three-way match, approval with note on mismatch, payments | ✅ | Supplier bills |
 | Supplier price history and price-jump alerts | ⬜ | step 4 of the plan |
@@ -113,12 +113,14 @@ Next up is marked **NEXT** (in the order it will be built).
 | Ctrl+K search over pages, actions and records; G + letter; ? for keys | ✅ | |
 | Pinned pages (star), Alt+1-9, folding menu groups | ✅ | |
 | Dark and light theme, phone layouts | ✅ | |
-| Sortable tables, CSV download where it matters | 🟡 | sorting everywhere; CSV on the money summary only |
+| Dense full-width layout; charts expand and click through to their data; drag and drop with gap and soft landing | ✅ | every page |
+| Sortable, paged tables (25 / 50 / 100 / all) that scroll inside; CSV download where it matters | 🟡 | paging and sorting everywhere; CSV on the money summary only - more with the import / export round |
 | Saved filters per table | ⬜ | |
-| Activity timeline on records | ⬜ | orders first - **NEXT** |
+| Activity timeline on records | 🟡 | orders done; deliveries and invoices next |
 | Approval inbox (bills to approve, mismatches) | ⬜ | |
 | Several languages | ⬜ | English only |
-| AI assistant (ask questions of the data) | 🔒 | F2: needs an AI key and the owner's consent |
+| Assistant: ask in your own words (stock, expiry, how much of X, orders, what to order, who owes, bills, month, best dishes, forecast, cooking, deliveries, open a page); cached answers; permissions respected | ✅ | chat button on every page, Ctrl+J |
+| Assistant backed by an AI model (free-form questions) | 🔒 | needs an AI key and the owner's consent; the assistant has the slot for it |
 
 ## How each feature is built
 Each service owns its tables; business rules are plain tested functions in `domain/`; one module per action in
