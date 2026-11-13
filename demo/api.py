@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import urllib.error
 import urllib.request
 
@@ -26,6 +27,22 @@ class Site:
     def __init__(self, base: str | None = None):
         self.base = (base or site_url()).rstrip("/") + "/api/v1"
         self.tokens: dict[str, str] = {}
+
+    def wait_until_up(self, seconds: int = 90, say=print) -> None:
+        """Wait for the site to answer (right after `run.sh start` / `restart` it needs a few seconds); any reply counts."""
+        root, told = self.base.rsplit("/api/", 1)[0] + "/", False
+        for _ in range(seconds):
+            try:
+                urllib.request.urlopen(root, timeout=3).close()
+                return
+            except urllib.error.HTTPError:
+                return
+            except (urllib.error.URLError, OSError):
+                if not told:
+                    say("waiting for the site to start...")
+                    told = True
+                time.sleep(1)
+        raise ApiFailed(f"the site {root} did not answer within {seconds} s - check: scripts/run.sh status")
 
     def call(self, method: str, path: str, body=None, who: str = ""):
         headers = {"Content-Type": "application/json"}

@@ -74,6 +74,7 @@ def main(args: list[str]) -> int:
     chosen = [PROFILES[only]] if only else list(PROFILES.values())
     site = Site()
     try:
+        site.wait_until_up()
         for d in chosen:
             site.login("ops", args[0], args[1])
             one(site, d, args, days, "--resume" in args)

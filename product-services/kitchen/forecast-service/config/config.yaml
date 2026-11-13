@@ -1,0 +1,9 @@
+service_name: forecast-service
+snapshot_table: forecast_requests
+project: kitchen
+description: "Sales forecasts: what each place will sell of each made product, day by day, learnt from stock counts and sales - several methods (moving average, same weekday, trend) tried on the last week and the most accurate used per product; each day's forecast kept so its accuracy can be checked later. Keywords: forecast, demand, prediction, sales history, production planning, accuracy, WAPE"
+owns: [forecasts]
+tables:
+  forecasts: [tenant_id, date]
+subscriptions:                        # the scheduler's tick: keep today's and tomorrow's forecast (for accuracy)
+  - {table: ticks, handler: jobs.handle_tick, when: "to_service = '{service}' AND status = 'NEW'"}

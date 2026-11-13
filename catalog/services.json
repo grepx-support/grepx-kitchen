@@ -559,9 +559,13 @@
     "actions": [
       "CREDIT_NOTE",
       "ISSUE_INVOICE",
+      "MARGINS",
+      "MONTHLY",
       "RECORD_PAYMENT",
       "SAVE_CUSTOMER",
       "SAVE_INVOICE",
+      "SEND_REMINDER",
+      "STATEMENT",
       "SUMMARY",
       "VOID_INVOICE"
     ],
@@ -571,9 +575,13 @@
     "routes": [
       "credit_note",
       "issue_invoice",
+      "margins",
+      "monthly",
       "record_payment",
       "save_customer",
       "save_invoice",
+      "send_reminder",
+      "statement",
       "summary",
       "void_invoice"
     ],
@@ -589,6 +597,7 @@
       "CREATE",
       "REORDER_LOCATIONS",
       "SAVE_LOCATION",
+      "SET_CLOSED",
       "UPDATE"
     ],
     "reasons": [],
@@ -598,6 +607,7 @@
       "create",
       "reorder_locations",
       "save_location",
+      "set_closed",
       "update"
     ],
     "reacts_to": []
@@ -661,6 +671,25 @@
     "reacts_to": []
   },
   {
+    "name": "forecast-service",
+    "layer": "product",
+    "product": "kitchen",
+    "path": "product-services/kitchen/forecast-service",
+    "request_table": "forecast_requests",
+    "actions": [
+      "FORECAST",
+      "SNAPSHOT"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Sales forecasts: what each place will sell of each made product, day by day, learnt from stock counts and sales - several methods (moving average, same weekday, trend) tried on the last week and the most accurate used per product; each day's forecast kept so its accuracy can be checked later. Keywords: forecast, demand, prediction, sales history, production planning, accuracy, WAPE",
+    "routes": [
+      "forecast",
+      "snapshot"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "inventory-service",
     "layer": "product",
     "product": "kitchen",
@@ -709,6 +738,7 @@
     "request_table": "payables_requests",
     "actions": [
       "APPROVE_BILL",
+      "MONTHLY",
       "RECORD_PAYMENT",
       "SAVE_BILL",
       "SUMMARY",
@@ -719,6 +749,7 @@
     "summary": "Supplier bills (accounts payable): enter a supplier's invoice against its purchase order, three-way match (ordered, received, billed - quantity and price), duplicate check, approval with a note when it does not match, due dates, part payments, void, what is due when. Money in whole cents. Keywords: accounts payable, AP, supplier invoice, bill, three-way match, 3-way match, purchase order matching, goods received, payment, due date, duplicate invoice",
     "routes": [
       "approve_bill",
+      "monthly",
       "record_payment",
       "save_bill",
       "summary",
@@ -788,6 +819,7 @@
       "DELIVERED",
       "PRODUCE",
       "RECEIVE",
+      "SELL",
       "SEND",
       "TRANSFER",
       "USE",
@@ -802,6 +834,7 @@
       "delivered",
       "produce",
       "receive",
+      "sell",
       "send",
       "transfer",
       "use",

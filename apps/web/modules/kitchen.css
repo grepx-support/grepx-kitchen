@@ -383,3 +383,22 @@
 .w3d-picks li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; background: var(--bg-2); }
 .w3d-picks li.on { outline: 2px solid #22d3ee; } .w3d-picks li div { display: grid; }
 .w3d-walk { padding-left: 22px; } .w3d-walk li { display: flex; gap: 8px; align-items: center; } .w3d-walk button { white-space: nowrap; flex: none; } .w3d-walk span { font-size: 13px; }
+/* forecast */
+.fc-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+.fc-controls select { width: auto; min-width: 180px; }
+.fc-make { font-variant-numeric: tabular-nums; } .fc-make td:first-child, .fc-make th:first-child { width: 36px; }
+.fc-use { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 14px; }
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin: 16px 0; }
+.fc-card { padding: 14px 16px; display: grid; gap: 8px; transition: transform .15s, box-shadow .15s; }
+.fc-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--area) 60%, transparent); }
+.fc-card header { display: flex; justify-content: space-between; align-items: start; gap: 8px; } .fc-card header div { display: grid; }
+.fc-spark { width: 100%; height: 70px; color: var(--ink-2); }
+.fc-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.fc-days span { display: grid; padding: 4px 0; border-radius: 8px; background: color-mix(in srgb, #f97316 9%, var(--card)); }
+.fc-days small { font-size: 10px; color: var(--muted); } .fc-days b { font-size: 13px; }
+.fc-acc { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+.fc-acc > div { display: grid; justify-items: center; gap: 4px; min-width: 52px; }
+.fc-acc .bars { display: flex; align-items: end; gap: 3px; height: 90px; }
+.fc-acc .bars i, .fc-legend i { display: inline-block; width: 12px; border-radius: 4px 4px 0 0; }
+.fc-acc .f, .fc-legend .f { background: #f97316; } .fc-acc .a, .fc-legend .a { background: #7c3aed; }
+.fc-legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin-top: 6px; } .fc-legend i { height: 10px; border-radius: 3px; margin-right: 6px; }

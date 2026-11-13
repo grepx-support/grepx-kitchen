@@ -7,3 +7,4 @@
 -e ../../../platform/libs/grepx-web-bootstrap
 -e ../../../platform/libs/nexus-logging
 -e ../../../platform/libs/grepx-service
+-e ../../../platform/libs/grepx-money
