@@ -110,3 +110,10 @@ def test_finished_goods_thrown_away_are_valued_at_their_cost_in_the_waste_report
              {"kind": "waste", "item_id": "taco", "qty": -3, "value": 0, "waste_reason": "overproduced"},
              {"kind": "use", "item_id": "milk", "qty": -5, "value": -10}]
     assert waste_by_reason(moves, {"milk": 2, "taco": 5}) == {"spoiled": 2, "overproduced": 15}
+
+
+def test_valuation_survives_a_level_below_zero():
+    from domain import valuation
+    got = valuation([{"location_id": "w", "item_id": "a", "qty": -2}, {"location_id": "w", "item_id": "b", "qty": 1}],
+                    {"a": 5.0, "b": 2.0}, [{"location_id": "w", "item_id": "b", "qty": 4, "unit_cost": 3}])
+    assert [(r["value"], r["lot_value"]) for r in got] == [(-10.0, 0.0), (2.0, 3.0)]

@@ -4,9 +4,10 @@
 
 """billing-service rules (pure)."""
 from .months import monthly
+from .margins import margins, period
 from .customers import clean_customer
 from .statements import REMIND_AFTER, reminder_stage, statement
 from .invoices import ageing, balance, clean_lines, credit_against, due_on, next_number, pay, priced, settle, status, void
 
-__all__ = ["monthly", "REMIND_AFTER", "reminder_stage", "statement", "ageing", "balance", "clean_customer", "clean_lines", "credit_against", "due_on", "next_number", "pay", "priced", "settle",
+__all__ = ["monthly", "margins", "period", "REMIND_AFTER", "reminder_stage", "statement", "ageing", "balance", "clean_customer", "clean_lines", "credit_against", "due_on", "next_number", "pay", "priced", "settle",
            "status", "void"]

@@ -12,6 +12,7 @@ import { biz } from "./lib/business.js";
 import { byDay } from "./lib/days.js";
 import { fmt, money, pct, thisMonth } from "./lib/format.js";
 import * as chart from "./costs/charts.js";
+import { costLandscape } from "./costs/view3d.js";
 
 async function costs(el, q) {
   const b = await biz();
@@ -31,10 +32,12 @@ async function costs(el, q) {
       { label: "Costing average", value: pct(s.costing_pct), icon: "chart", area: "#f59e0b", trend: daily.map((x) => x.costing_pct) },
       { label: "Net profit", value: s.net_profit === null ? "Not yet" : money(b, s.net_profit), icon: "sparkle", area: "#16a34a", tone: profitTone, note: `${s.overheads_days} day(s) of overheads` }])}
     ${chart.missing(s)}
+    <section class="card k-section c3" data-landscape></section>
     <div class="grid two"><section class="card accent"><h2>${icon("trend")} COGS by count period</h2>${d.days.length ? chart.trend(d.days, s) : html`<p class="muted">No closings this month.</p>`}</section>
       <section class="card accent"><h2>${icon("coin")} Where the money went</h2>${chart.split(s, b)}</section></div>
     <section class="card accent k-section"><h2>${icon("chart")} Sales by count period</h2>${d.days.length ? chart.sales(d.days) : html`<p class="muted">No sales yet.</p>`}</section>
     <section class="card k-section"><h2>Each count period</h2><div class="days"></div></section>`);
+  costLandscape(el.querySelector("[data-landscape]"), d.days, { ...s, cogs_range: d.cogs_range?.[0] != null ? d.cogs_range : s.cogs_range }, b.business?.currency || d.currency || "");
   new DataTable({ rows: d.days, empty: "No closings this month.", columns: [
     { key: "date", label: "Day", render: (x) => html`${x.date}${x.period_days > 1 ? html` <span class="muted small">(${x.period_days} days)</span>` : ""}` },
     { key: "location_name", label: "Location" },

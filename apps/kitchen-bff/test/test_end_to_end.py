@@ -350,3 +350,18 @@ def test_invoices_and_supplier_bills(env):
     assert len(rep["months"]) == 12 and (year["purchases"], year["tax_paid"], year["paid"], year["bills"]) == (9000, 810, 9810, 1)
     assert year["received"] == 18530 and year["invoices"] == 2 and year["gross"] == year["sales"] - 9000 and year["sales"] >= 17000
     assert ok(api.get("/api/v1/money/report?year=2001", headers=owner))["year_total"]["sales"] == 0
+    gp = ok(api.get("/api/v1/money/margins", headers=owner))
+    rice_row = next(p for p in gp["products"] if p["item_id"] == rice)
+    assert (rice_row["revenue"], rice_row["qty"]) == (2000, "5") and gp["total"]["revenue"] == year["sales"]
+    assert api.get("/api/v1/money/margins?from=2026-12-01&to=2026-01-01", headers=owner).status_code >= 400
+
+    # --- the operator closes the business: its people are locked out, nothing is lost; reopening brings it back ---
+    biz = next(b for b in ok(api.get("/api/v1/platform/businesses", headers=ops)) if b["name"] == "Money Kitchen")
+    assert ok(api.post(f"/api/v1/platform/businesses/{biz['id']}/close", headers=ops, json={}))["closed"] is True
+    stack.settle()
+    shut = api.get("/api/v1/sales", headers=owner)
+    assert shut.status_code == 403 and shut.json()["detail"]["reason"] == "BUSINESS_CLOSED"
+    assert next(b for b in ok(api.get("/api/v1/platform/businesses", headers=ops)) if b["id"] == biz["id"])["closed"] is True
+    ok(api.post(f"/api/v1/platform/businesses/{biz['id']}/reopen", headers=ops, json={}))
+    stack.settle()
+    assert api.get("/api/v1/sales", headers=owner).status_code == 200

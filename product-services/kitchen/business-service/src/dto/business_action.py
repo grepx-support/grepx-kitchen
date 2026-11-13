@@ -11,3 +11,4 @@ class BusinessAction(str, Enum):
     UPDATE = "UPDATE"
     SAVE_LOCATION = "SAVE_LOCATION"
     REORDER_LOCATIONS = "REORDER_LOCATIONS"   # the order locations are listed in (drag and drop in setup)
+    SET_CLOSED = "SET_CLOSED"                 # the platform operator closes (or reopens) a business; nothing is deleted

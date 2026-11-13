@@ -83,3 +83,12 @@ def test_invoicing_details_are_kept_and_checked():
     for bad in ({"tax_rate": "x"}, {"tax_rate": 80}):
         with pytest.raises(ValueError, match="INVALID_SETTING"):
             clean_billing(bad, {})
+
+
+def test_close_and_reopen_keeps_the_business(h):
+    call(h, action="CREATE", tenant_id="hft", name="HFT", currency="AUD", timezone="Australia/Sydney")
+    closed = call(h, action="SET_CLOSED", tenant_id="hft", closed=True, actor_id="ops").fields["business"]
+    assert closed["closed"] is True and closed["closed_by"] == "ops" and closed["name"] == "HFT" and closed["closed_at"]
+    opened = call(h, action="SET_CLOSED", tenant_id="hft", closed=False).fields["business"]
+    assert opened["closed"] is False and opened["currency"] == "AUD"
+    assert call(h, action="SET_CLOSED", tenant_id="nope", closed=True).reason == "UNKNOWN_BUSINESS"

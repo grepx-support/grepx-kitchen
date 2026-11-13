@@ -9,39 +9,40 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-import data
+from setup import staff
 
 
-def run(site, ids: dict, say) -> None:
-    p, item, wes = ids["place"], ids["item"], "wes@demo-taco.test"
-    bins = {code: site.post("/warehouse/bins", {"location_id": p["wh"], "code": code, "zone": zone}, "owner")["bin_id"] for code, zone in data.BINS}
+def run(site, d, ids: dict, say) -> None:
+    p, item, wes = ids["place"], ids["item"], staff(d, "warehouse")[1]
+    have = {b["code"]: b["id"] for b in site.get(f"/warehouse?location_id={p['wh']}", wes)["bins"]}   # made before (a resumed run)
+    bins = {code: have.get(code) or site.post("/warehouse/bins", {"location_id": p["wh"], "code": code, "zone": zone}, "owner")["bin_id"]
+            for code, zone in d.BINS}
     floor = site.get(f"/warehouse?location_id={p['wh']}", wes)
     keys = {v: k for k, v in item.items()}
     for lot in floor["lots"]:
-        code = data.BIN_OF.get(keys.get(lot["item_id"], ""))
+        code = d.BIN_OF.get(keys.get(lot["item_id"], ""))
         if code:
             site.post(f"/warehouse/lots/{lot['lot_id']}/move", {"bin_id": bins[code]}, wes)
-    soon = (date.today() + timedelta(days=1)).isoformat()
+    expires = lambda days: (date.today() + timedelta(days=days)).isoformat() if days is not None else ""
     site.post("/stock/receive", {"location_id": p["wh"], "note": "Market run", "lines": [
-        {"item_id": item["coriander"], "qty": 6, "expiry": soon, "lot_code": "MKT-1", "bin_id": bins["C-02"]},
-        {"item_id": item["cheese"], "qty": 4, "lot_code": "OX-2207", "bin_id": bins["C-02"]}]}, wes)
+        {"item_id": item[k], "qty": q, "expiry": expires(days), "lot_code": lot, "bin_id": bins[b]} for k, q, days, lot, b in d.MARKET]}, wes)
     say(f"{len(bins)} bins, {len(floor['lots'])} lots filed, a market delivery that expires tomorrow")
-    for key, qty, why in (("coriander", 2, "spoiled"), ("tortilla", 1, "damaged"), ("birria", 3, "overproduced")):
-        site.post("/stock/waste", {"location_id": p["kit"], "reason": why, "lines": [{"item_id": item[key], "qty": qty}]}, "kim@demo-taco.test")
+    for key, qty, why in d.WASTE:
+        site.post("/stock/waste", {"location_id": p["kit"], "reason": why, "lines": [{"item_id": item[key], "qty": qty}]}, staff(d, "kitchen")[1])
     say("some waste in the kitchen, with reasons")
-    for key, (low, high) in data.PAR.items():
+    for key, (low, high) in d.PAR.items():
         site.post("/inventory/par", {"location_id": p["wh"], "item_id": item[key], "min": low, "max": high}, "owner")
     site.post("/inventory/alerts/check", {}, "owner")
-    say(f"minimum / maximum for {len(data.PAR)} items; alerts checked")
-    site.post("/warehouse/picks", {"from_location_id": p["wh"], "to_location_id": p["truck"], "lines": [
-        {"item_id": item["tortilla"], "qty": 6}, {"item_id": item["box"], "qty": 4}, {"item_id": item["coriander"], "qty": 3}]}, wes)
+    say(f"minimum / maximum for {len(d.PAR)} items; alerts checked")
+    site.post("/warehouse/picks", {"from_location_id": p["wh"], "to_location_id": p[d.SELLERS[-1]],
+                                   "lines": [{"item_id": item[k], "qty": q} for k, q in d.PICK]}, wes)
     waiting = [t for t in site.get("/runs", wes)["waiting"] if t["date"] == date.today().isoformat()][:6]   # today's trips
     drivers = {d["name"]: d["id"] for d in site.get("/runs", wes)["drivers"]}
     if waiting:
-        site.post("/runs", {"date": date.today().isoformat(), "start_time": "10:30", "name": "Eastern suburbs", "vehicle": "Van 1",
-                            "driver_id": drivers.get("Dan Driver", ""), "drive_minutes": 25, "service_minutes": 10,
+        site.post("/runs", {"date": date.today().isoformat(), **d.RUN,
+                            "driver_id": drivers.get(staff(d, "delivery")[0], ""), "drive_minutes": 25, "service_minutes": 10,
                             "delivery_ids": [t["id"] for t in waiting]}, wes)
-    say(f"a pick list for the food truck; a delivery run with {len(waiting)} stops for Dan")
+    say(f"a pick list for the {next(n for k, n, *_ in d.PLACES if k == d.SELLERS[-1])}; a delivery run with {len(waiting)} stops for {staff(d, 'delivery')[0]}")
     open_orders = site.get("/orders?state=saved", "owner")["orders"]
     if open_orders:
         site.post(f"/orders/{open_orders[0]['id']}/send", {"channels": ["email", "whatsapp"]}, "owner")

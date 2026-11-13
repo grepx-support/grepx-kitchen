@@ -10,6 +10,7 @@ from . import void_invoice
 from . import credit_note
 from . import summary
 from . import monthly
+from . import margins
 from . import statement
 from . import send_reminder
 
@@ -23,6 +24,7 @@ ROUTES = {
     BillingAction.CREDIT_NOTE: credit_note.handle,
     BillingAction.SUMMARY: summary.handle,
     BillingAction.MONTHLY: monthly.handle,
+    BillingAction.MARGINS: margins.handle,
     BillingAction.STATEMENT: statement.handle,
     BillingAction.SEND_REMINDER: send_reminder.handle,
 }

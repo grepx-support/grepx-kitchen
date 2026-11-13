@@ -43,7 +43,7 @@ def businesses(user: Principal = Depends(operator), gw=Depends(gateway)):
     rows = []
     for b in gw.rows(gc.business.BUSINESSES):
         places = gw.rows(gc.business.LOCATIONS, tenant_id=b["_key"])
-        rows.append({**clean(b, ("name", "currency", "timezone", "modules")), "locations": len(places)})
+        rows.append({**clean(b, ("name", "currency", "timezone", "modules", "closed", "closed_at")), "locations": len(places)})
     return sorted(rows, key=lambda r: r.get("name", ""))
 
 
@@ -54,6 +54,18 @@ def support(tenant_id: str, body: dict | None = None, user: Principal = Depends(
     if business is None:
         raise ApiError("UNKNOWN_BUSINESS", 404)
     return {**open_support(gw, user, tenant_id, edit=bool((body or {}).get("edit"))), "business_name": business.get("name", "")}
+
+
+@router.post("/businesses/{tenant_id}/{verb}")
+def close_or_reopen(tenant_id: str, verb: str, user: Principal = Depends(operator), gw=Depends(gateway)):
+    """Close a business (its people can no longer use the app; nothing is deleted) or reopen it."""
+    if verb not in ("close", "reopen"):
+        raise ApiError("NOT_FOUND", 404)
+    if gw.one(gc.business.BUSINESSES, tenant_id) is None:
+        raise ApiError("UNKNOWN_BUSINESS", 404)
+    out = gw.command(gc.business.REQUESTS, gc.business.SERVICE, {"action": gc.business.BusinessAction.SET_CLOSED.value, "tenant_id": tenant_id,
+                                                                 "closed": verb == "close", "actor_id": user.user_id})
+    return {"business_id": tenant_id, "closed": out.fields["business"]["closed"]}
 
 
 @router.get("/leads")

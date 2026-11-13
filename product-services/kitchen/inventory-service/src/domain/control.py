@@ -80,8 +80,10 @@ def valuation(levels: list[dict], costs: dict[str, float], lots: list[dict]) -> 
         cost = costs.get(lv["item_id"], 0.0)
         in_lots, by_lots = lot_value.get(k, (0.0, 0.0))
         rest = max(0.0, qty - in_lots)
+        # the lots' value, cut down in proportion when fewer are left than the lots hold (none at all: a level below zero)
+        in_hand = by_lots if qty >= in_lots else (by_lots * max(qty, 0.0) / in_lots if in_lots > 0 else 0.0)
         out.append({"location_id": k[0], "item_id": k[1], "qty": qty, "unit_cost": cost, "value": round(qty * cost, 2),
-                    "lot_value": round(min(by_lots, by_lots if qty >= in_lots else by_lots * qty / in_lots) + rest * cost, 2)})
+                    "lot_value": round(min(by_lots, in_hand) + rest * cost, 2)})
     return out
 
 

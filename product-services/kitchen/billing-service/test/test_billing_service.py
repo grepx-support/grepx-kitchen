@@ -169,3 +169,42 @@ def test_monthly_action_defaults_to_this_year(h):
     got = call(h, action="MONTHLY", year="nonsense").fields
     assert len(got["months"]) == 12 and str(got["year"]) == got["months"][0]["month"][:4]
     assert str(call(h, action="MONTHLY", year=2024).fields["year"]) == "2024"
+
+
+def test_margins_per_product_and_customer():
+    from domain import margins, period
+    items = {"taco": {"name": "Tacos", "unit": "box", "cost": "3.00"}, "salsa": {"name": "Salsa", "unit": "jar", "cost": "0"}}
+    line = lambda item, qty, amount: {"item_id": item, "qty": qty, "amount": amount}
+    rows = [{"invoice_id": "i1", "state": "issued", "kind": "invoice", "issued": "2026-11-02", "customer_id": "uno", "discount_rate": "10",
+             "lines": [line("taco", "10", 5000), line("salsa", "2", 1000), line("", "1", 2000)]},
+            {"invoice_id": "i2", "state": "paid", "kind": "invoice", "issued": "2026-11-05", "customer_id": "dos", "lines": [line("taco", "2.5", 500)]},
+            {"invoice_id": "c1", "state": "paid", "kind": "credit", "issued": "2026-11-06", "customer_id": "uno", "lines": [line("taco", "1", 500)]},
+            {"invoice_id": "i3", "state": "draft", "kind": "invoice", "issued": "2026-11-06", "customer_id": "uno", "lines": [line("taco", "99", 1)]},
+            {"invoice_id": "i4", "state": "issued", "kind": "invoice", "issued": "2026-10-31", "customer_id": "uno", "lines": [line("taco", "99", 1)]}]
+    got = margins(rows, items, {"uno": "Cafe Uno"}, "2026-11-01", "2026-11-30")
+    taco = next(p for p in got["products"] if p["item_id"] == "taco")
+    # 4500 (5000 less 10 %) + 500 - 500 credit; cost (10 + 2.5 - 1) x 300
+    assert (taco["revenue"], taco["cost"], taco["profit"], taco["qty"], taco["invoices"], taco["customers"]) == (4500, 3450, 1050, "11.5", 3, 2)
+    assert taco["margin"] == 23.3
+    other = next(p for p in got["products"] if p["item_id"] == "")
+    assert (other["revenue"], other["cost"]) == (1800, 0)
+    assert got["no_cost"] == ["Salsa"] and got["below_cost"] == []
+    uno = next(c for c in got["customers"] if c["customer_id"] == "uno")
+    assert (uno["name"], uno["revenue"], uno["cost"], uno["invoices"]) == ("Cafe Uno", 4500 + 900 + 1800 - 500, 3000 - 300, 2)
+    assert got["total"]["revenue"] == 4500 + 900 + 1800 and got["total"]["profit"] == got["total"]["revenue"] - 3450
+    assert period("", "", "2026-11-13") == ("2026-11-01", "2026-11-13")
+    # a made product with no cost of its own is costed from its recipe: 2 kg of 4.00 + 0.5 jar of 1.00 per 10 made
+    items = {**items, "birria": {"name": "Birria", "unit": "box"}, "beef": {"name": "Beef", "cost": "4"}, "jar": {"name": "Jar", "cost": "1"}}
+    recipes = {"birria": {"batch_output": "10", "ingredients": [{"item_id": "beef", "qty": "2"}, {"item_id": "jar", "qty": "0.5"}]}}
+    sold = [{"invoice_id": "b", "state": "issued", "kind": "invoice", "issued": "2026-11-03", "customer_id": "uno", "lines": [line("birria", "4", 4000)]}]
+    got = margins(sold, items, {}, "2026-11-01", "2026-11-30", recipes)
+    assert (got["products"][0]["cost"], got["products"][0]["cost_from"], got["no_cost"]) == (340, "recipe", [])
+    for bad in (("2026-11-05", "2026-11-01"), ("nope", "")):
+        with pytest.raises(ValueError, match="INVALID_DATE"):
+            period(*bad, "2026-11-13")
+
+
+def test_margins_action(h):
+    got = call(h, action="MARGINS").fields
+    assert got["products"] == [] and got["total"]["revenue"] == 0
+    assert call(h, action="MARGINS", **{"from": "2026-12-01", "to": "2026-01-01"}).reason == "INVALID_DATE"

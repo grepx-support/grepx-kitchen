@@ -8,6 +8,7 @@
 import { bill, bills, newBill } from "./money/bills.js";
 import { detail, editor } from "./money/invoice.js";
 import { customers, sales } from "./money/sales.js";
+import { margins } from "./money/margins.js";
 import { report } from "./money/report.js";
 import { statementPage } from "./money/statement.js";
 
@@ -26,4 +27,6 @@ export const routes = [
   { path: "/bills/:id", ...PAY, render: (el, { args }) => bill(el, args[0]) },
   { path: "/money/report", nav: "Money summary", icon: "chart", auth: "staff", tenant: true, area: "money", group: "Money", perm: "manage_business",
     keywords: "profit loss p&l gst vat tax month sales purchases", render: report },
+  { path: "/money/margins", nav: "Profit by product", icon: "trend", auth: "staff", tenant: true, area: "money", group: "Money", perm: "manage_business",
+    keywords: "margin gross profit product customer cost", render: margins },
 ];

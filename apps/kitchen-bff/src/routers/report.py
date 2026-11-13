@@ -2,10 +2,10 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""The monthly money summary: sales (billing-service) and purchases (payables-service) for a year, side by side.
-Each service adds up its own documents; here the two lists are only joined month by month for the owner."""
+"""The owner's money reports: the monthly summary - sales (billing-service) and purchases (payables-service) for a year,
+side by side, each service adding up its own documents and joined here month by month - and profit per product."""
 import grepx_contracts as gc
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from kitchen import Kitchen, allow
 
@@ -33,3 +33,9 @@ def report(year: int | None = None, k: Kitchen = Depends(owner)):
     keys = [f for f in months[0] if f != "month"]
     return {"year": sales["year"], "months": months, "year_total": {f: sum(m[f] for m in months) for f in keys},
             "currency": k.business.get("currency", ""), "tax_label": (k.business.get("billing") or {}).get("tax_label") or "Tax"}
+
+
+@router.get("/margins")
+def margins(start: str = Query("", alias="from"), end: str = Query("", alias="to"), k: Kitchen = Depends(owner)):
+    out = k.cmd(gc.billing.REQUESTS, gc.billing.SERVICE, {"action": gc.billing.BillingAction.MARGINS.value, "from": start, "to": end})
+    return {**out, "currency": k.business.get("currency", "")}

@@ -2,7 +2,8 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""The demo business: a small taco company in Sydney - places, people, suppliers, items, recipes, prices.
+"""Demo business 1: a small taco company in Sydney - places, people, suppliers, items, recipes, prices, invoices.
+(india.py has the same names for the Indian restaurant; every demo step reads one of them.)
 
 Every login uses PASSWORD. It is demo data: never reuse these logins or this password for a real business.
 """
@@ -75,3 +76,28 @@ DAILY_SALES = {"bondi": {"birria": 14, "pollo": 10, "consomme": 12},   # usual u
                "parra": {"birria": 10, "pollo": 9, "consomme": 8},
                "truck": {"birria": 18, "pollo": 6, "consomme": 15}}
 OVERHEADS = {"bondi": (6200, 3800, 600), "parra": (5400, 3200, 500), "truck": (4100, 900, 700), "kit": (7000, 2600, 400)}
+
+KEY = "taco"
+PHONE = "+614000000{n}"                    # staff phone numbers (n = 10, 11, ...)
+
+# what the steps do with the data
+PACKAGING = ("pack", {"box": 6})          # the packaging supplier gets a fixed order every buying day
+ISSUES = ["", "", "", "", "Fridge door not closing properly", "Ran out of coriander at 7pm", "Card machine slow"]
+MARKET = [("coriander", 6, 1, "MKT-1", "C-02"), ("cheese", 4, None, "OX-2207", "C-02")]   # (item, qty, expires in days, lot, bin)
+WASTE = [("coriander", 2, "spoiled"), ("tortilla", 1, "damaged"), ("birria", 3, "overproduced")]
+PICK = [("tortilla", 6), ("box", 4), ("coriander", 3)]                                   # for the last seller (the truck)
+RUN = {"name": "Eastern suburbs", "vehicle": "Van 1", "start_time": "10:30"}
+
+BILLING = {"legal_name": "Demo Taco Co Pty Ltd", "address": "12 Harbour Road\nSydney NSW 2000", "tax_label": "GST", "tax_number": "51 824 753 556",
+           "tax_rate": 10, "payment_note": "Bank transfer to BSB 062-000, account 1234 5678, or PayID accounts@demo-taco.test. Please quote the invoice number."}
+CUSTOMERS = [("Cafe Uno", "accounts@cafeuno.test", 14, "8 Pitt Street\nSydney NSW 2000"),
+             ("Harbourside Catering", "ap@harbourside.test", 30, "2 Wharf Lane\nPyrmont NSW 2009"),
+             ("Taco Tuesday Franchise", "finance@tacotuesday.test", 7, "77 King Street\nNewtown NSW 2042")]
+INVOICES = [  # customer, days ago, lines [(item key or description, qty, price)], paid share (0..1, None = leave as draft)
+    (0, 40, [("birria", 30, "38.50"), ("Delivery", 1, "15")], 1.0),
+    (1, 20, [("pollo", 24, "36.00"), ("Catering staff (hours)", 6, "45")], 0.5),
+    (2, 25, [("birria", 12, "38.50"), ("pollo", 12, "36.00")], 0.0),
+    (0, 3, [("birria", 18, "38.50")], 0.0),
+    (1, 0, [("pollo", 10, "36.00")], None),
+]
+BILL_REF = "SUP-{n}"

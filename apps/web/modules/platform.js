@@ -12,14 +12,18 @@ import { area, head } from "./lib/areas.js";
 import { stamp } from "./lib/format.js";
 
 async function platform(el) {
-  const list = await api("/platform/businesses");
+  const all = await api("/platform/businesses"), list = all.filter((b) => !b.closed), closed = all.filter((b) => b.closed);
   el.style.setProperty("--area", area("platform"));
   el.innerHTML = String(html`${pageHead({ ...head("platform"), title: "Businesses", subtitle: "Every business on the platform. Each one sees only its own data." })}
     ${kpiRow([{ label: "Businesses", value: list.length, icon: "building", area: area("platform") },
       { label: "Locations", value: list.reduce((a, b) => a + (b.locations || 0), 0), icon: "pin", area: area("stock") }])}
     <div class="grid">${list.map((b) => html`<article class="card accent"><h2>${b.name}</h2><p class="muted">${b.currency} · ${b.timezone}</p><span class="badge">${b.locations} locations</span>
       <div class="row k-section"><button class="btn primary" data-open="${b.id}">${icon("eyeoff", { size: 15 })} Open (read only)</button>
-        <button class="btn" data-edit="${b.id}">${icon("settings", { size: 15 })} Open to fix</button></div></article>`)}</div>
+        <button class="btn" data-edit="${b.id}">${icon("settings", { size: 15 })} Open to fix</button>
+        <button class="btn danger" data-close="${b.id}">${icon("x", { size: 15 })} Close</button></div></article>`)}</div>
+    ${closed.length ? html`<section class="card k-section"><h2>Closed businesses</h2><p class="muted small">Their people cannot use the app. Nothing was deleted - reopen to bring one back.</p>
+      ${closed.map((b) => html`<div class="k-row"><b>${b.name}</b><span class="muted">${b.currency} · closed ${(b.closed_at || "").slice(0, 10)}</span>
+        <button class="btn small" data-reopen="${b.id}">${icon("refresh", { size: 14 })} Reopen</button></div>`)}</section>` : ""}
     <form class="card accent k-section"><h2>Set up a new business</h2><div class="row"><label>Business name<input name="name" required></label>
         <label>Currency<input name="currency" required maxlength="3" placeholder="AUD"></label><label>Time zone<input name="timezone" required placeholder="Australia/Sydney"></label></div>
       <h2 class="k-section">Owner</h2><div class="row"><label>Name<input name="oname" required></label><label>Email (login)<input name="email" type="email" required></label>
@@ -34,6 +38,15 @@ async function platform(el) {
   };
   el.querySelectorAll("[data-open]").forEach((btn) => btn.onclick = () => open(btn.dataset.open, false));
   el.querySelectorAll("[data-edit]").forEach((btn) => btn.onclick = () => open(btn.dataset.edit, true));
+  el.querySelectorAll("[data-close]").forEach((btn) => btn.onclick = async () => {
+    const b = list.find((x) => x.id === btn.dataset.close);
+    if (!(await confirm({ title: `Close ${b.name}?`, ok: "Close business", danger: true,
+      text: "Its owner and staff can no longer sign in to use the app. Nothing is deleted: you can reopen it from this page." }))) return;
+    if (await run(() => api(`/platform/businesses/${b.id}/close`, { method: "POST", body: {} }), `${b.name} closed`)) platform(el);
+  });
+  el.querySelectorAll("[data-reopen]").forEach((btn) => btn.onclick = async () => {
+    if (await run(() => api(`/platform/businesses/${btn.dataset.reopen}/reopen`, { method: "POST", body: {} }), "Reopened")) platform(el);
+  });
   el.querySelector("form").onsubmit = async (e) => {
     e.preventDefault();
     const d = new FormData(e.target);

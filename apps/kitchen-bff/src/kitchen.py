@@ -61,6 +61,8 @@ def kitchen_user(user: Principal = Depends(current_user), gw=Depends(gateway)) -
     business = gw.one(gc.business.BUSINESSES, user.tenant)
     if business is None:
         raise ApiError("UNKNOWN_BUSINESS", 403)
+    if business.get("closed") and not user.support:          # closed by the platform operator; support can still look
+        raise ApiError("BUSINESS_CLOSED", 403)
     person = gw.one(gc.people.PEOPLE, user.user_id) or {}
     return Kitchen(user, gw, business, person.get("name") or "")
 

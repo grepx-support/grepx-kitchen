@@ -50,6 +50,7 @@ export const actions = [
   { title: "New invoice", icon: "receipt", href: "#/sales/new", perm: ["billing", "manage_business"], keywords: "bill customer sell" },
   { title: "Enter a supplier bill", icon: "inbox", href: "#/bills/new", perm: ["payables", "manage_business"], keywords: "supplier invoice payable" },
   { title: "Money summary", icon: "chart", href: "#/money/report", perm: "manage_business", keywords: "profit loss gst tax month sales purchases" },
+  { title: "Profit by product", icon: "trend", href: "#/money/margins", perm: "manage_business", keywords: "margin gross profit customer" },
   { title: "3D warehouse", icon: "cube", href: "#/warehouse/3d", perm: "warehouse_in", keywords: "bins racks view" },
 ];
 

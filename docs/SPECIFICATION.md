@@ -120,7 +120,9 @@ PDFs use fpdf2 (LGPL, github.com/py-pdf/fpdf2) in kitchen-bff `src/documents/`; 
 | MON-07 | payment reminders: by hand from an invoice, or automatically at 1, 7, 14 and 30 days late (once each, latest step only) when the business turns it on | billing-service `SEND_REMINDER`, `jobs.tick` (schedule `billing-reminders`, 01:00 UTC), template `payment_reminder`; Setup → Business |
 | MON-08 | supplier bills from a received order, three-way matched (ordered / received / billed, price within 2 %); a mismatch needs a note to approve; duplicate supplier refs refused | payables-service `SAVE_BILL`, `APPROVE_BILL`, `RECORD_PAYMENT`, `VOID_BILL`, `SUMMARY`; Supplier bills |
 | MON-09 | monthly money summary for the owner: sales and purchases before tax, gross profit (sales less purchases), tax charged / paid / to pay, money in and out; CSV | billing-service and payables-service `MONTHLY`; BFF `/money/report`; Money → Summary (`#/money/report`) |
+| MON-10 | profit per product and per customer for a period (this month, last month, quarter, year or dates): sales after discounts less credit notes, cost = quantity x the item's cost today or, for a product made in-house, its recipe's ingredient cost per unit; flags products sold below cost or with no cost | billing-service `MARGINS`; BFF `/money/margins`; Money → Profit (`#/money/margins`) |
+| WH-06 | 3D warehouse (WebGL, three.js r170 vendored, MIT): racking with cartons by stock, colour by expiry, beacons on expired bins, search / expiry filter, tour of problem bins, top view, full screen; simple CSS view without WebGL | `warehouse/view3d.js`, `warehouse/scene/*`; Warehouse floor → 3D view |
 
 ## Future scope (section 12) - not built
 F1 Square, F2 AI entry, F3 full recipe use and batch cost, F4 forecasts from sales, F5 partner stock sharing, ~~F6 expiry~~ (built: WH-02, INC-02),
-F7 HR / scheduling, F8 supplier bidding, F9 delivery apps, F10 analytics, F11 margin per product, F12 customer features.
+F7 HR / scheduling, F8 supplier bidding, F9 delivery apps, F10 analytics, ~~F11 margin per product~~ (built: MON-10), F12 customer features.
