@@ -54,7 +54,8 @@
     "kitchen/find",
     "kitchen/assistant",
     "kitchen/terminal",
-    "core/admin"
+    "core/admin",
+    "core/integrations"
   ],
   "styles": [
     "kitchen/kitchen.css"
