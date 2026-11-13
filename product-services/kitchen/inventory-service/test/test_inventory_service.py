@@ -74,7 +74,7 @@ def test_alerts_are_kept_once_a_day_and_go_to_the_owners(h):
     first = call(h, action="CHECK_ALERTS", tenant_id="hft")
     assert first.ok and first.fields["new"] == 1 and call(h, action="CHECK_ALERTS", tenant_id="hft").fields["new"] == 0
     sent = h.rows("notifications")
-    assert {n["channel"] for n in sent} == {"email", "whatsapp"} and sent[0]["template"] == "stock_alert" and sent[0]["tenant_id"] == "hft"
+    assert {n["channel"] for n in sent} == {"email", "whatsapp", "sms"} and sent[0]["template"] == "stock_alert" and sent[0]["tenant_id"] == "hft"
     alert = h.rows("alerts")[0]
     assert (alert["kind"], alert["item_name"], alert["location_name"]) == ("low", "Beef", "Warehouse")
     assert call(h, action="ACK_ALERT", tenant_id="hft", alert_id=alert["_key"]).fields["alert"]["state"] == "done"

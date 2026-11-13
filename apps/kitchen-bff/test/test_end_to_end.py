@@ -276,10 +276,22 @@ def test_warehouse_floor_runs_inventory_and_messages(env, monkeypatch):
     stack.settle()
     box = ok(api.get("/api/v1/outbox", headers=owner))["messages"]
     assert {m["channel"] for m in box if m["template"] == "purchase_order"} == {"email", "whatsapp"}
+    logged = next(m for m in box if m["template"] == "purchase_order")
+    assert api.post(f"/api/v1/outbox/{logged['id']}/retry", headers=owner).status_code == 409        # only failed ones
+    # --- the business's own message settings: stock alerts by SMS only, in its own words ---
+    mine = {m["key"]: m for m in ok(api.get("/api/v1/outbox/settings", headers=owner))["messages"]}
+    assert mine["stock_alert"]["automatic"] and mine["stock_alert"]["mine"] is None
+    ok(api.put("/api/v1/outbox/settings/stock_alert", headers=owner, json={"channels": ["sms"], "subject": "{count} alerts", "text": "See {link}"}))
+    stack.settle()
+    mine = {m["key"]: m for m in ok(api.get("/api/v1/outbox/settings", headers=owner))["messages"]}
+    assert mine["stock_alert"]["mine"]["channels"] == ["sms"]
+    assert api.put("/api/v1/outbox/settings/stock_alert", headers=owner, json={"text": "Hi {password}"}).status_code == 409
+    assert api.put("/api/v1/outbox/settings/welcome", headers=owner, json={}).status_code == 404
     ok(api.post("/api/v1/platform/businesses", headers=ops, json={"name": "Other Bowl", "currency": "SGD", "timezone": "Asia/Singapore",
         "owner": {"name": "Otto Other", "email": "owner@other.sg", "phone": "+6591110001", "password": "other-pass"}}))
     other = login(api, "owner@other.sg", "other-pass")
     assert not [m for m in ok(api.get("/api/v1/outbox", headers=other))["messages"] if m["template"] == "purchase_order"]
+    assert {m["key"]: m for m in ok(api.get("/api/v1/outbox/settings", headers=other))["messages"]}["stock_alert"]["mine"] is None
 
     # --- public demo form (no login) -> the operator's list ---
     monkeypatch.setenv("LEADS_NOTIFY_EMAIL", "sales@grepx.sg")

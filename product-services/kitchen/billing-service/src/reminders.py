@@ -11,10 +11,12 @@ from dto import Table
 
 
 def remind(books, emitter, inv: dict, customer: dict, stage, by: str) -> dict | None:
-    """Email the customer about an unpaid invoice; None when they have no email."""
+    """Remind the customer about an unpaid invoice on the channels the business chose (Outbox -> Settings; email by
+    default); None when they have no email or phone."""
     biz = books.business
     late = stage if isinstance(stage, int) else 0
-    sent = notify(emitter, "payment_reminder", email=customer.get("email", ""), channels=["email"],
+    sent = notify(emitter, "payment_reminder", email=customer.get("email", ""), phone=customer.get("phone", ""),
+                  channels=["email", "whatsapp", "sms"] if isinstance(stage, int) else ["email"],
                   ref=f"remind-{inv['invoice_id']}-{stage}", tenant_id=books.tenant, auto=isinstance(stage, int),
                   values={"org": biz.get("name", ""), "customer": customer.get("name", ""), "number": inv["number"], "due": inv["due"],
                           "owed": f"{biz.get('currency', '')} {(inv['total'] - inv.get('paid', 0) - inv.get('credited', 0)) / 100:,.2f}",

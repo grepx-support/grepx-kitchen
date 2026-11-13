@@ -107,7 +107,17 @@ Next up is marked **NEXT** (in the order it will be built).
 | Staff rostering, rostered hours as labour cost | ⬜ | step 3 of the plan (roster-service) |
 | Clock in / out, leave, payroll | ➖ | the general ERP's HR / payroll modules |
 
-## 10. Experience
+## 10. Messages (email, WhatsApp, SMS)
+| Feature | Status | Where / what is missing |
+|---|---|---|
+| Email (SMTP), WhatsApp (Twilio or Meta Cloud API), SMS (Twilio); test mode logs instead of sending | ✅ | notification-service |
+| Operator connects providers, tests the connection, sends a test message; keys sealed | ✅ | Integrations page (platform admin) |
+| Each business chooses which automatic messages go out, on which channels, in its own words | ✅ | Outbox → What goes out |
+| Failed sends tried again by themselves (5 min, 30 min, 2 h), "Try again now", tries shown | ✅ | Outbox → Sent |
+| Files attached to emails (PDFs) | ✅ | used by the PDF round |
+| Delivery receipts from the provider (delivered / read) | 🔒 | needs the provider's webhook address on the live server |
+
+## 11. Experience
 | Feature | Status | Where / what is missing |
 |---|---|---|
 | Ctrl+K search over pages, actions and records; G + letter; ? for keys | ✅ | |

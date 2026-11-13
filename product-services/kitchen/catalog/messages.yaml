@@ -17,7 +17,7 @@ templates:
   stock_alert:
     label: Stock alerts for the owner (low, below zero, expiring, expired)
     placeholders: [first_name, org, count, summary, link]
-    channels: [email, sms, whatsapp]
+    channels: [email, whatsapp]          # the default; each business can choose its own (Outbox -> Settings)
     subject: "{org}: {count} stock alert(s)"
     text: "Hi {first_name},\n\n{count} new stock alert(s) today:\n{summary}\n\nSee them all: {link}"
   purchase_order:

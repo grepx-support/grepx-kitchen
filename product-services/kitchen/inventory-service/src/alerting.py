@@ -45,7 +45,7 @@ def check(stock, emitter, link: str = "") -> list[dict]:
         summary = "\n".join(f"- {r['item_name']} at {r['location_name']}: {LABEL[r['kind']]}" for r in new[:12])
         for person in owners(stock.read, stock.tenant):
             notify(emitter, "stock_alert", email=person.get("email", ""), phone=person.get("phone", ""),
-                   channels=["email", "whatsapp"], ref=f"alerts-{stock.tenant}-{day}-{len(new)}", tenant_id=stock.tenant,
+                   channels=["email", "whatsapp", "sms"], ref=f"alerts-{stock.tenant}-{day}-{len(new)}", tenant_id=stock.tenant,
                    user_id=person.get("_key", ""), values={"first_name": (person.get("name") or "").split(" ")[0], "count": len(new),
                                                           "summary": summary, "link": link})
     return new

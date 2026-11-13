@@ -33,7 +33,7 @@ export default {
         <label>Tax rate %<input name="tax_rate" type="number" min="0" max="50" step="any" value="${bl.tax_rate ?? ""}"></label></div>
       <div class="row"><label class="grow">Address<textarea name="address" rows="2">${bl.address || ""}</textarea></label>
         <label class="grow">How to pay (bank, PayNow ...)<textarea name="payment_note" rows="2">${bl.payment_note || ""}</textarea></label></div>
-      <label class="check"><input type="checkbox" name="auto_reminders" ${bl.auto_reminders ? "checked" : ""}> Email customers a reminder when an invoice is 1, 7, 14 and 30 days overdue</label>
+      <label class="check"><input type="checkbox" name="auto_reminders" ${bl.auto_reminders ? "checked" : ""}> Remind customers when an invoice is 1, 7, 14 and 30 days overdue (email by default; channels and words in Outbox → What goes out)</label>
       <p><button class="btn primary">Save</button></p></form>`);
     el.querySelector("form").onsubmit = async (e) => {
       e.preventDefault();
