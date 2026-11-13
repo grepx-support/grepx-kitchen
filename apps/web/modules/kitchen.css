@@ -446,3 +446,10 @@
 .ob-chip input { margin: 0; accent-color: var(--c); }
 .ob-ph code { cursor: pointer; padding: 1px 5px; border-radius: 4px; background: var(--soft, rgba(127,127,127,.12)); margin-right: 3px; }
 .ob-ph code:hover { background: color-mix(in srgb, var(--area, #2563eb) 20%, transparent); }
+
+/* Audit trail */
+.au-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.au-bar select { width: auto; min-width: 160px; padding: 5px 8px; border-radius: 8px; }
+.au-bar .check { width: auto; display: inline-flex; gap: 6px; align-items: center; }
+.au-fields th { text-align: left; white-space: nowrap; text-transform: capitalize; color: var(--muted); padding-right: 14px; }
+.au-fields td { word-break: break-word; }

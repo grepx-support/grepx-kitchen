@@ -33,6 +33,8 @@ def test_par_levels_and_alerts():
     got = alerts("2026-11-10", levels, {("wh", "beef"): {"min": 5, "max": 10}}, lots)
     assert sorted(a["kind"] for a in got) == ["expired", "expiring", "low", "negative"]
     assert next(a for a in got if a["kind"] == "low")["fill_to"] == 10
+    gone = alerts("2026-11-10", [{"location_id": "wh", "item_id": "beef", "qty": 0}], {("wh", "beef"): {"min": 5}}, [])
+    assert [(a["kind"], a["fill_to"]) for a in gone] == [("out", 5)]
 
 
 def test_variance_valuation_abc_cover():

@@ -12,6 +12,7 @@ import { frame } from "./common.js";
 
 const KIND = {
   expired: ["Expired", "#e11d48", "alert", (a) => html`<a class="btn small" href="#/warehouse?location=${a.location_id}">Throw away</a>`],
+  out: ["Out of stock", "#dc2626", "box", () => html`<a class="btn small" href="#/orders/recommended">Order now</a>`],
   negative: ["Below zero", "#be123c", "alert", () => html`<a class="btn small" href="#/inventory/takes">Count it</a>`],
   expiring: ["Expiring", "#f59e0b", "clock", (a) => html`<a class="btn small" href="#/warehouse?location=${a.location_id}">Use first</a>`],
   low: ["Below minimum", "#0ea5e9", "trend", () => html`<a class="btn small" href="#/orders/recommended">Order</a>`],

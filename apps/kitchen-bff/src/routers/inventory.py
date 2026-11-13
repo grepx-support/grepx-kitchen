@@ -21,7 +21,7 @@ def cmd(k: Kitchen, fields: dict) -> dict:
 @router.get("/alerts")
 def alerts(k: Kitchen = Depends(LOOK)):
     rows = [clean(a) for a in k.rows(gc.inventory.ALERTS) if a.get("state") == "open"]
-    return {"alerts": sorted(rows, key=lambda a: ({"expired": 0, "negative": 1, "expiring": 2, "low": 3}.get(a["kind"], 9), a.get("item_name", "")))}
+    return {"alerts": sorted(rows, key=lambda a: ({"expired": 0, "out": 1, "negative": 2, "expiring": 3, "low": 4}.get(a["kind"], 9), a.get("item_name", "")))}
 
 
 @router.post("/alerts/check")

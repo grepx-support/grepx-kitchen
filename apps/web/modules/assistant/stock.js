@@ -15,12 +15,12 @@ export const low = {
   words: ["low", "short", "shortage", "below", "minimum", "min", "out", "negative", "zero", "alert", "running"],
   examples: ["what is low on stock", "what is running out", "anything below zero"],
   answer: async (t, ctx) => {
-    const rows = (await alertsOf(ctx)).filter((a) => a.kind === "low" || a.kind === "negative");
+    const rows = (await alertsOf(ctx)).filter((a) => ["low", "negative", "out"].includes(a.kind));
     if (!rows.length) return { text: "Nothing is low or below zero right now. 👍", chips: ["what is expiring soon", "what should I order"] };
     return { text: `${rows.length} thing${rows.length === 1 ? " needs" : "s need"} attention:`, kpis: [{ label: "Below zero", value: rows.filter((a) => a.kind === "negative").length, tone: "bad", href: "#/inventory" },
       { label: "Below minimum", value: rows.filter((a) => a.kind === "low").length, tone: "warn", href: "#/inventory" }],
-      items: rows.map((a) => ({ title: a.item_name, sub: `${a.location_name} · ${a.kind === "negative" ? "below zero - count it again" : "below minimum"}`,
-        value: `${ctx.num(a.qty)} ${a.unit || ""}`, tone: a.kind === "negative" ? "bad" : "warn", href: `#/stock?item=${a.item_id}` })),
+      items: rows.map((a) => ({ title: a.item_name, sub: `${a.location_name} · ${{ negative: "below zero - count it again", out: "out of stock" }[a.kind] || "below minimum"}`,
+        value: `${ctx.num(a.qty)} ${a.unit || ""}`, tone: a.kind === "low" ? "warn" : "bad", href: `#/stock?item=${a.item_id}` })),
       chips: ["what should I order", "what is expiring soon"] };
   },
 };

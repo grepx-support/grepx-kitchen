@@ -20,7 +20,8 @@ Next up is marked **NEXT** (in the order it will be built).
 | Roles per business, permissions ticked by the owner | ✅ | Setup → Roles |
 | Profile photos, login, password | ✅ | |
 | Multi-factor login, single sign-on | 🔒 | needs a decision on the provider |
-| Login history / user activity | 🟡 | every stock movement keeps who and when; no login-history screen |
+| Audit trail: every change - who, when, what, done or refused and why; filters, details, CSV | ✅ | Setup → Audit trail |
+| Login history | ⬜ | |
 
 ## 2. Menu, recipes and costing (F&B extension)
 | Feature | Status | Where / what is missing |
@@ -66,7 +67,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Lots, expiry, first-expiry-first-out, bins and zones | ✅ | Warehouse floor |
 | Pick lists in bin order | ✅ | |
 | Pick list PDF | ⬜ | **NEXT (PDF round)** |
-| Min / max per item and place, alerts (expired, low, below zero, expiring) | ✅ | Inventory control |
+| Min / max per item and place, alerts (out of stock, low, below zero, expiring, expired) sent to the owner by email / WhatsApp / SMS | ✅ | Inventory control; channels in Outbox → What goes out |
 | Stock takes (blind), variance and its value | ✅ | |
 | Stock take sheet PDF (to count on paper) and result PDF | ⬜ | **NEXT (PDF round)** |
 | Valuation (item cost, lot cost), ABC, days of cover, waste by reason | ✅ | |

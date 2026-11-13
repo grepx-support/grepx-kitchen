@@ -12,7 +12,7 @@ from grepx_service import notify, now_iso
 from domain import alert_key, alerts
 from dto import Table
 
-LABEL = {"low": "below minimum", "negative": "below zero - count it", "expiring": "expiring soon", "expired": "expired"}
+LABEL = {"out": "OUT OF STOCK", "low": "below minimum", "negative": "below zero - count it", "expiring": "expiring soon", "expired": "expired"}
 
 
 def owners(read, tenant: str) -> list[dict]:

@@ -5,7 +5,7 @@
 """Inventory control rules (no I/O).
 
 Par levels   each item at each place may have a minimum (below it: alert, reorder) and a maximum (fill up to it).
-Alerts       low (under the minimum), negative (the system shows less than nothing: a count is due), expiring (a lot ends
+Alerts       out (none left of an item that has a minimum), low (under the minimum), negative (the system shows less than nothing: a count is due), expiring (a lot ends
              within EXPIRY_DAYS), expired (a lot is past its date). One alert per kind, place and item per day.
 Stock take   the expected quantities are frozen when it starts; variance = counted - expected, valued at the item's cost.
 Valuation    on hand x current cost, and by lot (lots that carry their own cost; stock without lots at current cost).
@@ -39,6 +39,9 @@ def alerts(day: str, levels: list[dict], pars: dict[tuple, dict], lots: list[dic
         par = pars.get(key) or {}
         if qty < 0:
             out.append({"kind": "negative", "location_id": key[0], "item_id": key[1], "qty": qty})
+        elif par.get("min") and qty == 0:
+            out.append({"kind": "out", "location_id": key[0], "item_id": key[1], "qty": qty, "limit": par["min"],
+                        "fill_to": par.get("max") or par["min"]})
         elif par.get("min") and qty < par["min"]:
             out.append({"kind": "low", "location_id": key[0], "item_id": key[1], "qty": qty, "limit": par["min"],
                         "fill_to": par.get("max") or par["min"]})

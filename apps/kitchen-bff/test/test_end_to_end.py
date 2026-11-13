@@ -276,6 +276,9 @@ def test_warehouse_floor_runs_inventory_and_messages(env, monkeypatch):
     stack.settle()
     box = ok(api.get("/api/v1/outbox", headers=owner))["messages"]
     assert {m["channel"] for m in box if m["template"] == "purchase_order"} == {"email", "whatsapp"}
+    trail = ok(api.get("/api/v1/audit", headers=owner))["entries"]
+    assert any(e["area"] == "Orders" and e["action"] == "Send" and e["done"] for e in trail)
+    assert not any(e["action"] in ("Valuation", "Analysis") for e in trail)
     logged = next(m for m in box if m["template"] == "purchase_order")
     assert api.post(f"/api/v1/outbox/{logged['id']}/retry", headers=owner).status_code == 409        # only failed ones
     # --- the business's own message settings: stock alerts by SMS only, in its own words ---
@@ -292,6 +295,7 @@ def test_warehouse_floor_runs_inventory_and_messages(env, monkeypatch):
     other = login(api, "owner@other.sg", "other-pass")
     assert not [m for m in ok(api.get("/api/v1/outbox", headers=other))["messages"] if m["template"] == "purchase_order"]
     assert {m["key"]: m for m in ok(api.get("/api/v1/outbox/settings", headers=other))["messages"]}["stock_alert"]["mine"] is None
+    assert not [e for e in ok(api.get("/api/v1/audit", headers=other))["entries"] if e["area"] == "Orders"]
 
     # --- public demo form (no login) -> the operator's list ---
     monkeypatch.setenv("LEADS_NOTIFY_EMAIL", "sales@grepx.sg")

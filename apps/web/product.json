@@ -48,6 +48,7 @@
     "kitchen/money",
     "kitchen/setup",
     "kitchen/outbox",
+    "kitchen/audit",
     "kitchen/landing",
     "kitchen/platform",
     "core/profile",
