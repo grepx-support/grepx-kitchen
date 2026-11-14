@@ -103,7 +103,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Daily cost of goods, labour, rent, other; COGS range flags; cost landscape in 3D | ✅ | Costs |
 | Funds: partners' / investors' capital, owner's capital, loans, grants; promises with due dates, money in, money put to use (outlet, project), paid back, interest, fund costs; pending and overdue promises, available, loan balance, each party's share, month-by-month flow; reversing keeps history; amounts carry their currency (one per fund now, more later) | ✅ | Money → Funds (fund-service, reusable) |
 | Funds - utilisation (spent of what was put to use, per use); plan per fund (expected EBITDA per use, start, ramp, horizon, discount, payout, hurdle) with payback month, ROI, IRR, NPV, money multiple, cash-back curve; actual EBITDA per outlet against plan; each investor's expected payout and return; balance sheet of the funds (assets = liabilities + equity) | ✅ | Funds → a fund → Plan & returns; Funds overview |
-| Several currencies in one fund (conversion at a rate) | ⬜ | the amounts already carry their currency |
+| Several currencies in one fund (conversion at a rate) | ✅ | Funds round (5) |
 | Catering quotations: event (date, time, venue, guests), menu lines, valid for N days; sent by email with the PDF; the customer says yes → order (SO number), or no (reason kept); expired quotes must be sent again; the order becomes a draft invoice with the same lines; pipeline, win rate, events coming up | ✅ | Money → Quotations (billing-service: SAVE / SEND / ACCEPT / DECLINE / CANCEL_QUOTE, INVOICE_ORDER, QUOTES) |
 | Full double-entry accounts (ledger, balance sheet) | ➖ | the general ERP's accounting module; the kitchen keeps sub-ledgers (AR, AP) |
 | POS sales import (Square), delivery apps (Swiggy / Zomato / Uber Eats) | 🔒 | F1 / F9: need the partner accounts |
@@ -173,4 +173,13 @@ the BFF only joins and checks access; the web is split into small modules. Nothi
 | Share a cost paid once for several places: equally, by sales, or by weights | ✅ | Setup → Monthly costs → Share a cost |
 | Start a month from the month before | ✅ | Setup → Monthly costs → Copy |
 | The Costs page shows the month's costs line by line | ✅ | Costs |
+
+## Bulk import / export (round 6)
+
+| Feature | Status | Where |
+|---|---|---|
+| Import from Excel (.xlsx) or CSV: suppliers, items, recipes (one row per ingredient), opening stock (per place), employees | ✅ | Setup → Import / export |
+| Every row checked first (nothing saved), problems shown with their row numbers; then the rows that pass are imported through the owning services | ✅ | Setup → Import / export → Import a file… |
+| Importing again updates what matches (by name, employees by email) instead of adding twice | ✅ | |
+| Templates to fill in (with a "How to fill it in" sheet) and everything exported as Excel or CSV | ✅ | Setup → Import / export |
 

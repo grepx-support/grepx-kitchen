@@ -53,4 +53,9 @@ COPY = {
     "INVALID_GROUP": "Put each cost under staff, premises or running costs.",
     "INVALID_SPLIT": "Choose how to split it - equally, by sales, or by the weights you give - and name the cost.",
     "NO_PLACES": "Pick the places that share this cost (with sales, or weights above zero).",
+    "NOT_A_SPREADSHEET": "That file can't be read - use Excel (.xlsx) or CSV.",
+    "EMPTY_FILE": "That file has no rows.",
+    "FILE_TOO_LARGE": "That file is too large (5 MB at most).",
+    "TOO_MANY_ROWS": "That file has too many rows (5,000 at most) - split it.",
+    "MISSING_COLUMNS": "The file is missing a column it needs - download the template to see the headings.",
 }

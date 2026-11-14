@@ -9,6 +9,7 @@ import { api } from "/assets/app.js";
 import { html, pageHead, tabs } from "/assets/kit/index.js";
 import { area, head } from "./lib/areas.js";
 import business from "./setup/business.js";
+import data from "./setup/data.js";
 import items from "./setup/items.js";
 import locations from "./setup/locations.js";
 import overheads from "./setup/overheads.js";
@@ -16,7 +17,7 @@ import { roles, users } from "./setup/people.js";
 import recipes from "./setup/recipes.js";
 import suppliers from "./setup/suppliers.js";
 
-const TABS = [business, locations, items, suppliers, recipes, users, roles, overheads];
+const TABS = [business, locations, items, suppliers, recipes, users, roles, overheads, data];
 
 async function setup(el, q) {
   const tab = TABS.find((t) => t.id === q.tab) || TABS[0];
