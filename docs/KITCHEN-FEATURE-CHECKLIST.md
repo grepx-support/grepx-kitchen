@@ -45,7 +45,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Kitchen terminal (big screen, timers) | ✅ | Terminal |
 | Forecast per dish per outlet per day, most accurate method chosen; "use as targets" | ✅ | forecast-service; Kitchen → Forecast |
 | Prep list for today by station (the week's target over the days left, in whole batches), made today, links to the card | ✅ | Chef → Prep list |
-| Food safety records (fridge temperatures, cleaning checks, HACCP) | ⬜ | |
+| Food safety (HACCP): fridge / freezer / hot-holding temperatures, cooking and cooling, delivery temperature, opening / closing / weekly checklists per place; out of range needs the action taken; still due today; log for inspectors (print, CSV); home widget | ✅ | Daily → Food safety (compliance-service, reusable) |
 
 ## 4. Buying (procure to pay)
 | Feature | Status | Where / what is missing |
@@ -112,7 +112,9 @@ Next up is marked **NEXT** (in the order it will be built).
 | Weekly roster per outlet: click to add, drag to move, presets, copy last week, publish, clash check across outlets, open shifts, hours and labour cost, 48-hour warning | ✅ | People → Roster (roster-service, reusable) |
 | Clock in / out with a PIN on the terminal, late minutes, worked hours | ✅ | People → Clock in / out |
 | Leave: types (annual, sick, casual, unpaid, own), yearly allowance pro-rated for new joiners, carry-over, balances, request / approve / cancel, month calendar, no rostering on approved leave | ✅ | People → Leave (leave-service, reusable) |
-| Payroll: monthly run, overtime, unpaid leave, deductions, payslips, labour cost into Costs; several countries' tax rules (India, Australia, Singapore...) as plug-ins, rates in one settings page | ⬜ | **NEXT** (payroll-service) |
+| Payroll: monthly run from salary or clocked hours, joiners / leavers pro-rated, unpaid leave, overtime, bonuses, advances, payslips (print); locking the month puts each outlet's labour cost into Costs | ✅ | People → Payroll (payroll-service, reusable) |
+| Statutory rules per country as plug-ins - India (EPF, ESI, Professional Tax, TDS new regime), Australia (PAYG + Medicare, super), Singapore (CPF, SDL), Basic - every rate in one settings page | ✅ | People → Payroll → Country & rates |
+| Payslip PDF sent by email / WhatsApp; staff see their own payslips | ⬜ | with the PDF round / mobile app |
 | Staff see their own shifts and payslips; mobile app screens | ⬜ | at the end, with the mobile app |
 
 ## 10. Messages (email, WhatsApp, SMS)

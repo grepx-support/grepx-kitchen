@@ -538,3 +538,34 @@
 .lv-name { grid-column: 1; font-weight: 600; font-size: 13px; }
 .lv-bar { height: 24px; border-radius: 999px; background: var(--c); color: #fff; font-size: 11px; display: flex; align-items: center; padding: 0 10px; white-space: nowrap; overflow: hidden; }
 .lv-bar.pending { background: repeating-linear-gradient(45deg, var(--c) 0 8px, color-mix(in srgb, var(--c) 60%, #fff) 8px 16px); }
+.ps header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--area); padding-bottom: 6px; margin-bottom: 8px; }
+.ps-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 700px) { .ps-two { grid-template-columns: 1fr; } }
+.ps-net { font-size: 18px; text-align: right; } .ps-net b { font-size: 26px; color: var(--area); margin-left: 8px; }
+.ps-rates { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.ps-rate { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+.ps-rate label { text-transform: capitalize; font-weight: 600; } .ps-rate textarea.mono { font-family: ui-monospace, monospace; font-size: 12px; width: 100%; }
+
+/* Home: Month so far - share of sales per cost, against the usual range (the tick) */
+.k-shares { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); }
+.k-share { display: grid; grid-template-columns: 80px 1fr 52px; gap: 8px; align-items: center; font-size: 12px; color: inherit; text-decoration: none; }
+.k-share:hover span:first-child { color: var(--primary); }
+.k-share i { position: relative; height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 15%, transparent); overflow: visible; }
+.k-share i b { position: absolute; inset: 0 auto 0 0; border-radius: 999px; transition: width .6s cubic-bezier(.2,.8,.2,1); }
+.k-share i em { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); opacity: .35; }
+.k-share span:last-child { text-align: right; font-weight: 700; }
+
+/* Food safety */
+.sf-group { margin: 14px 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.sf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.sf-card { display: flex; flex-direction: column; gap: 8px; border-top: 3px solid #f59e0b; transition: transform .15s; }
+.sf-card.done { border-top-color: #16a34a; } .sf-card.failed { border-top-color: #e11d48; background: color-mix(in srgb, #e11d48 4%, var(--card, #fff)); }
+.sf-card header { display: flex; align-items: center; gap: 6px; } .sf-card header b { flex: 1; }
+.sf-x { padding: 0 8px; }
+.sf-read { display: flex; flex-direction: column; gap: 4px; } .sf-read input { font-size: 26px; font-weight: 700; text-align: center; padding: 8px; }
+.sf-items { list-style: none; padding: 0; margin: 0; } .sf-items li { padding: 3px 0; } .sf-items .check { width: auto; font-size: 13px; }
+.sf-today { display: flex; gap: 4px; flex-wrap: wrap; min-height: 22px; }
+.sf-rec { font-size: 11px; padding: 2px 8px; border-radius: 999px; } .sf-rec.ok { background: color-mix(in srgb, #16a34a 15%, transparent); color: #15803d; }
+.sf-rec.bad { background: color-mix(in srgb, #e11d48 15%, transparent); color: #be123c; }
+.sf-home { list-style: none; padding: 0; margin: 0; } .sf-home li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.sf-home li a { flex: 1; font-weight: 600; } .sf-home .warn { color: #b45309; } .sf-home .ok { color: #15803d; }
+.sf-range { gap: 6px; } .sf-range input, .sf-range select { width: auto; }

@@ -3,7 +3,7 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """Kitchen routes; the common ones (auth, tasks, messages, access, media, gateway) come from grepx_bff."""
-from . import audit, bills, chef, leave, roster, team, closing, costs, inventory, kitchen, me, orders, forecast, outbox, platform, public, report, runs, sales, setup, stock, warehouse
+from . import audit, bills, chef, leave, payroll, roster, safety, team, closing, costs, inventory, kitchen, me, orders, forecast, outbox, platform, public, report, runs, sales, setup, stock, warehouse
 
-ROUTERS = [me.router, audit.router, chef.router, leave.router, roster.router, team.router, platform.router, setup.router, stock.router, kitchen.router, orders.router, closing.router, costs.router,
+ROUTERS = [me.router, audit.router, chef.router, leave.router, payroll.router, roster.router, safety.router, team.router, platform.router, setup.router, stock.router, kitchen.router, orders.router, closing.router, costs.router,
            warehouse.router, runs.router, inventory.router, outbox.router, public.router, sales.router, bills.router, report.router, forecast.router]

@@ -109,6 +109,8 @@ TEAM = [("Meera Iyer", "Head chef", "kit", ["bandra"], "monthly", 85000), ("Sanj
 TEAM_DOCS = [("Imran Shaikh", "Food handler licence", 16), ("Pooja Nair", "Health certificate", -20), ("Meera Iyer", "Food handler licence", 300)]
 TEAM_LEAVE = [("Meera Iyer", "annual", 10, 13, True), ("Imran Shaikh", "sick", 2, 3, True), ("Pooja Nair", "casual", 6, 6, False),
               ("Ravi Kumar", "annual", 18, 22, False)]
+PAYROLL_COUNTRY = "IN"
+PAY_ADJUSTMENTS = [("Meera Iyer", "bonus", 5000, "Diwali bonus"), ("Arjun Singh", "advance", 3000, "Advance recovery")]
 TEAM_SHIFTS = {"Meera Iyer": ("kit", "08:00", "17:00"), "Sanjay Rao": ("kit", "13:00", "22:00"), "Imran Shaikh": ("kit", "10:00", "19:00"),
                "Pooja Nair": ("bandra", "11:00", "20:00"), "Ravi Kumar": ("wh", "07:00", "15:00")}
 

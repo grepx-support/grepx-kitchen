@@ -110,6 +110,24 @@
     "reacts_to": []
   },
   {
+    "name": "compliance-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/compliance-service",
+    "request_table": "compliance_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Recurring checks at each site of any business: readings with a safe range (temperatures, pH, pressure) and yes / no checklists, how often they are due, every record with who and when, out-of-range flags with the action taken, what is missing today, history for inspectors. Keywords: HACCP, food safety, audits, inspections, logs",
+    "routes": [
+      "day",
+      "history",
+      "record",
+      "save_point"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "employee-service",
     "layer": "common",
     "product": "",
@@ -395,6 +413,26 @@
     "other_tables": [],
     "summary": "Read-only live operations screen: every request and verdict as it happens, traces, service health, headline numbers and a live map of places (all set by the deployment's monitor: section). Keywords: monitor, ops, live, map, wall screen, command centre, dashboard, trace, observability",
     "routes": [],
+    "reacts_to": []
+  },
+  {
+    "name": "payroll-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/payroll-service",
+    "request_table": "payroll_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Payroll for any business in several countries: monthly runs from salary or worked hours, overtime, unpaid leave, bonuses and advances, each country's statutory deductions as a plug-in with its rates in one settings record; payslips. Keywords: salary, wages, payslip, PF, ESI, CPF, superannuation, PAYG, TDS",
+    "routes": [
+      "adjust",
+      "finalise",
+      "month",
+      "run",
+      "set_settings",
+      "settings"
+    ],
     "reacts_to": []
   },
   {

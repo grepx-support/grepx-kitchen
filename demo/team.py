@@ -38,4 +38,10 @@ def run(site, d, ids: dict, say) -> None:
                                      "last": (date.today() + timedelta(days=end)).isoformat()}, "owner")
         if approve:
             site.post(f"/leave/{leave['leave_id']}/decide", {"approve": True}, "owner")
+    if getattr(d, "PAYROLL_COUNTRY", ""):
+        last_month = (date.today().replace(day=1) - timedelta(days=1)).isoformat()[:7]
+        site.put("/payroll/settings", {"country": d.PAYROLL_COUNTRY, "rates": {}}, "owner")
+        for name, kind, amount, note in getattr(d, "PAY_ADJUSTMENTS", []):
+            site.post("/payroll/adjust", {"month": last_month, "employee_id": people[name], "kind": kind, "amount": amount, "note": note}, "owner")
+        site.post("/payroll/run", {"month": last_month}, "owner")
     say(f"{len(people)} people across the outlets, {shifts} shifts this week, clock PIN 1234")

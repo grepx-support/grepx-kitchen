@@ -9,7 +9,7 @@ import { html, pageHead, tabs } from "/assets/kit/index.js";
 import { area, head } from "../lib/areas.js";
 
 const TABS = [{ id: "people", label: "People", icon: "users", href: "#/team" }, { id: "roster", label: "Roster", icon: "calendar", href: "#/roster" },
-  { id: "leave", label: "Leave", icon: "inbox", href: "#/leave" },
+  { id: "leave", label: "Leave", icon: "inbox", href: "#/leave" }, { id: "payroll", label: "Payroll", icon: "coin", href: "#/payroll" },
   { id: "clock", label: "Clock in / out", icon: "clock", href: "#/clock" }];
 
 export function frame(el, current, title, subtitle, actions = "") {

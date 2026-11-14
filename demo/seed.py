@@ -25,6 +25,7 @@ import history  # noqa: E402
 import setup  # noqa: E402
 import floor  # noqa: E402
 import money  # noqa: E402
+import safety  # noqa: E402
 import team  # noqa: E402
 import today  # noqa: E402
 from api import ApiFailed, Site  # noqa: E402
@@ -62,6 +63,7 @@ def one(site, d, args: list[str], days: int, resume: bool = False) -> None:
     floor.run(site, d, ids, say)
     money.run(site, d, ids, say)
     team.run(site, d, ids, say)
+    safety.run(site, d, ids, say)
 
 
 def main(args: list[str]) -> int:

@@ -25,7 +25,8 @@ COMMON = ["common-services/identity", "common-services/people-service", "common-
           "common-services/template-service", "common-services/task-service", "common-services/audit-log-service",
           "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service",
           "common-services/media-service", "common-services/employee-service", "common-services/roster-service",
-          "common-services/leave-service"]
+          "common-services/leave-service", "common-services/payroll-service",
+          "common-services/compliance-service"]
 MONTH = date.today().isoformat()[:7]
 
 
@@ -414,3 +415,19 @@ def test_team_and_roster_across_outlets(env):
     assert on_leave.status_code == 409 and "ON_LEAVE" in on_leave.text
     view = ok(api.get("/api/v1/leave?first=2026-11-01&last=2026-11-30&year=2026", headers=owner))
     assert view["leaves"][0]["days"] == 2 and view["people"][0]["types"][0]["taken"] == 2 and view["pending"] == []
+    # --- payroll: India rules, a bonus, the run, locking it puts the labour cost into Costs ---
+    assert ok(api.put("/api/v1/payroll/settings", headers=owner, json={"country": "IN", "rates": {"overtime_multiplier": 2}}))["rates"]["overtime_multiplier"] == 2
+    ok(api.post("/api/v1/payroll/adjust", headers=owner, json={"month": "2026-11", "employee_id": meera, "kind": "bonus", "amount": 500}))
+    run = ok(api.post("/api/v1/payroll/run", headers=owner, json={"month": "2026-11"}))
+    assert run["people"] == 1 and run["country"] == "IN"
+    done = ok(api.post("/api/v1/payroll/finalise", headers=owner, json={"month": "2026-11"}))
+    # --- food safety: the standard checks, a warm fridge needs the action taken ---
+    assert len(ok(api.post("/api/v1/safety/presets", headers=owner, json={"site_id": k1}))["added"]) == 9
+    assert ok(api.post("/api/v1/safety/presets", headers=owner, json={"site_id": k1}))["added"] == []
+    today = ok(api.get(f"/api/v1/safety/day?site_id={k1}", headers=owner))
+    fridge = next(p for p in today["points"] if p["name"] == "Walk-in fridge")
+    assert api.post("/api/v1/safety/record", headers=owner, json={"point_id": fridge["point_id"], "value": 8}).status_code == 409
+    assert ok(api.post("/api/v1/safety/record", headers=owner, json={"point_id": fridge["point_id"], "value": 8, "action_taken": "Door fixed"}))["ok"] is False
+    assert ok(api.get(f"/api/v1/safety/day?site_id={k1}", headers=owner))["failed"] == 1
+    labour = ok(api.get("/api/v1/setup", headers=owner))["overheads"]
+    assert labour[0]["labour"] == done["cost_by_site"][k1] and labour[0]["location_id"] == k1

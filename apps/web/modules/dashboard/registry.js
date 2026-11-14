@@ -15,6 +15,7 @@ import money from "./money.js";
 import moves from "./moves.js";
 import needed from "./needed.js";
 import orders from "./orders.js";
+import safety from "./safety.js";
 
 export const widgets = new WidgetRegistry();
-[hello, cogs, money, kitchen, needed, orders, deliveries, closings, moves].forEach((w) => widgets.register(w));
+[hello, cogs, money, kitchen, needed, safety, orders, deliveries, closings, moves].forEach((w) => widgets.register(w));
