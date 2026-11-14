@@ -29,7 +29,7 @@ export async function board(el) {
       lines: s.lines, eta: s.eta, column: r.id, state: s.state, delivery_id: s.delivery_id })))];
   const slot = el.querySelector(".slot");
   new KanbanBoard({ columns, cards, empty: "Drop trips here",
-    card: (c) => html`${c.column === "waiting" ? html`<label class="check"><input type="checkbox" data-tick="${c.id}"> <b>→ ${c.to}</b></label>` : html`<b>→ ${c.to}</b>`}
+    card: (c) => html`${c.column === "waiting" ? html`<input type="checkbox" data-tick="${c.id}" title="Tick to put it on a new run" aria-label="Tick ${c.to}"> ` : ""}<b>→ ${c.to}</b>
       <p class="muted small">${c.address || "no address"}</p><p>${pill(`${c.lines} lines`, "info")} ${c.eta ? pill(`ETA ${c.eta}`, "warn") : ""} ${c.date ? html`<span class="muted small">${c.date}</span>` : ""}</p>`,
     onOpen: (c) => showTrip(c.delivery_id || c.id),
     onMove: (c, from, to) => move(d, c, from, to) }).mount(slot);
