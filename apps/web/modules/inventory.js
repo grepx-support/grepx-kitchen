@@ -13,10 +13,10 @@ import { take, takes } from "./inventory/takes.js";
 const INV = { auth: "staff", tenant: true, area: "inventory", group: "Warehouse" };
 
 export const routes = [
-  { path: "/inventory", nav: "Inventory control", key: "v", icon: "alert", perm: "view_stock", ...INV, render: alerts },
-  { path: "/inventory/par", perm: "view_stock", ...INV, render: par },
-  { path: "/inventory/takes", perm: "adjust_stock", ...INV, render: takes },
-  { path: "/inventory/take/:id", perm: "adjust_stock", ...INV, render: (el, { args }) => take(el, args[0]) },
-  { path: "/inventory/value", perm: "view_costs", ...INV, render: value },
-  { path: "/inventory/analysis", perm: "view_stock", ...INV, render: analysis },
+  { path: "/inventory", feature: "inventory", nav: "Inventory control", key: "v", icon: "alert", perm: "view_stock", ...INV, render: alerts },
+  { path: "/inventory/par", feature: "inventory", perm: "view_stock", ...INV, render: par },
+  { path: "/inventory/takes", feature: "inventory", perm: "adjust_stock", ...INV, render: takes },
+  { path: "/inventory/take/:id", feature: "inventory", perm: "adjust_stock", ...INV, render: (el, { args }) => take(el, args[0]) },
+  { path: "/inventory/value", feature: "inventory", perm: "view_costs", ...INV, render: value },
+  { path: "/inventory/analysis", feature: "inventory", perm: "view_stock", ...INV, render: analysis },
 ];

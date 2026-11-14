@@ -10,7 +10,7 @@ import { forecast } from "./kitchen/forecast.js";
 import { kitchen } from "./kitchen/page.js";
 
 export const routes = [
-  { path: "/kitchen", nav: "Kitchen", key: "k", icon: "pot", area: "kitchen", group: "Daily", auth: "staff", tenant: true, perm: "kitchen", render: kitchen },
-  { path: "/kitchen/forecast", nav: "Forecast", key: "f", icon: "trend", area: "kitchen", group: "Daily", auth: "staff", tenant: true, perm: ["kitchen", "manage_business"],
+  { path: "/kitchen", feature: "kitchen", nav: "Kitchen", key: "k", icon: "pot", area: "kitchen", group: "Daily", auth: "staff", tenant: true, perm: "kitchen", render: kitchen },
+  { path: "/kitchen/forecast", feature: "forecast", nav: "Forecast", key: "f", icon: "trend", area: "kitchen", group: "Daily", auth: "staff", tenant: true, perm: ["kitchen", "manage_business"],
     keywords: "predict demand sales tomorrow week production plan", render: forecast },
 ];

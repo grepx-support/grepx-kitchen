@@ -55,5 +55,5 @@ async function costs(el, q) {
 }
 
 export const routes = [
-  { path: "/costs", nav: "Costs", key: "m", icon: "chart", area: "costs", group: "Money", auth: "staff", tenant: true, perm: "view_costs", render: costs },
+  { path: "/costs", feature: "costing", nav: "Costs", key: "m", icon: "chart", area: "costs", group: "Money", auth: "staff", tenant: true, perm: "view_costs", render: costs },
 ];

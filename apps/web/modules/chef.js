@@ -12,8 +12,8 @@ import { prepPage } from "./chef/prep.js";
 
 const base = { area: "chef", auth: "staff", tenant: true, perm: ["kitchen", "manage_business"] };
 export const routes = [
-  { ...base, path: "/chef", nav: "Chef", key: "r", icon: "book", group: "Daily", render: bookPage, keywords: "recipe book cards method chef dishes menu" },
-  { ...base, path: "/chef/recipe", render: cardPage, keywords: "recipe card" },
-  { ...base, path: "/chef/prep", render: prepPage, keywords: "prep list station mise en place today" },
-  { ...base, path: "/chef/allergens", render: allergenPage, keywords: "allergen chart matrix gluten nuts milk veg" },
+  { ...base, path: "/chef", feature: "chef", nav: "Chef", key: "r", icon: "book", group: "Daily", render: bookPage, keywords: "recipe book cards method chef dishes menu" },
+  { ...base, path: "/chef/recipe", feature: "chef", render: cardPage, keywords: "recipe card" },
+  { ...base, path: "/chef/prep", feature: "chef", render: prepPage, keywords: "prep list station mise en place today" },
+  { ...base, path: "/chef/allergens", feature: "chef", render: allergenPage, keywords: "allergen chart matrix gluten nuts milk veg" },
 ];

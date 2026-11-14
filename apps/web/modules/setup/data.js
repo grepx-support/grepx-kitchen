@@ -33,7 +33,7 @@ async function bring(kind, title) {
 }
 
 export default {
-  id: "data", label: "Import / export", icon: "download",
+  id: "data", label: "Import / export", icon: "download", feature: "import_export",
   async render(el) {
     const d = await api("/data");
     el.innerHTML = String(html`<p class="muted">Bring your records in from Excel or CSV, or take them out. ${ORDER}</p>

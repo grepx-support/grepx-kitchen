@@ -78,6 +78,14 @@ def allow(*perms: str, module: str = ""):
     return check
 
 
+def feature_on(module: str):
+    """A whole router (Setup -> Features) refuses while its feature is switched off for the business."""
+    def check(k: Kitchen = Depends(kitchen_user)) -> None:
+        if not (k.business.get("modules") or {}).get(module, True):
+            raise ApiError("MODULE_OFF", 403)
+    return check
+
+
 def listed(rows, *then: str) -> list[dict]:
     """Rows in the order the owner dragged them into (`sort`), unsorted ones after, then by the given fields."""
     return sorted(rows, key=lambda r: (r.get("sort") is None, r.get("sort") or 0, *(str(r.get(f, "")) for f in then)))

@@ -32,7 +32,7 @@ def one(item_id: str, k: Kitchen = Depends(reader)):
     dish = items.get(item_id)
     if dish is None or dish.get("kind") != "finished":
         raise ApiError("UNKNOWN_ITEM", 404)
-    return {"recipe": card(dish, recipes(k).get(item_id), items), "allergens": ALLERGENS}
+    return {"recipe": {**card(dish, recipes(k).get(item_id), items), "image_id": dish.get("image_id", "")}, "allergens": ALLERGENS}
 
 
 @router.put("/recipes/{item_id}/card")

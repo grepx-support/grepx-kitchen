@@ -24,6 +24,20 @@ class Module(str, Enum):
     ORDERS = "orders"
     COSTING = "costing"
     CLOSING = "closing"
+    WAREHOUSE = "warehouse"            # lots, bins, picking, scanning
+    DELIVERY = "delivery"              # delivery runs and the driver's screen
+    SALES = "sales"                    # customers and invoices
+    QUOTES = "quotes"                  # catering quotations -> orders
+    PURCHASING = "purchasing"          # supplier bills and paying them
+    TEAM = "team"                      # people and their documents
+    ROSTER = "roster"                  # shifts and clocking in
+    LEAVE = "leave"
+    PAYROLL = "payroll"
+    FUNDS = "funds"
+    FOOD_SAFETY = "food_safety"
+    CHEF = "chef"                      # recipe cards, allergens, stations
+    FORECAST = "forecast"
+    IMPORT_EXPORT = "import_export"
 
 
 class ReasonCode(str, Enum):

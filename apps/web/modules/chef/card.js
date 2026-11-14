@@ -38,7 +38,7 @@ export async function cardPage(el, q) {
     };
     return;
   }
-  body.innerHTML = String(html`<div class="ch-head card">${dietMark(r.diet)}<div class="ch-tags">${allergenTags(r.allergens)}${r.allergens.length ? "" : html`<span class="muted small">No allergens marked on its ingredients</span>`}</div>
+  body.innerHTML = String(html`${r.image_id ? html`<img class="ch-photo" src="/api/v1/media/${r.image_id}" alt="">` : ""}<div class="ch-head card">${dietMark(r.diet)}<div class="ch-tags">${allergenTags(r.allergens)}${r.allergens.length ? "" : html`<span class="muted small">No allergens marked on its ingredients</span>`}</div>
       <div class="ch-figs"><span><b>${await money(r.unit_cost)}</b> cost / ${r.unit}</span><span><b>${await money(r.price)}</b> price</span>
         <span class="${r.margin_pct != null && r.margin_pct < 60 ? "bad" : "good"}"><b>${r.margin_pct ?? "-"}%</b> margin</span><span><b>${r.yield_pct || 100}%</b> yield</span>
         ${r.portion ? html`<span><b>${r.portion}</b> portion</span>` : ""}${r.hold_hours ? html`<span><b>${r.hold_hours} h</b> holding</span>` : ""}</div></div>

@@ -11,7 +11,6 @@ import { resetBiz } from "../lib/business.js";
 import { values } from "./common.js";
 import { logoBlock, wireLogo } from "./logo.js";
 
-const MODULES = { kitchen: "Kitchen", inventory: "Inventory", orders: "Reorder and purchase orders", costing: "Costing and sales", closing: "Staff closing" };
 
 export default {
   id: "business", label: "Business", icon: "building",
@@ -19,7 +18,7 @@ export default {
     const b = s.business, st = b.settings || {}, bl = b.billing || {};
     el.innerHTML = String(html`<form class="card accent"><div class="row"><label>Name<input name="name" value="${b.name}"></label>
         <label>Currency<input name="currency" value="${b.currency}" maxlength="3"></label><label>Time zone<input name="timezone" value="${b.timezone}"></label></div>
-      <h2 class="k-section">Modules</h2><div class="k-perms">${Object.entries(MODULES).map(([k, v]) => html`<label class="check"><input type="checkbox" name="m_${k}" ${b.modules?.[k] !== false ? "checked" : ""}> ${v}</label>`)}</div>
+      <p class="muted">What the business uses (production, warehouse, payroll, funds...) is switched on and off in <a href="#/setup?tab=features">Features</a>.</p>
       <h2 class="k-section">Planning and costing</h2><div class="row">
         <label>Past weeks for targets (1-3)<input name="target_weeks" type="number" min="1" max="3" value="${st.target_weeks}"></label>
         <label>Safety buffer %<input name="safety_pct" type="number" min="0" value="${st.safety_pct}"></label>
@@ -43,7 +42,7 @@ export default {
     el.querySelector("form").onsubmit = async (e) => {
       e.preventDefault();
       const v = values(e.target);
-      const body = { name: v.name, currency: v.currency, timezone: v.timezone, modules: Object.fromEntries(Object.keys(MODULES).map((k) => [k, v[`m_${k}`]])),
+      const body = { name: v.name, currency: v.currency, timezone: v.timezone, 
         settings: { target_weeks: v.target_weeks, safety_pct: v.safety_pct, large_change_pct: v.large_change_pct, cogs_min: v.cogs_min, cogs_max: v.cogs_max, po_approval_over: v.po_approval_over || 0, price_jump_pct: v.price_jump_pct || 10,
           sales_types: v.sales_types.split(",").map((x) => x.trim()).filter(Boolean) },
         billing: { legal_name: v.legal_name, tax_label: v.tax_label, tax_number: v.tax_number, tax_rate: v.tax_rate || 0, address: v.address, payment_note: v.payment_note, auto_reminders: !!v.auto_reminders } };

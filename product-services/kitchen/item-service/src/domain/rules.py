@@ -5,6 +5,8 @@
 """What valid items, suppliers and recipes look like (COS-01, ORD-01, KIT-01, KIT-02)."""
 from __future__ import annotations
 
+import re
+
 from dto import ItemKind
 
 from .chef import allergens, diet
@@ -45,7 +47,15 @@ def clean_item(raw: dict, current: dict | None = None) -> dict:
             "shelf_life_days": _days(merged.get("shelf_life_days")),           # warehouse-service dates new lots with it
             "barcode": "".join(str(merged.get("barcode") or "").split())[:40],   # scanned on the warehouse screens
             "allergens": allergens(merged.get("allergens")), "diet": diet(merged.get("diet")),   # dishes carry them (domain/chef.py)
+            "image_id": image_id(merged.get("image_id")),                         # its picture (media-service), "" for none
             **({"sort": merged["sort"]} if isinstance(merged.get("sort"), int) else {})}   # listing order (REORDER)
+
+
+def image_id(value) -> str:
+    value = str(value or "")
+    if not re.fullmatch(r"[A-Za-z0-9:_-]{0,64}", value):
+        raise ValueError("INVALID_IMAGE")
+    return value
 
 
 def _days(value) -> int | None:

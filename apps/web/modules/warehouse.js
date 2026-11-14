@@ -23,9 +23,9 @@ const withPlace = (page) => async (el, q) => {
 };
 
 export const routes = [
-  { path: "/warehouse", nav: "Warehouse floor", key: "w", icon: "layout", perm: "warehouse_in", ...FLOOR, render: withPlace(lots) },
-  { path: "/warehouse/bins", perm: "warehouse_in", ...FLOOR, render: withPlace(bins) },
-  { path: "/warehouse/picks", perm: "warehouse_out", ...FLOOR, render: withPlace(picks) },
-  { path: "/warehouse/3d", perm: "warehouse_in", ...FLOOR, render: withPlace(view3d) },
-  { path: "/warehouse/pick/:id", perm: "warehouse_out", ...FLOOR, render: (el, { args }) => pickScreen(el, args[0]) },
+  { path: "/warehouse", feature: "warehouse", nav: "Warehouse floor", key: "w", icon: "layout", perm: "warehouse_in", ...FLOOR, render: withPlace(lots) },
+  { path: "/warehouse/bins", feature: "warehouse", perm: "warehouse_in", ...FLOOR, render: withPlace(bins) },
+  { path: "/warehouse/picks", feature: "warehouse", perm: "warehouse_out", ...FLOOR, render: withPlace(picks) },
+  { path: "/warehouse/3d", feature: "warehouse", perm: "warehouse_in", ...FLOOR, render: withPlace(view3d) },
+  { path: "/warehouse/pick/:id", feature: "warehouse", perm: "warehouse_out", ...FLOOR, render: (el, { args }) => pickScreen(el, args[0]) },
 ];

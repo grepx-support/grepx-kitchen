@@ -6,6 +6,7 @@
 import grepx_contracts as gc
 from fastapi import APIRouter, Depends
 
+from grepx_bff.routers.profile import ME_EXTRAS
 from grepx_bff.security import Principal, current_user, gateway
 from grepx_bff.views import clean
 
@@ -25,3 +26,12 @@ def me(user: Principal = Depends(current_user), gw=Depends(gateway)):
             out["locations"] = sorted((clean(r) for r in gw.rows(gc.business.LOCATIONS, tenant_id=user.tenant) if r.get("active", True)),
                                       key=lambda r: (r.get("sort") is None, r.get("sort") or 0, not r.get("holding"), r.get("name", "")))
     return out
+
+
+def features(user, gw) -> dict:
+    """/me carries the business's feature switches (Setup -> Features), so the web hides what is off."""
+    b = gw.one(gc.business.BUSINESSES, user.tenant) if user.tenant else None
+    return {"features": (b or {}).get("modules") or {}} if b and b.get("tenant_id") == user.tenant else {}
+
+
+ME_EXTRAS.append(features)

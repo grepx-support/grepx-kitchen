@@ -5,11 +5,12 @@
  */
 
 // Business setup by its owner. Each tab is its own file; adding a tab = one more entry in TABS (BUS, ACC, KIT, ORD, COS).
-import { api } from "/assets/app.js";
+import { api, state } from "/assets/app.js";
 import { html, pageHead, tabs } from "/assets/kit/index.js";
 import { area, head } from "./lib/areas.js";
 import business from "./setup/business.js";
 import data from "./setup/data.js";
+import features from "./setup/features.js";
 import items from "./setup/items.js";
 import locations from "./setup/locations.js";
 import overheads from "./setup/overheads.js";
@@ -17,14 +18,15 @@ import { roles, users } from "./setup/people.js";
 import recipes from "./setup/recipes.js";
 import suppliers from "./setup/suppliers.js";
 
-const TABS = [business, locations, items, suppliers, recipes, users, roles, overheads, data];
+const TABS = [business, features, locations, items, suppliers, recipes, users, roles, overheads, data];
 
 async function setup(el, q) {
-  const tab = TABS.find((t) => t.id === q.tab) || TABS[0];
+  const shown = TABS.filter((t) => !t.feature || (state.me?.features || {})[t.feature] !== false);
+  const tab = shown.find((t) => t.id === q.tab) || shown[0];
   const s = await api("/setup");
   el.style.setProperty("--area", area("setup"));
   el.innerHTML = String(html`${pageHead({ ...head("setup"), title: "Setup", subtitle: s.business.name })}
-    ${tabs(TABS.map((t) => ({ id: t.id, label: t.label, icon: t.icon, href: `#/setup?tab=${t.id}` })), tab.id)}<div class="k-body"></div>`);
+    ${tabs(shown.map((t) => ({ id: t.id, label: t.label, icon: t.icon, href: `#/setup?tab=${t.id}` })), tab.id)}<div class="k-body"></div>`);
   await tab.render(el.querySelector(".k-body"), s, q, { redraw: (extra = {}) => setup(el, { tab: tab.id, ...extra }) });
 }
 

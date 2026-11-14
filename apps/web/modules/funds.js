@@ -10,6 +10,6 @@ import { fundsPage } from "./funds/overview.js";
 
 const base = { area: "funds", auth: "staff", tenant: true, perm: "manage_business" };
 export const routes = [
-  { ...base, path: "/funds", nav: "Funds", icon: "coin", group: "Money", render: fundsPage, keywords: "funds capital investors partners portfolio loan grant money in pending" },
-  { ...base, path: "/funds/fund", render: fundPage, keywords: "fund detail" },
+  { ...base, path: "/funds", feature: "funds", nav: "Funds", icon: "coin", group: "Money", render: fundsPage, keywords: "funds capital investors partners portfolio loan grant money in pending" },
+  { ...base, path: "/funds/fund", feature: "funds", render: fundPage, keywords: "fund detail" },
 ];

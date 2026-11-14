@@ -5,7 +5,8 @@
  */
 
 // Items: drag into the order they appear in palettes and lists; add or edit one (COS-01, KIT-01).
-import { html } from "/assets/kit/index.js";
+import { html, icon } from "/assets/kit/index.js";
+import { asDataUrl, pickFile } from "../lib/files.js";
 import { fmt } from "../lib/format.js";
 import { option, post, sortList, values, wireSort } from "./common.js";
 import { itemFields, pickedAllergens } from "../chef/marks.js";
@@ -24,15 +25,32 @@ const form = (i = {}, suppliers) => html`<form class="card accent k-section"><h2
   ${i.id ? html`<label class="check"><input type="checkbox" name="archived" ${i.active === false ? "checked" : ""}> Archived</label>` : ""}
   <p><button class="btn primary">Save</button> ${i.id ? html`<a class="btn" href="#/setup?tab=items">New instead</a>` : ""}</p></form>`;
 
+/** The item's picture (shown on the item list, recipe cards and orders): upload, change, remove. */
+const pictureBlock = (i) => html`<section class="card k-section k-pic"><h2>Picture of ${i.name || "the item"}</h2><div class="row">
+  ${i.image_id ? html`<img src="/api/v1/media/${i.image_id}" alt="${i.name}" style="max-height:120px;border-radius:10px">` : html`<span class="muted">No picture yet.</span>`}
+  <button type="button" class="btn small" data-pic>${icon("upload", { size: 15 })} ${i.image_id ? "Change" : "Add a picture"}</button>
+  ${i.image_id ? html`<button type="button" class="btn small" data-pic-off>Remove</button>` : ""}</div></section>`;
+
+function wirePicture(el, id) {
+  el.querySelector("[data-pic]")?.addEventListener("click", async () => {
+    const file = await pickFile("image/png,image/jpeg,image/webp");
+    if (file && await post(`/setup/items/${id}/picture`, { image: await asDataUrl(file) }, "Picture saved")) location.reload();
+  });
+  el.querySelector("[data-pic-off]")?.addEventListener("click", async () => {
+    if (await post(`/setup/items/${id}/picture`, { remove: true }, "Picture removed")) location.reload();
+  });
+}
+
 export default {
   id: "items", label: "Items", icon: "box",
   render(el, s, q) {
     const sup = Object.fromEntries(s.suppliers.map((x) => [x.id, x.name]));
     el.innerHTML = String(html`<section class="card"><p class="muted">Drag to set the order items appear on every screen.</p>
-      ${sortList(s.items.map((i) => ({ id: i.id, title: i.name, tag: TAG[i.kind] || "•", off: i.active === false, href: `#/setup?tab=items&edit=${i.id}`,
+      ${sortList(s.items.map((i) => ({ id: i.id, title: i.name, tag: TAG[i.kind] || "•", img: i.image_id, off: i.active === false, href: `#/setup?tab=items&edit=${i.id}`,
         sub: `${i.kind} · ${i.unit} · cost ${fmt(i.cost)}${i.category ? ` · ${i.category}` : ""}${sup[i.supplier_id] ? ` · ${sup[i.supplier_id]}` : ""}` })))}</section>
-      ${form(s.items.find((i) => i.id === q.edit), s.suppliers)}`);
+      ${q.edit ? pictureBlock(s.items.find((i) => i.id === q.edit) || {}) : ""}${form(s.items.find((i) => i.id === q.edit), s.suppliers)}`);
     wireSort(el, "items");
+    wirePicture(el, q.edit);
     el.querySelector("form").onsubmit = async (e) => {
       e.preventDefault();
       const v = values(e.target);

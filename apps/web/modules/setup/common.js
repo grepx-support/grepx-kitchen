@@ -12,7 +12,7 @@ export const post = (path, body, done) => run(() => api(path, { method: "POST", 
 
 /** A list the owner can drag into order: rows [{id, title, sub, tag, href, off}] */
 export const sortList = (rows, empty = "Nothing yet.") => rows.length ? html`<ul class="k-sort">${rows.map((r) => html`<li data-id="${r.id}" class="${r.off ? "muted" : ""}">
-    <button type="button" class="kit-grip" aria-label="Move ${r.title} (arrow keys)">${icon("grip", { size: 16 })}</button><span class="tag">${r.tag || ""}</span>
+    <button type="button" class="kit-grip" aria-label="Move ${r.title} (arrow keys)">${icon("grip", { size: 16 })}</button>${r.img ? html`<img class="k-thumb" src="/api/v1/media/${r.img}" alt="" loading="lazy">` : html`<span class="tag">${r.tag || ""}</span>`}
     <span class="who"><b>${r.title}</b><small>${r.sub || ""}</small></span>${r.href ? html`<a class="btn small" href="${r.href}">Edit</a>` : ""}</li>`)}</ul>`
   : html`<p class="muted">${empty}</p>`;
 

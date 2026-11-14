@@ -183,3 +183,59 @@ the BFF only joins and checks access; the web is split into small modules. Nothi
 | Importing again updates what matches (by name, employees by email) instead of adding twice | ✅ | |
 | Templates to fill in (with a "How to fill it in" sheet) and everything exported as Excel or CSV | ✅ | Setup → Import / export |
 
+## Features, pictures (round 7)
+
+| Feature | Status | Where |
+|---|---|---|
+| Setup → Features: 19 features in six groups, each explained in a line and switched on / off for the business; what is off leaves the menu and its API refuses (MODULE_OFF); data is kept | ✅ | Setup → Features |
+| Item pictures: on the item list, the item's edit page and the recipe card | ✅ | Setup → Items → Edit → Picture |
+| Every list row and board card opens what it is about | ✅ | everywhere (tables inside other screens still to go) |
+
+## Compared with Unleashed (inventory software) - what we have and what is next
+
+Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ not yet (with the service it belongs in).
+
+| Unleashed feature | Us | Notes / where it goes |
+|---|---|---|
+| **Inventory** | | |
+| Real-time stock across places, transfers | ✅ | stock-service |
+| Inventory counts (full / partial), reconcile | ✅ | closing counts, count sheets, stock adjust; posting to accounting ⬜ (with an accounting link) |
+| Multi-warehouse | ✅ | places of every kind |
+| Barcode scanning (receive, pick, count) | ✅ | warehouse screens |
+| Batch tracking with expiry, recalls | 🟡 | lots and expiry ✅ (warehouse-service); recall report "which customers got lot X" ⬜ |
+| Serial numbers | ⬜ | rarely needed for food; equipment register (asset-service, generic) if wanted |
+| Replenishment (min / max per item) and reorder prompts | ✅ | par levels, suggested orders |
+| Forecasting | ✅ | forecast-service |
+| Inventory optimisation (dead / over stock) | 🟡 | slow movers report ✅; over-stock alert ⬜ (inventory-service) |
+| **Orders (selling)** | | |
+| Sales quotes → orders | ✅ | catering quotations |
+| Sales orders from all channels, invoicing | 🟡 | invoices ✅; standing / online orders from outlets and B2B customers ⬜ (order-service, product) |
+| Freight and charges on quotes / orders | ⬜ | billing-service: charge lines kept apart in reports |
+| Customer pricing (fixed price or % per customer) | ⬜ | billing-service price lists |
+| Quantity discounts (price breaks) | ⬜ | billing-service price lists |
+| **Purchasing** | | |
+| Suppliers with prices, currencies, lead times, performance | 🟡 | suppliers, price history ✅; lead time, supplier currency, on-time rate ⬜ (item- / purchase-service) |
+| Landed cost (duty, freight, labour on a purchase) | ⬜ | purchase-service: costs spread over the lines into the unit cost |
+| Recost a purchase when the bill arrives | 🟡 | bill matched to the order with price differences ✅; updating stock value ⬜ |
+| Supplier returns | ⬜ | purchase-service RETURN (stock out, credit expected) |
+| Partial receipts against an order | ✅ | |
+| **Production** | | |
+| Bill of materials (recipes) drawing down stock | ✅ | recipes, kitchen production |
+| Assemblies / what can be made from stock | 🟡 | production plan ✅; "can make N from stock now" ⬜ (planning-service) |
+| Disassembly (whole chicken → cuts, cost split) | ⬜ | planning-service BREAK_DOWN with yields |
+| Kits / bundles (combo meals) | ⬜ | item-service: a sold item made of others, stock taken on sale |
+| Kanban planner | ✅ | order, delivery and production boards |
+| **General** | | |
+| Reports, dashboards | ✅ | costs, money, stock, dashboards |
+| Pick, pack, dispatch | ✅ | pick lists, delivery runs, delivery notes |
+| File library on products, customers, suppliers, transactions | 🟡 | item pictures, employee documents ✅; attachments on any record ⬜ (media-service, generic) |
+| Open API with keys | ⬜ | grepx-bff API keys per business (generic) |
+| Data import / export | ✅ | round 6 |
+| **Add-ons** | | |
+| B2B ordering store (customers order online at their prices) | ⬜ | product app on billing price lists |
+| CRM | 🟡 | lead-service ✅ (leads); activity history per customer ⬜ |
+| Accounting (Xero / QuickBooks) | ⬜ | integration-service: invoices, bills, payments out |
+| E-commerce / delivery apps (Shopify, Grab, Swiggy...) | ⬜ | integration-service: orders in, stock out |
+
+**Suggested next, in order:** (1) customer price lists, quantity breaks and charge lines; (2) landed cost and recosting on the bill; (3) supplier returns; (4) disassembly and combo items; (5) attachments on any record; (6) recall report by lot; (7) API keys; (8) accounting link.
+
