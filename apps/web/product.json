@@ -56,7 +56,8 @@
     "kitchen/assistant",
     "kitchen/terminal",
     "core/admin",
-    "core/integrations"
+    "core/integrations",
+    "core/security"
   ],
   "styles": [
     "kitchen/kitchen.css"

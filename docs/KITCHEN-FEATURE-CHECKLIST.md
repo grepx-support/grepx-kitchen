@@ -19,7 +19,9 @@ Next up is marked **NEXT** (in the order it will be built).
 | Close / reopen a business (operator) | ✅ | Platform → Businesses |
 | Roles per business, permissions ticked by the owner | ✅ | Setup → Roles |
 | Profile photos, login, password | ✅ | |
-| Multi-factor login, single sign-on | 🔒 | needs a decision on the provider |
+| Two-step login (authenticator app codes, 10 one-time recovery codes; operator can switch it off for a lost phone) | ✅ | Profile → Sign-in & security; Platform → Staff |
+| Sign in with Google, Microsoft (any or one company's accounts), or any OpenID Connect company login (Okta, Auth0, Keycloak, Zoho...) | ✅ | buttons on the login page once the operator saves the client id on Integrations |
+| SAML sign-in, passkeys, sign-in by emailed code | ⬜ | |
 | Audit trail: every change - who, when, what, done or refused and why; filters, details, CSV | ✅ | Setup → Audit trail |
 | Login history | ⬜ | |
 
