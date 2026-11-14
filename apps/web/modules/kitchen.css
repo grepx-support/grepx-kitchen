@@ -593,3 +593,18 @@
 .bs-total { font-weight: 800; border-bottom: 2px solid var(--area); }
 .pl-use { align-items: end; } .pl-use label { min-width: 120px; }
 .pl-use .btn { flex: 0 0 auto; width: auto; align-self: end; margin-bottom: 4px; }
+
+/* Funds: suggestions, real spending per use, drag a fund onto a place, balance-sheet drill-down */
+.fd-tips { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.fd-tip { border: 1px solid var(--line); border-left: 4px solid var(--muted); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; }
+.fd-tip.fd-act { border-left-color: #e11d48; } .fd-tip.fd-watch { border-left-color: #f59e0b; } .fd-tip.fd-idea { border-left-color: #0ea5e9; }
+.fd-tip p { margin: 0; }
+.fd-link { padding: 8px 0; border-bottom: 1px solid var(--line); } .fd-link .row { justify-content: space-between; }
+.fd-bar i.over { background: linear-gradient(90deg, #f59e0b, #e11d48); }
+.fd-places { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 18px; }
+.fd-drop { border: 2px dashed var(--line); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--muted); transition: all .15s; }
+.fd-drop.on, .fd-card.on { border-color: var(--area); color: var(--text); background: color-mix(in srgb, var(--area) 10%, transparent); }
+.fd-card[draggable="true"] { cursor: grab; } .fd-card.dragging { opacity: .5; }
+.fd-st a { margin-left: 4px; color: var(--muted); }
+.bs-row-d summary { cursor: pointer; list-style: none; } .bs-row-d summary::-webkit-details-marker { display: none; }
+.bs-sub { padding-left: 16px; font-size: 12px; color: var(--muted); }

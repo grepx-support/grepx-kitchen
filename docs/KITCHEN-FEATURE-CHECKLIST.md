@@ -149,3 +149,17 @@ Next up is marked **NEXT** (in the order it will be built).
 Each service owns its tables; business rules are plain tested functions in `domain/`; one module per action in
 `routes/`; small classes (Strategy for interchangeable methods, Template Method for documents and reports);
 the BFF only joins and checks access; the web is split into small modules. Nothing is marked ✅ before its tests pass.
+
+## Funds - the full model (round 5)
+
+| Feature | Status | Where |
+|---|---|---|
+| Money given to a use against its real spending (a use named like a place: that place's ingredients, labour, rent, other costs since it got money), left / overspent, monthly burn, by category | ✅ | Funds; a fund → Forecast & advice |
+| Cash forecast 12 months, three cases (expected / best with the plan's earnings / worst: overdue promises never come, the rest late), runway | ✅ | Funds; a fund → Forecast & advice |
+| Suggestions: chase overdue promises, runway short, use overspent, behind plan, repay a dear loan early, idle cash | ✅ | Funds; a fund → Forecast & advice |
+| Promises board: drag a promise to "Paid in" to record the money | ✅ | Funds |
+| Drag a fund onto a place to put money to it; drag fund cards to reorder | ✅ | Funds |
+| Balance sheet as of any date, every line opens to what is behind it (per fund, use, lender, partner); checks it balances | ✅ | Funds |
+| Several currencies: money in another currency converted at its rate, the original kept; funds in another currency counted in the business currency at their rate | ✅ | Record; New fund / Change |
+| Investor statement PDF per party; sent by email / WhatsApp with the PDF attached (each send kept) | ✅ | a fund → Who put money in → printer / send icons |
+| Every movement as CSV | ✅ | a fund → Every movement → CSV |

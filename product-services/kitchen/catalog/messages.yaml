@@ -44,6 +44,12 @@ templates:
     channels: [email, whatsapp]
     subject: "{supplier} raised {count} price(s)"
     text: "Hi {first_name},\n\n{supplier}'s bill {bill} has higher prices than last time:\n{summary}\n\nCheck it before you approve the bill."
+  fund_statement:
+    label: An investor's statement (the PDF attached)
+    placeholders: [org, name, period, link]
+    channels: [email, whatsapp]
+    subject: "{org} - your statement"
+    text: "Dear {name},\n\nPlease find attached your statement from {org} for {period}: what you put in, what was paid back and your share.\n\n{org}"
   customer_invoice:
     label: An invoice emailed to a customer
     placeholders: [org, customer, number, total, due, link]

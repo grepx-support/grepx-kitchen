@@ -21,6 +21,8 @@ export async function fundDialog(f = {}) {
     <label>Kind<select name="kind">${Object.entries(FUND_KIND).map(([k, v]) => html`<option value="${k}" ${f.kind === k ? "selected" : ""}>${v}</option>`)}</select></label></div>
     <div class="row"><label>Target<input name="target" type="number" min="0" step="any" value="${f.target ? f.target / 100 : ""}"></label>
     <label>Loan rate % a year<input name="rate_pct" type="number" min="0" step="any" value="${f.rate_pct || ""}"></label></div>
+    <div class="row"><label>Currency<input name="currency" maxlength="3" value="${f.currency || ""}" placeholder="the business's"></label>
+    <label>Rate to the business currency (only if different)<input name="rate_to_base" type="number" min="0" step="any" value="${f.rate_to_base || ""}"></label></div>
     <label>What it is for<input name="purpose" value="${f.purpose || ""}" placeholder="e.g. two new outlets and the central kitchen"></label>`);
   if (await openDialog({ title: f.fund_id ? "Change the fund" : "New fund", body: box, actions: [{ label: "Cancel", value: "" }, { label: "Save", value: "ok", primary: true }] }) !== "ok") return null;
   return run(() => api("/funds", { method: "POST", body: { ...Object.fromEntries(new FormData(box)), fund_id: f.fund_id } }), "Fund saved");
