@@ -47,7 +47,7 @@ def from_order(po_id: str, k: Kitchen = Depends(payer)):
 
 @router.post("")
 def save(body: dict, k: Kitchen = Depends(payer)):
-    return ask(k, A.SAVE_BILL, **{f: body.get(f) for f in ("bill_id", "supplier_id", "supplier_ref", "bill_date", "due", "po_id", "lines", "tax_rate", "notes")})
+    return ask(k, A.SAVE_BILL, **{f: body.get(f) for f in ("bill_id", "supplier_id", "supplier_ref", "bill_date", "due", "po_id", "lines", "tax_rate", "notes", "landed", "recost")})
 
 
 @router.get("/{bill_id}")
@@ -61,7 +61,8 @@ def bill(bill_id: str, k: Kitchen = Depends(payer)):
     return out
 
 
-ACTIONS = {"approve": (A.APPROVE_BILL, ("note",)), "pay": (A.RECORD_PAYMENT, ("amount", "date", "method", "reference")), "void": (A.VOID_BILL, ("reason",))}
+ACTIONS = {"approve": (A.APPROVE_BILL, ("note",)), "pay": (A.RECORD_PAYMENT, ("amount", "date", "method", "reference")), "void": (A.VOID_BILL, ("reason",)),
+           "return": (A.RETURN_GOODS, ("lines", "reason", "note", "location_id", "date"))}
 
 
 @router.post("/{bill_id}/{verb}")

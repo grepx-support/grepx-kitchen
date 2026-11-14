@@ -9,6 +9,7 @@ from . import void_bill
 from . import summary
 from . import monthly
 from . import prices
+from . import return_goods
 
 TABLE = "payables_requests"
 ROUTES = {
@@ -19,5 +20,6 @@ ROUTES = {
     PayablesAction.SUMMARY: summary.handle,
     PayablesAction.MONTHLY: monthly.handle,
     PayablesAction.PRICES: prices.handle,
+    PayablesAction.RETURN_GOODS: return_goods.handle,
 }
 handle = ActionDispatcher(ROUTES, PayablesAction, TABLE)

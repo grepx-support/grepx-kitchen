@@ -202,7 +202,7 @@ Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ n
 | Inventory counts (full / partial), reconcile | ✅ | closing counts, count sheets, stock adjust; posting to accounting ⬜ (with an accounting link) |
 | Multi-warehouse | ✅ | places of every kind |
 | Barcode scanning (receive, pick, count) | ✅ | warehouse screens |
-| Batch tracking with expiry, recalls | 🟡 | lots and expiry ✅ (warehouse-service); recall report "which customers got lot X" ⬜ |
+| Batch tracking with expiry, recalls | ✅ | lots and expiry; Warehouse → Recall traces a lot code through moves, dishes it went into, customers it was sold to, and what is left to pull (warehouse-service RECALL) |
 | Serial numbers | ⬜ | rarely needed for food; equipment register (asset-service, generic) if wanted |
 | Replenishment (min / max per item) and reorder prompts | ✅ | par levels, suggested orders |
 | Forecasting | ✅ | forecast-service |
@@ -215,15 +215,15 @@ Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ n
 | Quantity discounts (price breaks) | ✅ | billing-service price_breaks; repriced as the quantity changes |
 | **Purchasing** | | |
 | Suppliers with prices, currencies, lead times, performance | 🟡 | suppliers, price history ✅; lead time, supplier currency, on-time rate ⬜ (item- / purchase-service) |
-| Landed cost (duty, freight, labour on a purchase) | ⬜ | purchase-service: costs spread over the lines into the unit cost |
-| Recost a purchase when the bill arrives | 🟡 | bill matched to the order with price differences ✅; updating stock value ⬜ |
-| Supplier returns | ⬜ | purchase-service RETURN (stock out, credit expected) |
+| Landed cost (duty, freight, labour on a purchase) | ✅ | payables-service: landed costs on a bill spread by value / qty / weight into each line's real unit cost |
+| Recost a purchase when the bill arrives | ✅ | approving a bill sets each item's cost to its real (landed) unit cost (item-service SET_COSTS, with cost history) |
+| Supplier returns | ✅ | payables-service RETURN_GOODS: credited on the bill (refund due once paid), stock-service RETURN takes it out of stock |
 | Partial receipts against an order | ✅ | |
 | **Production** | | |
 | Bill of materials (recipes) drawing down stock | ✅ | recipes, kitchen production |
 | Assemblies / what can be made from stock | 🟡 | production plan ✅; "can make N from stock now" ⬜ (planning-service) |
-| Disassembly (whole chicken → cuts, cost split) | ⬜ | planning-service BREAK_DOWN with yields |
-| Kits / bundles (combo meals) | ⬜ | item-service: a sold item made of others, stock taken on sale |
+| Disassembly (whole chicken → cuts, cost split) | ✅ | item "Breaks into"; Stock → Break down (stock-service BREAK_DOWN; lots follow) |
+| Kits / bundles (combo meals) | ✅ | item "Combo of"; selling a combo takes its parts out of stock |
 | Kanban planner | ✅ | order, delivery and production boards |
 | **General** | | |
 | Reports, dashboards | ✅ | costs, money, stock, dashboards |
@@ -237,5 +237,5 @@ Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ n
 | Accounting (Xero / QuickBooks) | ⬜ | integration-service: invoices, bills, payments out |
 | E-commerce / delivery apps (Shopify, Grab, Swiggy...) | ⬜ | integration-service: orders in, stock out |
 
-**Suggested next, in order:** ~~(1) customer price lists, quantity breaks and charge lines~~ done; (2) landed cost and recosting on the bill; (3) supplier returns; (4) disassembly and combo items; (5) attachments on any record; (6) recall report by lot; (7) API keys; (8) accounting link.
+**Suggested next, in order:** ~~(1) customer price lists, quantity breaks and charge lines~~ done; ~~(2) landed cost; (3) supplier returns; (4) disassembly and combos~~ done; (5) attachments on any record; ~~(6) recall~~ done; (7) API keys; (8) accounting link.
 

@@ -815,6 +815,7 @@
       "OVERHEADS",
       "SET_OVERHEAD",
       "SHARE_OVERHEAD",
+      "SUMMARIES",
       "SUMMARY"
     ],
     "reasons": [],
@@ -899,7 +900,8 @@
       "SAVE_ITEM",
       "SAVE_RECIPE",
       "SAVE_RECIPE_CARD",
-      "SAVE_SUPPLIER"
+      "SAVE_SUPPLIER",
+      "SET_COSTS"
     ],
     "reasons": [],
     "other_tables": [],
@@ -909,7 +911,8 @@
       "save_item",
       "save_recipe",
       "save_recipe_card",
-      "save_supplier"
+      "save_supplier",
+      "set_costs"
     ],
     "reacts_to": []
   },
@@ -924,6 +927,7 @@
       "MONTHLY",
       "PRICES",
       "RECORD_PAYMENT",
+      "RETURN_GOODS",
       "SAVE_BILL",
       "SUMMARY",
       "VOID_BILL"
@@ -937,6 +941,7 @@
       "price_alert",
       "prices",
       "record_payment",
+      "return_goods",
       "save_bill",
       "summary",
       "void_bill"
@@ -1005,10 +1010,12 @@
     "request_table": "stock_requests",
     "actions": [
       "ADJUST",
+      "BREAK_DOWN",
       "COUNT",
       "DELIVERED",
       "PRODUCE",
       "RECEIVE",
+      "RETURN",
       "SELL",
       "SEND",
       "TRANSFER",
@@ -1020,10 +1027,12 @@
     "summary": "Stock of every item at every location and the movement history behind it (receive, warehouse out, transfer, production, ingredient use, adjustment with reason, count). Every change records who, when, why and the unit cost; history is append-only. Keywords: inventory, stock level, ledger, transfer, adjustment, stocktake, count",
     "routes": [
       "adjust",
+      "break_down",
       "count",
       "delivered",
       "produce",
       "receive",
+      "return_goods",
       "sell",
       "send",
       "transfer",
@@ -1048,6 +1057,7 @@
       "create_pick",
       "move_lot",
       "pick",
+      "recall",
       "save_bin"
     ],
     "reacts_to": []

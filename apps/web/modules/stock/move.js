@@ -11,14 +11,16 @@ import { biz, has } from "../lib/business.js";
 import { catalogue } from "../lib/items.js";
 import { picker } from "../lib/place.js";
 import { REASONS } from "../lib/waste.js";
+import { breakdownCard, wireBreakdown } from "./breakdown.js";
 import { frame } from "./common.js";
 
 export async function move(el) {
   const [b, items] = await Promise.all([biz(), catalogue()]);
   const first = b.locations[0]?.id || "", second = b.locations[1]?.id || first;
-  const body = frame(el, "move", { title: "Transfer & adjust", subtitle: "Move stock between stores, or correct a counting error." });
+  const body = frame(el, "move", { title: "Transfer & adjust", subtitle: "Move stock between stores, break bulk into parts, throw away, or correct a count." });
   body.innerHTML = String(html`<section class="card accent"><h2>${icon("swap")} Move stock</h2><div class="k-bar">${picker(b.locations, first, () => true, "from", "From")}
       ${picker(b.locations, second, () => true, "to", "To")}<button class="btn primary" data-move>Transfer</button></div><div class="t"></div></section>
+    ${breakdownCard(b, items, first)}
     ${canWaste() ? html`<section class="card accent k-section" style="--area:#f97316"><h2>${icon("x")} Throw away</h2>
       <p class="muted">Expired, spoiled or damaged stock leaves the store here; it counts in the cost of goods and in the waste report.</p>
       <div class="k-bar">${picker(b.locations, first, () => true, "wat", "At")}<label>Why<select name="reason">${REASONS.map(([v, t]) => html`<option value="${v}">${t}</option>`)}</select></label>
@@ -32,6 +34,7 @@ export async function move(el) {
   if (wasted) wasted.mount(body.querySelector(".w"));
   const adjust = has("adjust_stock") ? new Builder({ items, title: "Items", label: "Correct qty", empty: "Drag in the item to correct" }) : null;
   if (adjust) adjust.mount(body.querySelector(".a"));
+  wireBreakdown(body, items, () => move(el));
   const val = (name) => body.querySelector(`[name="${name}"]`).value;
   body.querySelector("[data-move]").onclick = async () => {
     const lines = transfer.lines();

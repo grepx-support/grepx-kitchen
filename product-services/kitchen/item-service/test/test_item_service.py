@@ -107,3 +107,11 @@ def test_recipe_card_allergens_and_veg_marks(h):
     items = {paneer["item_id"]: paneer, egg["item_id"]: egg}
     assert dish_marks(lines, items) == {"allergens": ["eggs", "milk"], "diet": "egg"}
     assert dish_marks(lines + [{"item_id": "unmarked"}], items)["diet"] == ""
+
+
+def test_set_costs_keeps_history():
+    from domain.costs import recost
+    item = {"cost": 10}
+    assert recost(item, "10", "x", "t") is item
+    new = recost(item, "12.5", "Bill HM-1", "2026-11-14")
+    assert new["cost"] == 12.5 and new["cost_history"][0] == {"cost": 12.5, "was": 10.0, "source": "Bill HM-1", "at": "2026-11-14"}

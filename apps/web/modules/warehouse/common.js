@@ -15,7 +15,8 @@ export function frame(el, current, b, place, subtitle) {
     ${tabs([{ id: "lots", label: "Lots & expiry", icon: "clock", href: `#/warehouse?location=${place}` },
       { id: "bins", label: "Bins", icon: "layout", href: `#/warehouse/bins?location=${place}` },
       { id: "picks", label: "Pick lists", icon: "list", href: `#/warehouse/picks?location=${place}` },
-      { id: "3d", label: "3D view", icon: "cube", href: `#/warehouse/3d?location=${place}` }], current)}<div class="k-body"></div>`);
+      { id: "3d", label: "3D view", icon: "cube", href: `#/warehouse/3d?location=${place}` },
+      { id: "recall", label: "Recall", icon: "alert", href: `#/warehouse/recall?location=${place}` }], current)}<div class="k-body"></div>`);
   return el.querySelector(".k-body");
 }
 

@@ -6,11 +6,13 @@
 from grepx_service import ActionDispatcher
 
 from dto import StockAction
-from . import adjust, count, delivered, produce, receive, sell, send, transfer, use, waste
+from . import adjust, break_down, count, delivered, produce, receive, return_goods, sell, send, transfer, use, waste
 
 TABLE = "stock_requests"
 ROUTES = {
     StockAction.RECEIVE: receive.handle,
+    StockAction.RETURN: return_goods.handle,
+    StockAction.BREAK_DOWN: break_down.handle,
     StockAction.SEND: send.handle,
     StockAction.TRANSFER: transfer.handle,
     StockAction.PRODUCE: produce.handle,

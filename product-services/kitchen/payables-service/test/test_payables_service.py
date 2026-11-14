@@ -126,3 +126,39 @@ def test_price_history_and_jumps_tell_the_owner(h):
     view = call(h, action="PRICES", item_id="beef", days=3650).fields
     assert [p["price"] for p in view["points"]] == [1200, 1380] and view["rises"][0]["jump"] and view["jump_pct"] == 10
     assert changes([{"item_id": "beef", "unit_price": 1380}], "veg", "2026-11-12", "x", [], 10) == []    # another supplier: no history
+
+
+def test_landed_cost_spreads_and_recosts(h):
+    from domain.landed import clean_costs, share
+    assert share(100, [1, 1, 1]) == [34, 33, 33] or sum(share(100, [1, 1, 1])) == 100
+    assert clean_costs([{"kind": "duty", "amount": "5"}])[0] == {"kind": "duty", "amount": 500, "spread": "value", "on_bill": True, "note": ""}
+    saved = bill(h, landed=[{"kind": "freight", "amount": "20", "spread": "qty"}, {"kind": "duty", "amount": "10.30", "on_bill": False}])
+    assert saved.ok, saved.reason
+    b = saved.fields["bill"]
+    beef, pork = b["lines"]
+    # freight 2000 by qty 8:5 -> 1231 / 769; duty 1030 by value 9600:4500 -> 701 / 329
+    assert (beef["landed"], pork["landed"]) == (1231 + 701, 769 + 329)
+    assert beef["landed_unit"] == "1441.50" and b["landed_total"] == 3030 and b["total"] == 15369 + 2000
+    assert call(h, action="SAVE_BILL", supplier_id="meat", supplier_ref="X1", lines=[{"item_id": "beef", "qty": 1, "unit_price": 1}],
+                landed=[{"kind": "bribe", "amount": 1}]).reason == "INVALID_LANDED_COST"
+    ok = call(h, action="APPROVE_BILL", bill_id=saved.fields["bill_id"])
+    assert ok.fields["recosted"] == {"beef": "14.415", "pork": "11.196"}
+    sent = [r for r in h.rows("item_requests")]
+    assert sent and sent[-1]["costs"]["beef"] == "14.415"
+
+
+def test_returns_credit_the_bill_and_leave_stock(h):
+    saved = bill(h)
+    key = saved.fields["bill_id"]
+    assert call(h, action="RETURN_GOODS", bill_id=key, reason="damaged", lines=[{"item_id": "beef", "qty": 9}]).reason == "MORE_THAN_BILLED"
+    assert call(h, action="RETURN_GOODS", bill_id=key, reason="meh", lines=[{"item_id": "beef", "qty": 1}]).reason == "INVALID_REASON"
+    r = call(h, action="RETURN_GOODS", bill_id=key, reason="damaged", location_id="wh", lines=[{"item_id": "beef", "qty": 2}])
+    assert r.ok, r.reason
+    b = r.fields["bill"]
+    assert (r.fields["return"]["credit"], b["credited"]) == (2616, 2616)       # 2 x 12.00 + 9 % tax
+    assert h.rows("stock_requests")[-1]["action"] == "RETURN"
+    assert call(h, action="RETURN_GOODS", bill_id=key, reason="damaged", lines=[{"item_id": "beef", "qty": 6.5}]).reason == "MORE_THAN_BILLED"
+    call(h, action="APPROVE_BILL", bill_id=key)
+    assert call(h, action="RECORD_PAYMENT", bill_id=key, amount="127.53", date="2026-11-20").fields["bill"]["state"] == "paid"
+    back = call(h, action="RETURN_GOODS", bill_id=key, reason="quality", lines=[{"item_id": "pork", "qty": 1}]).fields["bill"]
+    assert back["refund_due"] == 981

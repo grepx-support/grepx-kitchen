@@ -13,6 +13,7 @@ class WarehouseAction(str, Enum):
     PICK = "PICK"                    # how much of a line was picked
     COMPLETE_PICK = "COMPLETE_PICK"  # picked -> warehouse-out (stock-service SEND)
     CANCEL_PICK = "CANCEL_PICK"
+    RECALL = "RECALL"                # a lot id or code: where it all went, what is left to pull, what it was made from
 
 
 class Table(str, Enum):

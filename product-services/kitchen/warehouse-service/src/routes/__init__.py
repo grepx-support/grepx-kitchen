@@ -6,7 +6,7 @@
 from grepx_service import ActionDispatcher
 
 from dto import WarehouseAction
-from . import cancel_pick, complete_pick, create_pick, move_lot, pick, save_bin
+from . import cancel_pick, complete_pick, create_pick, move_lot, pick, recall, save_bin
 
 TABLE = "warehouse_requests"
 ROUTES = {
@@ -16,5 +16,6 @@ ROUTES = {
     WarehouseAction.PICK: pick.handle,
     WarehouseAction.COMPLETE_PICK: complete_pick.handle,
     WarehouseAction.CANCEL_PICK: cancel_pick.handle,
+    WarehouseAction.RECALL: recall.handle,
 }
 handle = ActionDispatcher(ROUTES, WarehouseAction, TABLE)

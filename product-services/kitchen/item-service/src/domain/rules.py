@@ -31,6 +31,9 @@ def quantity(value, reason: str = "INVALID_QUANTITY", allow_zero: bool = False) 
     return int(number) if number.is_integer() else number
 
 
+from .parts import clean_parts  # noqa: E402
+
+
 def clean_item(raw: dict, current: dict | None = None) -> dict:
     merged = {**(current or {}), **{k: v for k, v in raw.items() if v is not None}}
     kind = str(merged.get("kind") or "").lower()
@@ -48,6 +51,8 @@ def clean_item(raw: dict, current: dict | None = None) -> dict:
             "barcode": "".join(str(merged.get("barcode") or "").split())[:40],   # scanned on the warehouse screens
             "allergens": allergens(merged.get("allergens")), "diet": diet(merged.get("diet")),   # dishes carry them (domain/chef.py)
             "image_id": image_id(merged.get("image_id")),                         # its picture (media-service), "" for none
+            "components": clean_parts(merged.get("components"), str(merged.get("item_id") or "")),    # a combo: selling it takes these
+            "breaks_into": clean_parts(merged.get("breaks_into"), str(merged.get("item_id") or "")),  # one unit gives these
             **({"sort": merged["sort"]} if isinstance(merged.get("sort"), int) else {})}   # listing order (REORDER)
 
 

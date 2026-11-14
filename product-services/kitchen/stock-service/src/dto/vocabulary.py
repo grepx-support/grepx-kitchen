@@ -24,6 +24,8 @@ class MovementKind(str, Enum):
     COUNT = "count"                  # counted at closing: replaces system stock, difference kept (Q6)
     WASTE = "waste"                  # thrown away (expired, spoiled, damaged...) with its reason - part of the cost of goods
     SALE = "sale"                    # sold to a customer on an invoice (billing-service) - part of the cost of goods
+    RETURN = "return"                # sent back to the supplier, who credits it - not a cost of goods
+    BREAK_DOWN = "break_down"        # bulk broken into its parts (out) and the parts (in) - value moves, not a cost of goods
 
 
 class WasteReason(str, Enum):
@@ -44,6 +46,8 @@ class ReasonCode(str, Enum):
     UNKNOWN_BUSINESS = "UNKNOWN_BUSINESS"
     UNKNOWN_LOCATION = "UNKNOWN_LOCATION"
     UNKNOWN_ITEM = "UNKNOWN_ITEM"
+    ONE_ITEM_ONLY = "ONE_ITEM_ONLY"
+    NOTHING_TO_BREAK_INTO = "NOTHING_TO_BREAK_INTO"
     NO_LINES = "NO_LINES"
     INVALID_QUANTITY = "INVALID_QUANTITY"
     SAME_LOCATION = "SAME_LOCATION"

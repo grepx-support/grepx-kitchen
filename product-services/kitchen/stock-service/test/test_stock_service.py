@@ -113,3 +113,12 @@ def test_a_sale_on_an_invoice_leaves_stock_with_the_invoice(h):
                 lines=[{"item_id": "birria", "qty": 4}])
     move = [m for m in h.rows("stock_movements") if m["kind"] == "sale"][0]
     assert done.ok and qty(h, "s1", "birria") == 6 and (move["invoice_number"], move["value"]) == ("INV-2026-0001", -24)
+
+
+def test_combos_expand_and_items_break_down():
+    from domain.parts import break_down, expand
+    items = {"box": {"components": [{"item_id": "rice", "qty": "1"}, {"item_id": "curry", "qty": "0.5"}]}, "rice": {}}
+    assert expand([{"item_id": "box", "qty": 4}, {"item_id": "rice", "qty": 1}], items) == [{"item_id": "rice", "qty": 5}, {"item_id": "curry", "qty": 2.0}]
+    chicken = {"breaks_into": [{"item_id": "breast", "qty": "2"}, {"item_id": "wing", "qty": "2"}]}
+    assert break_down(chicken, 3) == [{"item_id": "breast", "qty": 6.0}, {"item_id": "wing", "qty": 6.0}]
+    assert break_down(chicken, 3, [{"item_id": "breast", "qty": 5}]) == [{"item_id": "breast", "qty": 5.0}]

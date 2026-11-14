@@ -9,7 +9,7 @@ from domain import clean_item
 from dto import ReasonCode, Table
 from .common import guard, mine
 
-FIELDS = ("name", "kind", "unit", "cost", "price", "supplier_id", "active", "category", "shelf_life_days", "barcode", "allergens", "diet", "image_id")
+FIELDS = ("name", "kind", "unit", "cost", "price", "supplier_id", "active", "category", "shelf_life_days", "barcode", "allergens", "diet", "image_id", "components", "breaks_into")
 
 
 def handle(ctx: RequestContext) -> None:
@@ -21,9 +21,12 @@ def handle(ctx: RequestContext) -> None:
     if item_id and current is None:
         return ctx.reject(ReasonCode.UNKNOWN_ITEM)
     try:
-        row = clean_item({k: ctx.get(k) for k in FIELDS if ctx.get(k) is not None}, current)
+        row = clean_item({"item_id": item_id, **{k: ctx.get(k) for k in FIELDS if ctx.get(k) is not None}}, current)
     except ValueError as exc:
         return ctx.reject(str(exc))
+    ids = {r["_key"] for r in ctx.read.accepted(Table.ITEMS.value, tenant_id=tenant)}
+    if any(p["item_id"] not in ids for p in [*row["components"], *row["breaks_into"]]):
+        return ctx.reject(ReasonCode.UNKNOWN_ITEM)
     if row["supplier_id"] and mine(ctx, Table.SUPPLIERS.value, row["supplier_id"], tenant) is None:
         return ctx.reject(ReasonCode.UNKNOWN_SUPPLIER)
     item_id = item_id or new_key()[:12]

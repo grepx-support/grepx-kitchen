@@ -9,6 +9,7 @@ import { bins } from "./warehouse/bins.js";
 import { lots } from "./warehouse/lots.js";
 import { pickScreen } from "./warehouse/pick.js";
 import { picks } from "./warehouse/picks.js";
+import { recall } from "./warehouse/recall.js";
 import { view3d } from "./warehouse/view3d.js";
 import { biz } from "./lib/business.js";
 import { isHolding, remembered } from "./lib/place.js";
@@ -26,6 +27,7 @@ export const routes = [
   { path: "/warehouse", feature: "warehouse", nav: "Warehouse floor", key: "w", icon: "layout", perm: "warehouse_in", ...FLOOR, render: withPlace(lots) },
   { path: "/warehouse/bins", feature: "warehouse", perm: "warehouse_in", ...FLOOR, render: withPlace(bins) },
   { path: "/warehouse/picks", feature: "warehouse", perm: "warehouse_out", ...FLOOR, render: withPlace(picks) },
+  { path: "/warehouse/recall", feature: "warehouse", perm: "warehouse_in", ...FLOOR, keywords: "recall trace lot batch customer food safety", render: withPlace(recall) },
   { path: "/warehouse/3d", feature: "warehouse", perm: "warehouse_in", ...FLOOR, render: withPlace(view3d) },
   { path: "/warehouse/pick/:id", feature: "warehouse", perm: "warehouse_out", ...FLOOR, render: (el, { args }) => pickScreen(el, args[0]) },
 ];

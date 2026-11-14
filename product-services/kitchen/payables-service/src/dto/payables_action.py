@@ -13,4 +13,5 @@ class PayablesAction(str, Enum):
     VOID_BILL = "VOID_BILL"
     SUMMARY = "SUMMARY"
     MONTHLY = "MONTHLY"
+    RETURN_GOODS = "RETURN_GOODS"      # send goods on a bill back to the supplier: credited, and out of stock
     PRICES = "PRICES"                  # price history per supplier and item, and the recent rises (jumps first)

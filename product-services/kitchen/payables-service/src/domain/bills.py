@@ -33,7 +33,8 @@ def is_duplicate(supplier_id: str, supplier_ref: str, others: list[dict], own_ke
 
 
 def balance(bill: dict) -> int:
-    return bill.get("total", 0) - bill.get("paid", 0)
+    """Still to pay: total less payments and supplier credits (returns)."""
+    return bill.get("total", 0) - bill.get("paid", 0) - bill.get("credited", 0)
 
 
 def approve(bill: dict, note: str, by: str) -> dict:

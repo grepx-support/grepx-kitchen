@@ -631,3 +631,19 @@
 /* Price lists, charge lines */
 .pl-chip { display: inline-flex; gap: 6px; align-items: center; padding: 2px 8px; margin: 2px; border-radius: 999px; background: color-mix(in srgb, var(--area) 12%, transparent); font-size: 12px; }
 .m-charge td:first-child { border-left: 3px solid #f59e0b; } .m-src { display: block; color: #0d9488; font-size: 11px; }
+
+/* Recall tree */
+.rc-tree { list-style: none; padding: 0; margin: 0; }
+.rc-node { margin-left: calc(var(--depth, 0) * 28px); position: relative; padding: 6px 0 6px 18px; border-left: 2px solid color-mix(in srgb, var(--area) 40%, transparent); }
+.rc-node::before { content: ""; position: absolute; left: -2px; top: 22px; width: 14px; border-top: 2px solid color-mix(in srgb, var(--area) 40%, transparent); }
+.rc-card { padding: 10px 12px; border-radius: 10px; background: var(--surface, #fff); box-shadow: 0 1px 3px rgb(0 0 0 / .08); }
+.rc-node.open .rc-card { border-left: 4px solid #dc2626; }
+.rc-uses { margin: 6px 0 0; padding-left: 16px; font-size: 13px; } .rc-list li { padding: 4px 0; }
+@media print { .k-side, .kit-tabs, form[data-find], .page-head .actions { display: none !important; } }
+
+/* Break down */
+.bd-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.bd-chip { display: inline-flex; gap: 6px; align-items: center; padding: 6px 10px; border-radius: 12px; background: color-mix(in srgb, #8b5cf6 12%, transparent); }
+.bd-chip.src { background: #8b5cf6; color: #fff; font-weight: 600; } .bd-chip input { width: 80px; }
+fieldset.pt { border: 1px dashed color-mix(in srgb, var(--area) 45%, transparent); border-radius: 12px; padding: 10px 12px; }
+fieldset.pt legend { font-weight: 600; padding: 0 6px; } .pt-row select { min-width: 180px; } .pt-row input { width: 90px; }

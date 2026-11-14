@@ -108,3 +108,33 @@ def test_following_an_accepted_stock_change_happens_once(h):
     assert follow_stock(app, row, cfg) == "skipped"
     lots = h.rows("lots")
     assert len(lots) == 1 and (lots[0]["qty"], lots[0]["expiry"]) == (4, "2026-11-16")
+
+
+def test_recall_follows_a_lot_to_places_dishes_and_customers():
+    from domain.recall import start, trace
+    items = {"beef": {"cost": 12}, "stew": {"cost": 5}}
+    got = follow("rcv", {"tenant_id": "hft", "supplier_id": "meat", "lines": [{"item_id": "beef", "qty": 10, "lot_code": "B-77"}]},
+                 [{"location_id": "wh", "item_id": "beef", "kind": "receive", "qty": 10}], {}, items, "2026-11-01")
+    lots = {l["lot_id"]: l for l in got}
+    sent = follow("snd", {"tenant_id": "hft", "to_location_id": "k"}, [{"location_id": "wh", "item_id": "beef", "kind": "send_out", "qty": -6},
+                                                                      {"location_id": "k", "item_id": "beef", "kind": "send_in", "qty": 6}],
+                  {("wh", "beef"): list(lots.values())}, items, "2026-11-02")
+    lots.update({l["lot_id"]: l for l in sent})
+    kitchen = [l for l in lots.values() if l["location_id"] == "k"]
+    assert kitchen[0]["parent"] == "rcv-0" and kitchen[0]["supplier_id"] == "meat"
+    cooked = follow("mk", {"tenant_id": "hft"}, [{"location_id": "k", "item_id": "beef", "kind": "use", "qty": -4},
+                                                 {"location_id": "k", "item_id": "stew", "kind": "produce", "qty": 8}],
+                    {("k", "beef"): kitchen}, items, "2026-11-03")
+    lots.update({l["lot_id"]: l for l in cooked})
+    stew = next(l for l in lots.values() if l["item_id"] == "stew")
+    assert stew["made_from"] == [kitchen[0]["lot_id"]]
+    sold = follow("inv", {"tenant_id": "hft", "customer_name": "Office Co", "invoice_number": "INV-1"},
+                  [{"location_id": "k", "item_id": "stew", "kind": "sale", "qty": -3}], {("k", "stew"): [stew]}, items, "2026-11-04")
+    lots.update({l["lot_id"]: l for l in sold})
+    all_lots = list(lots.values())
+    r = trace(start(all_lots, " b-77 "), all_lots)
+    assert r["customers"] == [{"customer_id": "", "name": "Office Co", "qty": 3.0, "invoices": ["INV-1"]}]
+    assert {(l["item_id"], l["location_id"], l["qty"]) for l in r["on_hand"]} == {("beef", "wh", 4), ("beef", "k", 2), ("stew", "k", 5)}
+    assert [l["how"] for l in r["lots"]] == ["start", "start", "made into"]     # the code is on both places' lots
+    back = trace(start(all_lots, stew["lot_id"]), all_lots)
+    assert back["made_from"][0]["lot_code"] == "B-77"

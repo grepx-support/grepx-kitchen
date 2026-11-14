@@ -83,3 +83,31 @@ def finish_pick(pick_id: str, verb: str, k: Kitchen = Depends(PICKER)):
         from grepx_bff.errors import ApiError
         raise ApiError("NOT_FOUND", 404)
     return cmd(k, {"action": action, "pick_id": pick_id})["pick"]
+
+
+@router.get("/recall")
+def recall(code: str, k: Kitchen = Depends(FLOOR)):
+    """A lot id or lot code: where every unit went, what to pull from the shelves, customers to call, what it was made from.
+    Names filled in for the screen."""
+    r = cmd(k, {"action": gc.warehouse.WarehouseAction.RECALL.value, "code": code})["recall"]
+    items = k.items()
+    places = {p["_key"]: p.get("name", "") for p in k.rows(gc.business.LOCATIONS)}
+    suppliers = {s["_key"]: s.get("name", "") for s in k.rows(gc.item.SUPPLIERS)}
+
+    def name(row: dict) -> dict:
+        return {**row, "item_name": (items.get(row.get("item_id")) or {}).get("name", row.get("item_id", "")), "unit": (items.get(row.get("item_id")) or {}).get("unit", ""),
+                "place": places.get(row.get("location_id"), ""), "to_place": places.get(row.get("to_location_id"), ""),
+                "supplier": suppliers.get(row.get("supplier_id"), "")}
+    return {**r, **{key: [name(x) for x in rows] for key, rows in r.items() if isinstance(rows, list) and all("item_id" in x for x in rows)}}
+
+
+@router.get("/lot-codes")
+def lot_codes(k: Kitchen = Depends(FLOOR)):
+    """Every lot code seen, newest first (to pick from when starting a recall)."""
+    items = k.items()
+    seen: dict[str, dict] = {}
+    for lot in sorted(k.rows(gc.warehouse.LOTS), key=lambda l: l.get("received", ""), reverse=True):
+        code = lot.get("lot_code")
+        if code and code not in seen:
+            seen[code] = {"code": code, "item_name": (items.get(lot.get("item_id")) or {}).get("name", ""), "received": lot.get("received", "")}
+    return {"codes": list(seen.values())[:300]}

@@ -37,7 +37,8 @@ def items(k: Kitchen = Depends(allow())):
     rows = [r for r in k.rows(gc.item.ITEMS) if r.get("active", True)]
     return {"items": [{"id": r["_key"], "name": r.get("name", ""), "unit": r.get("unit", ""), "kind": r.get("kind", ""),
                        "category": r.get("category", ""), "barcode": r.get("barcode", ""), "price": r.get("price") or 0,
-                       "shelf_life_days": r.get("shelf_life_days")} for r in listed(rows, "name")]}
+                       "shelf_life_days": r.get("shelf_life_days"), "components": r.get("components") or [],
+                       "breaks_into": r.get("breaks_into") or []} for r in listed(rows, "name")]}
 
 
 @router.get("/movements")
@@ -86,6 +87,13 @@ def waste(body: dict, k: Kitchen = Depends(allow("adjust_stock", "warehouse_in",
     """Thrown away, with the reason (expired, spoiled, damaged, overproduced, other) - counts in the cost of goods."""
     return k.cmd(gc.stock.REQUESTS, gc.stock.SERVICE, {"action": "WASTE", "location_id": body.get("location_id"), "lines": lines(body),
                                                        "reason": body.get("reason", ""), "note": body.get("note", "")})
+
+
+@router.post("/break-down")
+def break_down(body: dict, k: Kitchen = Depends(allow("adjust_stock", "warehouse_in", "kitchen", module=INV))):
+    """Bulk into its parts at one place (a whole chicken into cuts); outputs: what really came out (else the item's own split)."""
+    return k.cmd(gc.stock.REQUESTS, gc.stock.SERVICE, {"action": gc.stock.StockAction.BREAK_DOWN.value, "location_id": body.get("location_id"),
+                                                       "lines": lines(body), "outputs": body.get("outputs"), "note": body.get("note", "")})
 
 
 @router.post("/transfer")

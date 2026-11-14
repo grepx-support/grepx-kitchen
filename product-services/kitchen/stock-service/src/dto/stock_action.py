@@ -16,4 +16,6 @@ class StockAction(str, Enum):
     COUNT = "COUNT"
     DELIVERED = "DELIVERED"      # the destination confirms a warehouse-out delivery arrived
     WASTE = "WASTE"              # thrown away with a reason (expired, spoiled, damaged, overproduced, other)
+    RETURN = "RETURN"            # goods sent back to the supplier (credited on their bill)
+    BREAK_DOWN = "BREAK_DOWN"    # bulk into its parts (a whole chicken into cuts) at one location
     SELL = "SELL"                # goods on an issued customer invoice leave the location they are sent from

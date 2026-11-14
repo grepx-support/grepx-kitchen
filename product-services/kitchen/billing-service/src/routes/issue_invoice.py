@@ -26,7 +26,8 @@ def take_from_stock(ctx, books, inv: dict) -> None:
     if inv.get("location_id") and lines:
         ctx.request(gc.stock.REQUESTS, f"inv-{inv['invoice_id']}",
                     {"action": gc.stock.StockAction.SELL.value, "tenant_id": books.tenant, "location_id": inv["location_id"], "lines": lines,
-                     "invoice_id": inv["invoice_id"], "invoice_number": inv["number"], "note": f"Invoice {inv['number']}",
+                     "invoice_id": inv["invoice_id"], "invoice_number": inv["number"], "customer_id": inv.get("customer_id", ""), "customer_name": inv.get("customer_name", ""),
+                     "note": f"Invoice {inv['number']}",
                      "actor_id": ctx.text("actor_id"), "actor_name": ctx.text("actor_name")}, gc.stock.SERVICE)
 
 

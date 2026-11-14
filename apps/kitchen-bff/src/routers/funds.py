@@ -29,13 +29,21 @@ def months_back(n: int) -> list[str]:
     return list(reversed(last_months(n - 1))) + [date.today().isoformat()[:7]]
 
 
+def summaries(k: Kitchen, location_ids: list[str], months: list[str]) -> dict[str, dict[str, dict]]:
+    """{location_id: {month: costing summary}} in one request (not one per place and month)."""
+    if not location_ids:
+        return {}
+    return k.cmd(gc.costing.REQUESTS, gc.costing.SERVICE, {"action": "SUMMARIES", "months": months, "location_ids": location_ids})["summaries"]
+
+
 def spending(k: Kitchen, purposes: set[str], n: int = 6) -> dict[str, list[dict]]:
     """Each use that is one of the business's places: its costs per month and category (minor units), last n months."""
     places = {r.get("name", ""): r["_key"] for r in k.rows(gc.business.LOCATIONS)}
+    used = sorted(purposes & set(places))
+    grid = summaries(k, [places[p] for p in used], months_back(n))
     out: dict[str, list[dict]] = {}
-    for purpose in purposes & set(places):
-        for m in months_back(n):
-            s = k.cmd(gc.costing.REQUESTS, gc.costing.SERVICE, {"action": "SUMMARY", "month": m, "location_id": places[purpose]})["summary"]
+    for purpose in used:
+        for m, s in grid.get(places[purpose], {}).items():
             out.setdefault(purpose, []).extend({"month": m, "category": label, "amount": round(float(s.get(f) or 0) * 100)}
                                                for f, label in CATEGORIES if s.get(f))
     return out
@@ -67,14 +75,12 @@ def actual_ebitda(k: Kitchen, fund_id: str) -> dict[str, list[float]]:
     plan = (k.one(gc.fund.FUNDS, fund_id) or {}).get("plan") or {}
     places = {r.get("name", ""): r["_key"] for r in k.rows(gc.business.LOCATIONS)}
     out: dict[str, list[float]] = {}
-    for use in plan.get("uses") or []:
-        loc = places.get(use.get("purpose", ""))
-        if not loc:
-            continue
-        for m in last_months():
-            s = k.cmd(gc.costing.REQUESTS, gc.costing.SERVICE, {"action": "SUMMARY", "month": m, "location_id": loc})["summary"]
+    uses = [(u["purpose"], places[u["purpose"]]) for u in plan.get("uses") or [] if places.get(u.get("purpose", ""))]
+    grid = summaries(k, sorted({loc for _, loc in uses}), last_months())
+    for purpose, loc in uses:
+        for s in grid.get(loc, {}).values():
             if s.get("sales") and s.get("net_profit") is not None:
-                out.setdefault(use["purpose"], []).append(float(s["net_profit"]))
+                out.setdefault(purpose, []).append(float(s["net_profit"]))
     return out
 
 

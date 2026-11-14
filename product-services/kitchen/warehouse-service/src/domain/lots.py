@@ -18,6 +18,14 @@ from datetime import date, timedelta
 
 PAIRED = {"send_in": "send_out", "transfer_in": "transfer_out"}
 NO_DATE = "9999-12-31"
+USES_KEPT = 200
+WHERE = ("ref", "note", "to_location_id", "customer_id", "customer_name", "invoice_number", "trip_id")
+
+
+def use_of(request_key: str, fields: dict, change: dict, qty: float, day: str) -> dict:
+    """Where part of a lot went: the request, the kind of move and who / where it went to (kept on the lot for recalls)."""
+    return {"request": request_key, "kind": change.get("kind", ""), "qty": qty, "date": day, "location_id": change["location_id"],
+            **{k: str(fields[k]) for k in WHERE if fields.get(k)}}
 
 
 def order(lot: dict) -> tuple:
@@ -51,31 +59,37 @@ def follow(request_key: str, fields: dict, changes: list[dict], lots: dict[tuple
     lines = {str(l.get("item_id")): l for l in fields.get("lines") or [] if isinstance(l, dict)}
     touched: dict[str, dict] = {}
     carried: dict[str, list[tuple[dict, float]]] = {}
+    consumed: list[str] = []                                     # lots used up here (ingredients of what this request made)
     for c in changes:                                            # what left, first expiry first
         if c["qty"] >= 0:
             continue
         here = [touched.get(l["lot_id"], l) for l in lots.get((c["location_id"], c["item_id"]), [])]
         parts, _ = take(here, -c["qty"], str(lines.get(c["item_id"], {}).get("lot_id") or ""))
         for lot, n in parts:
-            touched[lot["lot_id"]] = {**lot, "qty": round(lot["qty"] - n, 4)}
+            uses = [use_of(request_key, fields, c, n, day), *(lot.get("uses") or [])][:USES_KEPT]
+            touched[lot["lot_id"]] = {**lot, "qty": round(lot["qty"] - n, 4), "uses": uses}
+            if c.get("kind") not in PAIRED.values():
+                consumed.append(lot["lot_id"])
         if c.get("kind") in PAIRED.values():
             carried[c["item_id"]] = parts
     new = []
     for n, c in enumerate(ch for ch in changes if ch["qty"] > 0):
         line, base = lines.get(c["item_id"], {}), {"tenant_id": fields.get("tenant_id", ""), "location_id": c["location_id"],
-                                                   "item_id": c["item_id"], "received": day, "source": request_key, "bin_id": ""}
+                                                   "item_id": c["item_id"], "received": day, "source": request_key, "bin_id": "",
+                                                   "supplier_id": str(fields.get("supplier_id") or ""), "uses": []}
         if c.get("kind") in PAIRED:
             left = c["qty"]
             for m, (lot, qty) in enumerate(carried.get(c["item_id"], [])):
-                new.append({**base, "lot_id": f"{request_key}-{n}-{m}", "qty": qty, "expiry": lot.get("expiry"),
-                            "lot_code": lot.get("lot_code", ""), "unit_cost": lot.get("unit_cost")})
+                new.append({**base, "lot_id": f"{request_key}-{n}-{m}", "qty": qty, "expiry": lot.get("expiry"), "parent": lot["lot_id"],
+                            "lot_code": lot.get("lot_code", ""), "unit_cost": lot.get("unit_cost"), "supplier_id": lot.get("supplier_id", "")})
                 left = round(left - qty, 4)
             if left > 0:                                         # stock that had no lot record (from before lots)
                 new.append({**base, "lot_id": f"{request_key}-{n}-x", "qty": left, "expiry": None, "lot_code": "", "unit_cost": None})
             continue
         new.append({**base, "lot_id": f"{request_key}-{n}", "qty": c["qty"], "expiry": expiry_for(line, items.get(c["item_id"], {}), day),
                     "lot_code": str(line.get("lot_code") or "")[:40], "bin_id": str(line.get("bin_id") or ""),
-                    "unit_cost": items.get(c["item_id"], {}).get("cost")})
+                    "unit_cost": items.get(c["item_id"], {}).get("cost"),
+                    **({"made_from": sorted(set(consumed))} if c.get("kind") in ("produce", "break_down") and consumed else {})})
     return [{**l, "open": l["qty"] > 0} for l in [*touched.values(), *new]]
 
 

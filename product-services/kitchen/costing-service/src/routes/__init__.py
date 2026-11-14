@@ -12,6 +12,7 @@ TABLE = "costing_requests"
 ROUTES = {
     CostingAction.SET_OVERHEAD: set_overhead.handle,
     CostingAction.SUMMARY: summary.handle,
+    CostingAction.SUMMARIES: summary.handle_many,
     CostingAction.SHARE_OVERHEAD: share_overhead.handle,
     CostingAction.COPY_OVERHEADS: copy_overheads.handle,
     CostingAction.OVERHEADS: overheads.handle,
