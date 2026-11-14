@@ -59,7 +59,7 @@ export async function payrollPage(el, q) {
       text: "Press Work out: pay from salaries or clocked hours, unpaid leave, bonuses and the country's deductions." })}</section>`);
   const again = () => payrollPage(el, q);
   if (m.payslips.length) {
-    new DataTable({ rows: m.payslips, columns: [
+    new DataTable({ onRow: (s, tr) => tr.querySelector("[data-slip]")?.click(), rows: m.payslips, columns: [
       { key: "name", label: "Person", render: (s) => html`<a href="javascript:void 0" data-slip="${s.employee_id}"><b>${s.name}</b></a> <span class="muted small">${s.position}</span>` },
       { key: "worked_hours", label: "Hours", render: (s) => html`${s.worked_hours || ""}` },
       { key: "gross", label: "Gross", render: (s) => html`${money(b, s.gross)}` },

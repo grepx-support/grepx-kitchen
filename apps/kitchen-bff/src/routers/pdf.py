@@ -36,9 +36,7 @@ def order_file(po_id: str, k: Kitchen) -> PdfFile:
 
 def delivery_note_file(delivery_id: str, k: Kitchen) -> PdfFile:
     trip = stock.trip(delivery_id, k)
-    run = next((r for r in k.rows(gc.delivery.RUNS) for s in r.get("stops") or [] if s.get("delivery_id") == delivery_id
-                and s.get("state") == "delivered"), None)
-    stop = next((s for s in (run or {}).get("stops") or [] if s.get("delivery_id") == delivery_id), None)
+    stop, run = stock.handover(delivery_id, k)
     return report(specs.delivery_note(trip, stop, run), k, f"delivery-note-{trip['date']}-{trip['to'].replace(' ', '-')}")
 
 

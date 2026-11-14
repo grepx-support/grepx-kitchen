@@ -11,6 +11,7 @@ import { biz } from "../lib/business.js";
 import { fmt, money } from "../lib/format.js";
 import { REASONS } from "../lib/waste.js";
 import { frame } from "./common.js";
+import { showDetails } from "../lib/details.js";
 
 export async function value(el) {
   const [b, v] = await Promise.all([biz(), api("/inventory/valuation")]);
@@ -22,7 +23,7 @@ export async function value(el) {
       { label: "Lines", value: v.lines.length, icon: "list", area: "#8b5cf6" }])}
     <div class="grid two"><section class="card accent"><h2>${icon("pin")} By location</h2>${barList({ rows: Object.entries(byPlace).sort((a, z) => z[1] - a[1]).map(([k, n]) => ({ label: k, value: n, color: "#16a34a" })) })}</section>
       <section class="card"><h2>Every line</h2><div class="t"></div></section></div>`);
-  new DataTable({ rows: v.lines, columns: [{ key: "name", label: "Item" }, { key: "location_name", label: "Location" },
+  new DataTable({ onRow: (r) => showDetails(r.name, r), rows: v.lines, columns: [{ key: "name", label: "Item" }, { key: "location_name", label: "Location" },
     { key: "qty", label: "Qty", align: "end", render: (l) => html`${fmt(l.qty)} ${l.unit}` },
     { key: "value", label: "Value", align: "end", render: (l) => html`${money(b, l.value)}` }] }).mount(body.querySelector(".t"));
 }
@@ -44,7 +45,7 @@ export async function analysis(el, q) {
       <section class="card accent"><h2>${icon("x")} Waste by reason</h2>${wasted ? donut({ centre: fmt(wasted, 0), caption: b.business?.currency || "",
         parts: REASONS.map(([k, t], n) => ({ label: t, value: a.waste[k] || 0, color: ["#e11d48", "#f97316", "#8b5cf6", "#0ea5e9", "#94a3b8"][n] })) }) : html`<p class="muted">No waste recorded.</p>`}</section></div>
     <section class="card k-section"><h2>Items</h2><div class="t"></div></section>`);
-  new DataTable({ rows: a.items, columns: [{ key: "name", label: "Item" }, { key: "class", label: "Class", render: (i) => html`${pill(i.class, i.class === "A" ? "bad" : i.class === "B" ? "warn" : "good")}` },
+  new DataTable({ onRow: (r) => showDetails(r.name, r), rows: a.items, columns: [{ key: "name", label: "Item" }, { key: "class", label: "Class", render: (i) => html`${pill(i.class, i.class === "A" ? "bad" : i.class === "B" ? "warn" : "good")}` },
     { key: "used_value", label: "Used (value)", align: "end", render: (i) => html`${money(b, i.used_value)}` },
     { key: "used_qty", label: "Used", align: "end", render: (i) => html`${fmt(i.used_qty)} ${i.unit}` },
     { key: "on_hand", label: "On hand", align: "end", render: (i) => html`${fmt(i.on_hand)}` },

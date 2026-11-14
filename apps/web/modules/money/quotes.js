@@ -34,7 +34,7 @@ export async function quotes(el, q) {
     <section class="card k-section"><div class="kit-chips">${FILTERS.map((f) => html`<a class="kit-chip ${(q.status || "all") === f ? "on" : ""}" href="#/sales/quotes?status=${f}">${f}</a>`)}</div>
       ${shown.length ? html`<div class="t"></div>` : empty({ icon: "receipt", title: "No quotations here", text: "Write one with New quotation." })}</section>`);
   if (!shown.length) return;
-  new DataTable({ rows: shown, columns: [
+  new DataTable({ onRow: (x) => { location.hash = `#/sales/quote/${x.quote_id}`; }, rows: shown, columns: [
     { key: "number", label: "Number", render: (x) => html`<a href="#/sales/quote/${x.quote_id}"><b>${x.order_number || x.number || "Draft"}</b></a>` },
     { key: "customer_name", label: "Customer" }, { key: "event_date", label: "Event", render: (x) => html`${x.event_date} ${x.event_name || ""}` },
     { key: "guests", label: "Guests", align: "end" }, { key: "total", label: "Total", align: "end", render: (x) => html`${cash(x.total)}` },

@@ -10,6 +10,7 @@ import { api, run } from "/assets/app.js";
 import { DataTable, empty, html, icon, kpiRow, openDialog, pill } from "/assets/kit/index.js";
 import { stamp } from "../lib/format.js";
 import { CHANNEL, frame } from "./common.js";
+import { showDetails } from "../lib/details.js";
 
 const TONE = { SENT: "good", DELIVERED: "good", LOGGED: "info", FAILED: "bad", QUEUED: "warn", SKIPPED: "" };
 const word = (m) => (m.delivery === "FAILED" && m.will_retry ? "failed - will retry" : (m.delivery || "").toLowerCase());
@@ -41,7 +42,7 @@ export async function sent(el, q) {
       chip(`#/outbox?channel=${k}`, q.channel === k, label))}${chip("#/outbox?failed=1", q.failed, `Failed (${failed})`)}</div>
     <section class="card k-section">${shown.length ? html`<div class="t"></div>` : empty({ icon: "mail", title: "Nothing here", text: "Send a purchase order to a supplier, or wait for a stock alert." })}</section>`);
   if (!shown.length) return;
-  new DataTable({ rows: shown, columns: [
+  new DataTable({ onRow: (r) => showDetails(r.subject || r.template || "Message", r, { long: ["body"] }), rows: shown, columns: [
     { key: "at", label: "When", render: (m) => html`${stamp(m.at)}` },
     { key: "channel", label: "Channel", render: (m) => html`${icon(CHANNEL[m.channel]?.[1] || "mail", { size: 15 })} ${CHANNEL[m.channel]?.[0] || m.channel}` },
     { key: "recipient", label: "To" },

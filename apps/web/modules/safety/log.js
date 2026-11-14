@@ -13,6 +13,7 @@ import { biz } from "../lib/business.js";
 import { downloadCsv } from "../lib/csv.js";
 import { TABS } from "./today.js";
 import { openPdf } from "../money/common.js";
+import { showDetails } from "../lib/details.js";
 
 export async function logPage(el, q) {
   const b = await biz();
@@ -32,7 +33,7 @@ export async function logPage(el, q) {
   el.querySelector("[data-pdf]").onclick = () => openPdf(`/pdf/safety?first=${first}&last=${last}&site_id=${q.site || ""}`);
   el.querySelector("[data-csv]").onclick = () => downloadCsv(`food-safety-${first}-${last}.csv`, [["When", "Place", "Check", "Value", "In range", "Action taken", "By"],
     ...h.records.map((r) => [r.at, place(r.site_id), r.point_name, r.value ?? (r.failed || []).join("; "), r.ok ? "yes" : "no", r.action_taken, r.by])]);
-  new DataTable({ rows: h.records, columns: [
+  new DataTable({ onRow: (r) => showDetails(r.point_name || "Check", r), rows: h.records, columns: [
     { key: "at", label: "When", render: (r) => html`${r.at.replace("T", " ")}` }, { key: "site_id", label: "Place", render: (r) => html`${place(r.site_id)}` },
     { key: "point_name", label: "Check" }, { key: "value", label: "Reading", render: (r) => html`${r.value != null ? `${r.value}${r.unit}` : (r.failed || []).join(", ") || "all yes"}` },
     { key: "ok", label: "", render: (r) => html`${r.ok ? pill("in range", "good") : pill("out", "bad")}` },

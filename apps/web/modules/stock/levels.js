@@ -11,6 +11,7 @@ import { area } from "../lib/areas.js";
 import { biz } from "../lib/business.js";
 import { fmt, stamp, today } from "../lib/format.js";
 import { frame } from "./common.js";
+import { showDetails } from "../lib/details.js";
 
 export async function levels(el, q) {
   const b = await biz();
@@ -29,7 +30,7 @@ export async function levels(el, q) {
       .map((r) => ({ label: `${r.item_name}`, value: r.qty, unit: ` ${r.unit}`, color: r.qty < 0 ? "#e11d48" : area("stock") })) })}</section>`)}</div>
     <section class="card k-section"><h2>History</h2><p class="muted small">Every change with who, when and why. Nobody can edit it.</p><div class="hist"></div></section>`);
   if (!places.length) body.querySelector(".grid").append(h("p", { class: "muted" }, "No stock recorded yet."));
-  new DataTable({ rows: m.movements, columns: [
+  new DataTable({ onRow: (r) => showDetails(`${r.item_name} - ${r.kind}`, r), rows: m.movements, columns: [
     { key: "at", label: "When", render: (r) => html`${stamp(r.at)}` },
     { key: "kind", label: "What", render: (r) => html`<b>${r.kind.replace("_", " ")}</b> <span class="muted small">${r.location_name || ""}${r.other_location_name ? ` ↔ ${r.other_location_name}` : ""}</span>${r.note ? html`<div class="muted small">${r.note}</div>` : ""}` },
     { key: "item_name", label: "Item" },

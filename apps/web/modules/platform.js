@@ -10,6 +10,7 @@ import { api, enterSupport, run } from "/assets/app.js";
 import { confirm, DataTable, empty, html, icon, kpiRow, pageHead } from "/assets/kit/index.js";
 import { area, head } from "./lib/areas.js";
 import { stamp } from "./lib/format.js";
+import { showDetails } from "./lib/details.js";
 
 async function platform(el) {
   const all = await api("/platform/businesses"), list = all.filter((b) => !b.closed), closed = all.filter((b) => b.closed);
@@ -64,7 +65,7 @@ async function leads(el) {
     ${kpiRow(STAGES.map(([k, t]) => ({ label: t, value: list.filter((l) => (l.stage || "new") === k).length, icon: k === "won" ? "check" : "user", area: area("platform") })))}
     <section class="card k-section">${list.length ? html`<div class="t"></div>` : empty({ icon: "user", title: "No requests yet", text: "They appear here when someone fills in the form on the public page." })}</section>`);
   if (!list.length) return;
-  new DataTable({ rows: list, columns: [
+  new DataTable({ onRow: (b) => showDetails(b.name, b), rows: list, columns: [
     { key: "created_at", label: "When", render: (l) => html`${stamp(l.created_at)}` },
     { key: "name", label: "Who", render: (l) => html`<b>${l.name}</b><br><span class="muted small">${l.company || ""}${l.size ? ` · ${l.size} locations` : ""}</span>` },
     { key: "email", label: "Contact", render: (l) => html`<a href="mailto:${l.email}">${l.email}</a>${l.phone ? html`<br><span class="small">${l.phone}</span>` : ""}` },

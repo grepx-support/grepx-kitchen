@@ -9,6 +9,7 @@ import { api, run, toast } from "/assets/app.js";
 import { h, html, icon, KanbanBoard, pageHead, pill } from "/assets/kit/index.js";
 import { area, head } from "../lib/areas.js";
 import { today } from "../lib/format.js";
+import { showTrip } from "../lib/trip.js";
 
 const RUN_COLORS = ["#7c3aed", "#0891b2", "#f97316", "#16a34a", "#e11d48", "#2563eb"];
 
@@ -25,11 +26,12 @@ export async function board(el) {
       color: RUN_COLORS[n % RUN_COLORS.length], hint: `${r.driver_name || "no driver"} · ${r.date} ${r.start_time} · ${r.state === "on_road" ? "on the road" : "planned"}` }))];
   const cards = [...d.waiting.map((t) => ({ ...t, column: "waiting" })),
     ...d.runs.flatMap((r) => (r.stops || []).filter((s) => s.state === "pending" || s.state === "arrived").map((s) => ({ id: s.stop_id, to: s.name, address: s.address,
-      lines: s.lines, eta: s.eta, column: r.id, state: s.state })))];
+      lines: s.lines, eta: s.eta, column: r.id, state: s.state, delivery_id: s.delivery_id })))];
   const slot = el.querySelector(".slot");
   new KanbanBoard({ columns, cards, empty: "Drop trips here",
     card: (c) => html`${c.column === "waiting" ? html`<label class="check"><input type="checkbox" data-tick="${c.id}"> <b>→ ${c.to}</b></label>` : html`<b>→ ${c.to}</b>`}
       <p class="muted small">${c.address || "no address"}</p><p>${pill(`${c.lines} lines`, "info")} ${c.eta ? pill(`ETA ${c.eta}`, "warn") : ""} ${c.date ? html`<span class="muted small">${c.date}</span>` : ""}</p>`,
+    onOpen: (c) => showTrip(c.delivery_id || c.id),
     onMove: (c, from, to) => move(d, c, from, to) }).mount(slot);
   slot.append(h("p", { class: "muted small" }, "Open a run to put its stops in order:"));
   d.runs.forEach((r) => slot.append(h("a", { class: "btn small", href: `#/runs/${r.id}` }, `${r.name} - ${r.stops.length} stop${r.stops.length === 1 ? "" : "s"}`)));

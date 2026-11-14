@@ -128,6 +128,15 @@ def trip_view(request_id: str, day: str, moves: list[dict], track: dict, places:
                        "qty": -m["qty"]} for m in moves]}
 
 
+def handover(delivery_id: str, k: Kitchen) -> tuple[dict | None, dict | None]:
+    """The run stop that delivered this trip (receiver, signatures, time) and its run - (None, None) before that."""
+    for r in k.rows(gc.delivery.RUNS):
+        for s in r.get("stops") or []:
+            if s.get("delivery_id") == delivery_id:
+                return s, r
+    return None, None
+
+
 def trip(delivery_id: str, k: Kitchen) -> dict:
     """One trip that left the warehouse (the delivery note's lines)."""
     moves = sorted((r for r in k.rows(gc.stock.STOCK_MOVEMENTS, kind="send_out") if r.get("request_id") == delivery_id), key=lambda r: r.get("at", ""))
@@ -142,3 +151,13 @@ def delivered(delivery_id: str, body: dict | None = None, k: Kitchen = Depends(D
     """The delivery board: a trip arrived (moved from Sent to Delivered)."""
     return k.cmd(gc.stock.REQUESTS, gc.stock.SERVICE, {"action": "DELIVERED", "delivery_id": delivery_id,
                                                        "note": (body or {}).get("note", "")})["delivery"]
+
+
+@router.get("/deliveries/{delivery_id}")
+def delivery(delivery_id: str, k: Kitchen = Depends(DELIVERY)):
+    """One trip in full: what left, from where to where, and its run and stop (driver, ETA, who received it)."""
+    stop, run = handover(delivery_id, k)
+    keep = ("stop_id", "state", "eta", "receiver", "delivered_at", "driver", "note", "reason")
+    return {**trip(delivery_id, k), "stop": {f: stop.get(f) for f in keep if f in stop} if stop else None,
+            "run": {"run_id": run["_key"], "name": run.get("name", ""), "date": run.get("date", ""), "driver_name": run.get("driver_name", ""),
+                    "vehicle": run.get("vehicle", ""), "state": run.get("state", "")} if run else None}

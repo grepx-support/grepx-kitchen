@@ -16,6 +16,7 @@ import { forecastCard, promisesBoard, spendingCard, suggestionCards } from "./in
 import { statementActions, statementClick } from "./statement.js";
 import { downloadCsv } from "../lib/csv.js";
 import { tabs } from "/assets/kit/index.js";
+import { showDetails } from "../lib/details.js";
 
 async function move(f, people) {
   const box = document.createElement("form");
@@ -62,7 +63,7 @@ export async function fundPage(el, q) {
     return;
   }
   if (view === "returns") return wirePlan(el, f.fund_id, again) || el.querySelector("[data-move]").addEventListener("click", async () => { if (await move(f, d.people)) again(); });
-  new DataTable({ rows: d.entries, columns: [
+  new DataTable({ onRow: (e) => showDetails(`${e.date} - ${e.kind}`, e), rows: d.entries, columns: [
     { key: "date", label: "Date" }, { key: "kind", label: "What", render: (e) => html`<span class="fd-kind" style="--k:${KIND[e.kind][1]}">${KIND[e.kind][0]}</span>${e.reversed ? html` ${pill("reversed", "")}` : ""}` },
     { key: "amount", label: "Amount", render: (e) => html`<b class="${e.reversed ? "muted" : ""}">${c(e.amount)}</b>` }, { key: "party", label: "Party" },
     { key: "purpose", label: "Used for" }, { key: "ref", label: "Ref" }, { key: "by", label: "By" },

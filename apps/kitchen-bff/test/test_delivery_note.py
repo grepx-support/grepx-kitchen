@@ -42,5 +42,8 @@ def test_delivery_note_before_and_after_the_handover(env):
     stack.settle()
     after = api.get(f"/api/v1/pdf/delivery/{trip}", headers=owner).content
     assert after.count(b"/Subtype /Image") == 2                      # the driver's and the receiver's signatures
+    opened = ok(api.get(f"/api/v1/stock/deliveries/{trip}", headers=owner))         # a trip card opened on a board
+    assert (opened["to"], opened["lines"][0]["qty"], opened["run"]["vehicle"], opened["stop"]["receiver"]) == ("Orchard outlet", 12, "Van SBA1234", "Mei at Orchard")
+    assert "signature" not in opened["stop"]
     other = open_business(api, "Other Kitchen", "owner@other.sg")["owner"]
     assert api.get(f"/api/v1/pdf/delivery/{trip}", headers=other).status_code == 404       # another business never sees it

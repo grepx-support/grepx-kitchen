@@ -41,7 +41,7 @@ async function costs(el, q) {
     <section class="card accent k-section"><h2>${icon("chart")} Sales by count period</h2>${d.days.length ? chart.sales(d.days) : html`<p class="muted">No sales yet.</p>`}</section>
     <section class="card k-section" id="days"><h2>Each count period ${day ? html`<a class="kit-chip on" href="#/costs?month=${month}${loc ? `&location=${loc}` : ""}" title="Show the whole month">${day} ✕</a>` : ""}</h2><div class="days"></div></section>`);
   costLandscape(el.querySelector("[data-landscape]"), d.days, { ...s, cogs_range: d.cogs_range?.[0] != null ? d.cogs_range : s.cogs_range }, b.business?.currency || d.currency || "");
-  new DataTable({ rows: day ? d.days.filter((x) => x.date === day) : d.days, empty: day ? "No closing on this day." : "No closings this month.", columns: [
+  new DataTable({ onRow: (r) => { location.hash = `#/costs?day=${r.date}`; }, rows: day ? d.days.filter((x) => x.date === day) : d.days, empty: day ? "No closing on this day." : "No closings this month.", columns: [
     { key: "date", label: "Day", render: (x) => html`${x.date}${x.period_days > 1 ? html` <span class="muted small">(${x.period_days} days)</span>` : ""}` },
     { key: "location_name", label: "Location" },
     { key: "sales", label: "Sales", align: "end", render: (x) => html`${fmt(x.sales)}` },

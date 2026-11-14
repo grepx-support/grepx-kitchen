@@ -44,6 +44,7 @@ export function promisesBoard(host, promises, funds, again) {
       { id: "late", title: "Overdue", icon: "alert", color: "#e11d48", accepts: () => false },
       { id: "due", title: "Promised", icon: "clock", color: "#7c3aed", accepts: () => false },
       { id: "in", title: "Paid in", icon: "check", color: "#16a34a", accepts: () => true, hint: "Drop a promise here to record the money" }],
+    onOpen: (p) => { location.hash = `#/funds/fund?id=${p.fund_id}&view=advice`; },
     card: (p) => html`<b>${p.name}</b><div>${cash(p.missing, funds[p.fund_id]?.currency)}</div><small class="muted">${funds[p.fund_id]?.name || ""} · due ${p.due}</small>`,
     onMove: async (p) => {
       const box = document.createElement("form");

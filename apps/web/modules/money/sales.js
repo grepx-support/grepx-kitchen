@@ -26,7 +26,7 @@ export async function sales(el, q) {
     <section class="card k-section"><div class="kit-chips">${FILTERS.map((f) => html`<a class="kit-chip ${(q.status || "all") === f ? "on" : ""}" href="#/sales?status=${f}">${f}</a>`)}</div>
       ${shown.length ? html`<div class="t"></div>` : empty({ icon: "receipt", title: "No invoices here", text: "Create one with New invoice." })}</section>`);
   if (!shown.length) return;
-  new DataTable({ rows: shown, columns: [
+  new DataTable({ onRow: (i) => { location.hash = `#/sales/invoice/${i.invoice_id}`; }, rows: shown, columns: [
     { key: "number", label: "Number", render: (i) => html`<a href="#/sales/invoice/${i.invoice_id}"><b>${i.number || "Draft"}</b></a>${i.kind === "credit" ? html` <small class="muted">credit note</small>` : ""}` },
     { key: "customer_name", label: "Customer" }, { key: "issued", label: "Date" }, { key: "due", label: "Due" },
     { key: "total", label: "Total", align: "end", render: (i) => html`${cash(i.kind === "credit" ? -i.total : i.total)}` },
@@ -62,7 +62,7 @@ export async function customers(el) {
     : empty({ icon: "users", title: "No customers yet", text: "Add the cafés, caterers or franchisees you sell to." }));
   el.querySelector("[data-new]").onclick = async () => { if (await editCustomer()) customers(el); };
   if (!d.customers.length) return;
-  new DataTable({ rows: d.customers, columns: [{ key: "name", label: "Customer", render: (c) => html`<a href="javascript:void 0" data-edit="${c.customer_id}"><b>${c.name}</b></a>` },
+  new DataTable({ onRow: (c, tr) => tr.querySelector("[data-edit]")?.click(), rows: d.customers, columns: [{ key: "name", label: "Customer", render: (c) => html`<a href="javascript:void 0" data-edit="${c.customer_id}"><b>${c.name}</b></a>` },
     { key: "email", label: "Email" }, { key: "terms_days", label: "Terms", render: (c) => html`${c.terms_days} days` },
     { key: "owed", label: "Owes", align: "end", value: (c) => owed[c.customer_id] || 0, render: (c) => html`<b>${cash(owed[c.customer_id] || 0)}</b>` },
     { key: "statement", label: "", render: (c) => html`<a class="btn small" href="#/sales/customer/${c.customer_id}">Statement</a>` }] })

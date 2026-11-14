@@ -28,7 +28,7 @@ export async function teamPage(el, q) {
       html`<a href="#/team/person?id=${d.employee_id}">${pill(`${d.name}: ${d.kind} ${d.state} ${d.expires_on}`, DOC[d.state])}</a>`)}</section>` : ""}
     <section class="card k-section">${t.team.length ? html`<div class="t"></div>` : empty({ icon: "users", title: "Nobody yet", text: "Add your chefs, cooks and outlet staff." })}</section>`);
   if (!t.team.length) return;
-  new DataTable({ rows: t.team, columns: [
+  new DataTable({ onRow: (p) => { location.hash = `#/team/person?id=${p.employee_id}`; }, rows: t.team, columns: [
     { key: "name", label: "Name", render: (p) => html`<a href="#/team/person?id=${p.employee_id}"><b>${p.name}</b></a>${p.active === false ? html` ${pill("left", "")}` : ""}` },
     { key: "position", label: "Position" },
     { key: "home_site", label: "Home outlet", render: (p) => html`${siteName(b, p.home_site)}` },

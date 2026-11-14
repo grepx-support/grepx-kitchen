@@ -11,6 +11,7 @@ import { DataTable, empty, html, icon, kpiRow, openDialog, pageHead, pill } from
 import { area, head } from "./lib/areas.js";
 import { downloadCsv } from "./lib/csv.js";
 import { stamp } from "./lib/format.js";
+import { showDetails } from "./lib/details.js";
 
 const DAYS = [1, 7, 30, 90];
 const link = (q, extra) => `#/audit?${new URLSearchParams(Object.entries({ ...q, ...extra }).filter(([, v]) => v !== "" && v != null))}`;
@@ -44,7 +45,7 @@ async function audit(el, q) {
   el.querySelector("[data-csv]").addEventListener("click", () => downloadCsv(`audit-${q.days || 7}-days.csv`,
     [["When", "Who", "Area", "Change", "Details", "Done", "Why refused"], ...shown.map((e) => [e.at, e.who, e.area, e.action, e.what, e.done ? "yes" : "no", e.why])]));
   if (!shown.length) return;
-  new DataTable({ rows: shown, columns: [
+  new DataTable({ onRow: (r) => showDetails(`${r.action || "Change"} - ${r.at || ""}`, r), rows: shown, columns: [
     { key: "at", label: "When", render: (e) => html`${stamp(e.at)}` },
     { key: "who", label: "Who" },
     { key: "area", label: "Area", render: (e) => html`${pill(e.area, "")}` },

@@ -27,7 +27,7 @@ export async function bills(el) {
       <b>${p.number}</b><span>${names[p.supplier_id] || ""}</span><a class="btn small" href="#/bills/new?po=${p.po_id}">Enter bill</a></div>`)}</section>` : ""}
     <section class="card k-section">${d.bills.length ? html`<div class="t"></div>` : empty({ icon: "inbox", title: "No bills yet", text: "Enter the first one from an order above." })}</section>`);
   if (!d.bills.length) return;
-  new DataTable({ rows: d.bills, columns: [
+  new DataTable({ onRow: (b) => { location.hash = `#/bills/${b.bill_id}`; }, rows: d.bills, columns: [
     { key: "supplier_name", label: "Supplier", render: (b) => html`<a href="#/bills/${b.bill_id}"><b>${b.supplier_name}</b></a> <small class="muted">${b.supplier_ref}</small>` },
     { key: "po_number", label: "Order" }, { key: "due", label: "Due", render: (b) => html`<span class="${b.overdue ? "bad" : ""}">${b.due}</span>` },
     { key: "total", label: "Total", align: "end", render: (b) => html`${cash(b.total)}` },
