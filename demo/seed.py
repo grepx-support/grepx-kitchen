@@ -5,11 +5,12 @@
 """Optional demo data: two businesses with two weeks of history, so every screen shows how the app works -
 Demo Taco Co (Sydney, AUD; data.py) and Spice Route Kitchen (an Indian restaurant group in Mumbai, INR; india.py).
 
-    scripts/run.sh demo ADMIN_EMAIL ADMIN_PASSWORD [--days 14] [--only taco|india] [--resume]
+    scripts/run.sh demo ADMIN_EMAIL ADMIN_PASSWORD [--days 14] [--only taco|india] [--resume] [--funds]
 
 ADMIN_EMAIL / ADMIN_PASSWORD: the platform admin made with `scripts/run.sh admin` (it creates the demo businesses).
 The site and services must be running. A demo business that already exists is left alone (its logins are printed again);
 with --resume its last steps (deliveries, warehouse floor, money) run again - to finish one that stopped half way.
+With --funds an existing demo business gets six months of costs and the demo funds (when it has no funds yet).
 Demo logins share one password (data.PASSWORD) - demo only, never for a real business.
 """
 from __future__ import annotations
@@ -48,11 +49,18 @@ def logins(d) -> None:
 
 def one(site, d, args: list[str], days: int, resume: bool = False) -> None:
     if any(b["name"] == d.BUSINESS["name"] for b in site.get("/platform/businesses", "ops")):
-        if not resume:
+        if not resume and "--funds" not in args:
             print(f"{d.BUSINESS['name']} is already there - nothing added.")
             return
-        print(f"Finishing {d.BUSINESS['name']}...")
         ids = setup.existing(site, d)
+        if "--funds" in args:
+            if site.get("/funds", "owner")["funds"]:
+                print(f"{d.BUSINESS['name']} already has funds - nothing added.")
+                return
+            setup.monthly_costs(site, d, ids)
+            funds.run(site, d, ids, say)
+            return
+        print(f"Finishing {d.BUSINESS['name']}...")
         today.deliveries(site, d, ids, say)
         floor.run(site, d, ids, say)
         money.run(site, d, ids, say)

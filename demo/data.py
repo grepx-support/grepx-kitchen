@@ -101,3 +101,23 @@ INVOICES = [  # customer, days ago, lines [(item key or description, qty, price)
     (1, 0, [("pollo", 10, "36.00")], None),
 ]
 BILL_REF = "SUP-{n}"
+
+# Funds: partners and an investor (one promise overdue, one paid in NZ dollars), money put to the places by their names
+# (so Funds shows each place's real costs against it), and a small equipment loan.
+FUND_PARTIES = [("Olivia Owner", "owner", "owner@demo-taco.test", "+61400000001"), ("Liam Chen", "partner", "liam@demo-taco.test", "+61400000002"),
+                ("Harbour Angels", "investor", "hello@harbour-angels.test", ""), ("Kiwi Kitchen Fund", "investor", "invest@kiwikitchen.test", ""),
+                ("Westpac", "lender", "business@westpac.test", "")]
+FUNDS = [("Founders' capital", "equity", 600000, 0, [
+            ("commit", 250000, "Olivia Owner", 210, 190), ("commit", 150000, "Liam Chen", 210, 160), ("commit", 120000, "Harbour Angels", 80, 15),
+            ("commit", 92000, "Kiwi Kitchen Fund", 60, -45),
+            ("receive", 250000, "Olivia Owner", 195, ""), ("receive", 150000, "Liam Chen", 170, ""), ("receive", 50000, "Harbour Angels", 55, ""),
+            ("receive", 50000, "Kiwi Kitchen Fund", 50, "", {"currency": "NZD", "rate": "0.92", "ref": "TT KKF-114"}),
+            ("allocate", 160000, "", 180, "Taco kitchen"), ("allocate", 45000, "", 150, "Bondi store"), ("allocate", 60000, "", 110, "Parramatta store"),
+            ("allocate", 35000, "", 45, "Food truck"), ("spend", 120000, "", 170, "Taco kitchen"), ("cost", 1800, "", 140, "")]),
+         ("Equipment loan", "loan", 0, 8.9, [
+            ("receive", 80000, "Westpac", 140, ""), ("allocate", 72000, "", 135, "Food truck"),
+            ("interest", 593, "Westpac", 110, ""), ("return", 4000, "Westpac", 110, ""), ("interest", 563, "Westpac", 80, ""), ("return", 4000, "Westpac", 80, ""),
+            ("interest", 533, "Westpac", 50, ""), ("return", 4000, "Westpac", 50, "")])]
+FUND_PLANS = {"Founders' capital": {"horizon": 36, "discount_pct": 12, "payout_pct": 50, "hurdle_pct": 15, "uses": [
+    {"purpose": "Bondi store", "monthly_ebitda": 9000, "starts_in": 0, "ramp": 3}, {"purpose": "Parramatta store", "monthly_ebitda": 7000, "starts_in": 1, "ramp": 4},
+    {"purpose": "Food truck", "monthly_ebitda": 3500, "starts_in": 1, "ramp": 3}]}}

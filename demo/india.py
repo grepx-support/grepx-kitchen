@@ -110,17 +110,26 @@ TEAM_DOCS = [("Imran Shaikh", "Food handler licence", 16), ("Pooja Nair", "Healt
 TEAM_LEAVE = [("Meera Iyer", "annual", 10, 13, True), ("Imran Shaikh", "sick", 2, 3, True), ("Pooja Nair", "casual", 6, 6, False),
               ("Ravi Kumar", "annual", 18, 22, False)]
 # funds: name, kind, target, loan rate, [(what, amount, party, days ago, due-days-ago for promises / used for)]
-FUND_PARTIES = [("Aarav Mehta", "owner"), ("Kavya Desai", "partner"), ("Mumbai Angels Syndicate", "investor"), ("HDFC Bank", "lender")]
-FUNDS = [("Partners' capital", "equity", 5000000, 0, [
+FUND_PARTIES = [("Aarav Mehta", "owner", "owner@spice-route.test", "+919800000001"), ("Kavya Desai", "partner", "kavya@spice-route.test", "+919800000002"),
+                ("Mumbai Angels Syndicate", "investor", "deals@mumbai-angels.test", ""), ("Lion City Ventures", "investor", "ops@lioncity.test", "+6590000077"),
+                ("HDFC Bank", "lender", "smebanking@hdfc.test", "")]
+USD = {"currency": "USD", "rate": "84.20", "ref": "SWIFT LCV-0921"}          # paid in US dollars, converted at 84.20
+FUNDS = [("Partners' capital", "equity", 7500000, 0, [
             ("commit", 2500000, "Aarav Mehta", 200, 180), ("commit", 1500000, "Kavya Desai", 200, 150), ("commit", 1000000, "Mumbai Angels Syndicate", 90, 20),
+            ("commit", 2105000, "Lion City Ventures", 75, -30),
             ("receive", 2500000, "Aarav Mehta", 185, ""), ("receive", 1500000, "Kavya Desai", 160, ""), ("receive", 400000, "Mumbai Angels Syndicate", 60, ""),
-            ("allocate", 1800000, "", 170, "Central kitchen - Powai"), ("allocate", 1200000, "", 120, "Lower Parel outlet"), ("allocate", 450000, "", 40, "Tiffin van"),
+            ("receive", 12500, "Lion City Ventures", 70, "", USD),
+            ("allocate", 1800000, "", 170, "Central kitchen - Powai"), ("allocate", 1200000, "", 120, "Lower Parel outlet"),
+            ("allocate", 900000, "", 100, "Bandra outlet"), ("allocate", 450000, "", 40, "Tiffin van"),
             ("spend", 1650000, "", 160, "Central kitchen - Powai"), ("spend", 980000, "", 100, "Lower Parel outlet"), ("spend", 210000, "", 30, "Tiffin van"),
-            ("cost", 25000, "", 150, "")]),
+            ("cost", 25000, "", 150, ""), ("return", 150000, "Aarav Mehta", 20, "")]),
          ("Kitchen equipment loan", "loan", 0, 10.5, [
             ("receive", 1500000, "HDFC Bank", 150, ""), ("allocate", 1400000, "", 140, "Tandoors and cold room"),
             ("interest", 13125, "HDFC Bank", 120, ""), ("return", 75000, "HDFC Bank", 120, ""), ("interest", 12470, "HDFC Bank", 90, ""),
-            ("return", 75000, "HDFC Bank", 90, ""), ("interest", 11800, "HDFC Bank", 60, ""), ("return", 75000, "HDFC Bank", 60, "")])]
+            ("return", 75000, "HDFC Bank", 90, ""), ("interest", 11800, "HDFC Bank", 60, ""), ("return", 75000, "HDFC Bank", 60, "")]),
+         ("Singapore expansion (USD)", "equity", 50000, 0, [
+            ("commit", 40000, "Lion City Ventures", 45, -60), ("receive", 15000, "Lion City Ventures", 40, ""),
+            ("cost", 350, "", 35, "")], {"currency": "USD", "rate_to_base": "84.20", "purpose": "A first outlet in Singapore"})]
 # expected EBITDA a month per use (INR), starts in (months), ramp (months) - the fund's plan
 FUND_PLANS = {"Partners' capital": {"horizon": 48, "discount_pct": 14, "payout_pct": 60, "hurdle_pct": 18, "uses": [
     {"purpose": "Lower Parel outlet", "monthly_ebitda": 140000, "starts_in": 1, "ramp": 6}, {"purpose": "Bandra outlet", "monthly_ebitda": 120000, "starts_in": 0, "ramp": 3},

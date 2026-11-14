@@ -9,6 +9,25 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 
+def months_back(today: date, n: int) -> list[str]:
+    """The last n months, oldest first, this month last."""
+    y, m, out = today.year, today.month, []
+    for _ in range(n):
+        out.append(f"{y:04d}-{m:02d}")
+        y, m = (y - 1, 12) if m == 1 else (y, m - 1)
+    return list(reversed(out))
+
+
+def monthly_costs(site, d, ids: dict) -> None:
+    """Six months of each place's labour, rent and other costs (creeping up a little each month): Funds links them to
+    the money each place was given."""
+    for n, month in enumerate(months_back(date.today(), 6)):
+        lift = 1 + 0.03 * n
+        for key, (labour, rent, other) in d.OVERHEADS.items():
+            site.post("/setup/overheads", {"location_id": ids["place"][key], "month": month, "labour": round(labour * lift), "rent": rent,
+                                           "other": round(other * lift)}, "owner")
+
+
 def month_before(d: date) -> str:
     return (d.replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
 
@@ -48,11 +67,8 @@ def create(site, d, ops_email: str, ops_password: str, say) -> dict:
         ids["user"][email] = site.post("/setup/users", {"name": name, "email": email, "phone": phone, "password": d.PASSWORD,
                                                         "staff_role": role}, "owner")["user_id"]
         site.login(email, email, d.PASSWORD)
-    today = date.today()
-    for month in (month_before(today), today.strftime("%Y-%m")):
-        for key, (labour, rent, other) in d.OVERHEADS.items():
-            site.post("/setup/overheads", {"location_id": ids["place"][key], "month": month, "labour": labour, "rent": rent, "other": other}, "owner")
-    say(f"{len(d.STAFF)} staff logins and monthly costs for two months")
+    monthly_costs(site, d, ids)
+    say(f"{len(d.STAFF)} staff logins and monthly costs for six months")
     return ids
 
 
