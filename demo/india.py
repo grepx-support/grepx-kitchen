@@ -115,11 +115,16 @@ FUNDS = [("Partners' capital", "equity", 5000000, 0, [
             ("commit", 2500000, "Aarav Mehta", 200, 180), ("commit", 1500000, "Kavya Desai", 200, 150), ("commit", 1000000, "Mumbai Angels Syndicate", 90, 20),
             ("receive", 2500000, "Aarav Mehta", 185, ""), ("receive", 1500000, "Kavya Desai", 160, ""), ("receive", 400000, "Mumbai Angels Syndicate", 60, ""),
             ("allocate", 1800000, "", 170, "Central kitchen - Powai"), ("allocate", 1200000, "", 120, "Lower Parel outlet"), ("allocate", 450000, "", 40, "Tiffin van"),
+            ("spend", 1650000, "", 160, "Central kitchen - Powai"), ("spend", 980000, "", 100, "Lower Parel outlet"), ("spend", 210000, "", 30, "Tiffin van"),
             ("cost", 25000, "", 150, "")]),
          ("Kitchen equipment loan", "loan", 0, 10.5, [
             ("receive", 1500000, "HDFC Bank", 150, ""), ("allocate", 1400000, "", 140, "Tandoors and cold room"),
             ("interest", 13125, "HDFC Bank", 120, ""), ("return", 75000, "HDFC Bank", 120, ""), ("interest", 12470, "HDFC Bank", 90, ""),
             ("return", 75000, "HDFC Bank", 90, ""), ("interest", 11800, "HDFC Bank", 60, ""), ("return", 75000, "HDFC Bank", 60, "")])]
+# expected EBITDA a month per use (INR), starts in (months), ramp (months) - the fund's plan
+FUND_PLANS = {"Partners' capital": {"horizon": 48, "discount_pct": 14, "payout_pct": 60, "hurdle_pct": 18, "uses": [
+    {"purpose": "Lower Parel outlet", "monthly_ebitda": 140000, "starts_in": 1, "ramp": 6}, {"purpose": "Bandra outlet", "monthly_ebitda": 120000, "starts_in": 0, "ramp": 3},
+    {"purpose": "Tiffin van", "monthly_ebitda": 45000, "starts_in": 2, "ramp": 4}]}}
 PAYROLL_COUNTRY = "IN"
 PAY_ADJUSTMENTS = [("Meera Iyer", "bonus", 5000, "Diwali bonus"), ("Arjun Singh", "advance", 3000, "Advance recovery")]
 TEAM_SHIFTS = {"Meera Iyer": ("kit", "08:00", "17:00"), "Sanjay Rao": ("kit", "13:00", "22:00"), "Imran Shaikh": ("kit", "10:00", "19:00"),

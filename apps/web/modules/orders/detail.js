@@ -12,6 +12,7 @@ import { head } from "../lib/areas.js";
 import { biz, has } from "../lib/business.js";
 import { money, stamp } from "../lib/format.js";
 import { receive } from "./common.js";
+import { openPdf } from "../money/common.js";
 import { orderSummary } from "./summary.js";
 
 const TONE = { saved: "warn", received: "good", cancelled: "" };
@@ -32,7 +33,7 @@ export async function detail(el, id) {
   const open = o.state === "saved";
   const wa = o.supplier_phone ? `https://wa.me/${o.supplier_phone.replace(/\D/g, "")}?text=${encodeURIComponent(o.text)}` : "";
   el.innerHTML = String(html`${pageHead({ ...head("orders"), title: o.number, subtitle: `${o.supplier_name} · ${stamp(o.created_at)}`,
-    actions: html`${pill(o.state, TONE[o.state])}<a class="btn small" href="#/orders">${icon("board", { size: 15 })} Board</a>
+    actions: html`${pill(o.state, TONE[o.state])}<button class="btn small" data-po-pdf>${icon("printer", { size: 15 })} PDF</button><a class="btn small" href="#/orders">${icon("board", { size: 15 })} Board</a>
       <a class="btn small" href="#/orders/list">${icon("list", { size: 15 })} List</a>
       <a class="btn small ${o.prev_id ? "" : "disabled"}" href="${o.prev_id ? `#/orders/${o.prev_id}` : "javascript:void 0"}" title="Newer order (K)">‹ Newer</a>
       <a class="btn small ${o.next_id ? "" : "disabled"}" href="${o.next_id ? `#/orders/${o.next_id}` : "javascript:void 0"}" title="Older order (J)">Older ›</a>` })}
@@ -53,6 +54,7 @@ export async function detail(el, id) {
   const slot = el.querySelector(".slot");
   const basket = open ? new Basket({ label: "Qty", lines: o.lines.map((l) => ({ item_id: l.item_id, name: l.item_name, unit: l.unit, qty: l.qty })) }).mount(slot) : null;
   const again = () => detail(el, id);
+  el.querySelector("[data-po-pdf]").onclick = () => openPdf(`/pdf/order/${o.po_id || o.id}`);
   el.querySelector("[data-copy]").onclick = async () => { try { await navigator.clipboard.writeText(o.text); toast("Copied - paste it into WhatsApp"); } catch (e) { toast("Select the text and copy it."); } };
   el.querySelector("[data-dup]")?.addEventListener("click", async () => { const n = await run(() => api(`/orders/${o.id}/copy`, { method: "POST" }), "New order saved"); if (n) location.hash = `#/orders/${n.po_id}`; });
   el.querySelector("[data-cancel]")?.addEventListener("click", async () => {

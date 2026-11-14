@@ -162,6 +162,10 @@ def test_the_weekly_and_daily_cycle(env):
     assert month["net_profit"] == round(720 - 144 - month["labour"] - month["rent"] - month["other"], 2)
     diffs = ok(api.get("/api/v1/closing/history", headers=owner))["closings"][0]["counts"]
     assert diffs[0]["difference"] == -24                                                                 # Q6: the owner reviews it
+    cid = ok(api.get("/api/v1/closing/history", headers=owner))["closings"][0]["closing_id"]
+    for path in (f"/api/v1/pdf/closing/{cid}", f"/api/v1/pdf/order/{po['po_id']}"):
+        r = api.get(path, headers=owner)
+        assert r.status_code == 200 and r.content[:4] == b"%PDF", (path, r.text[:300])
 
     # --- roles: who may adjust stock (ACC-03), modules on/off (BUS-03) ---
     adjust = {"location_id": truck, "lines": [{"item_id": birria, "qty": 5}], "note": "Recount after spill"}
@@ -437,6 +441,14 @@ def test_team_and_roster_across_outlets(env):
               {"kind": "allocate", "amount": 150000, "purpose": "Outlet fit-out"}):
         ok(api.post(f"/api/v1/funds/{seed['fund_id']}/entries", headers=owner, json=e))
     view = ok(api.get("/api/v1/funds", headers=owner))
+    ok(api.put(f"/api/v1/funds/{seed['fund_id']}/plan", headers=owner, json={"payout_pct": 60, "uses": [{"purpose": "Outlet", "monthly_ebitda": 30000, "ramp": 2}]}))
+    full = ok(api.get(f"/api/v1/funds/{seed['fund_id']}", headers=owner))
+    assert full["projection"]["payback_month"] and full["against_plan"][0]["purpose"] == "Outlet" and "Outlet" in full["places"]
+    assert view["balance_sheet"]["INR"]["balances"]
     assert view["totals"]["INR"]["pending"] == 20000000 and view["totals"]["INR"]["available"] == 25000000 and view["overdue"][0]["name"] == "Asha Mehta"
+    for path in (f"/api/v1/pdf/payslip?month=2026-11&employee_id={meera}", f"/api/v1/pdf/safety?first=2026-01-01&last=2030-12-31&site_id={k1}",
+                 f"/api/v1/pdf/count-sheet?location_id={k1}"):
+        r = api.get(path, headers=owner)
+        assert r.status_code == 200 and r.content[:4] == b"%PDF", (path, r.text[:200])
     labour = ok(api.get("/api/v1/setup", headers=owner))["overheads"]
     assert labour[0]["labour"] == done["cost_by_site"][k1] and labour[0]["location_id"] == k1

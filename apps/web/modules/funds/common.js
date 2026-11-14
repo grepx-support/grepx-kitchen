@@ -10,8 +10,8 @@ import { html, openDialog } from "/assets/kit/index.js";
 
 const ZERO = new Set(["JPY", "KRW", "IDR", "VND"]);
 export const cash = (minor, cur) => (minor == null ? "-" : new Intl.NumberFormat(undefined, { style: "currency", currency: cur || "USD",
-  maximumFractionDigits: ZERO.has(cur) ? 0 : 2 }).format(minor / (ZERO.has(cur) ? 1 : 100)));
-export const KIND = { commit: ["Promised", "#7c3aed"], receive: ["Money in", "#16a34a"], allocate: ["Put to use", "#0ea5e9"], release: ["Came back unused", "#14b8a6"],
+  maximumFractionDigits: ZERO.has(cur) || Math.abs(minor) >= 1e7 ? 0 : 2 }).format(minor / (ZERO.has(cur) ? 1 : 100)));   // big sums without cents
+export const KIND = { commit: ["Promised", "#7c3aed"], receive: ["Money in", "#16a34a"], allocate: ["Put to use", "#0ea5e9"], release: ["Came back unused", "#14b8a6"], spend: ["Spent (from what was put to use)", "#7c3aed"],
   return: ["Paid back", "#f59e0b"], interest: ["Interest", "#e11d48"], cost: ["Fund cost", "#64748b"] };
 export const FUND_KIND = { equity: "Equity (investors / partners)", owner: "Owner's capital", loan: "Loan", grant: "Grant" };
 

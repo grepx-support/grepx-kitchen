@@ -53,7 +53,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Suppliers (contact, phone, email) | ✅ | Setup → Suppliers |
 | Recommended orders per supplier from usage | ✅ | Orders → Recommended |
 | Purchase orders: save, change, copy, cancel, send by email / WhatsApp / SMS | ✅ | Orders |
-| Purchase order PDF | ⬜ | **NEXT (PDF round)** |
+| Purchase order PDF | ✅ | order page → PDF |
 | Orders list: stage tabs, search, supplier and date filters, prev / next, J / K keys; board cards open a side drawer | ✅ | Orders → Board, List |
 | Order timeline (made, sent, received, billed, approved, paid) and ordered-against-received lines | ✅ | order page, drawer, list |
 | Goods receipt: in full or changed, expiry, batch, bin | ✅ | Warehouse in |
@@ -69,10 +69,10 @@ Next up is marked **NEXT** (in the order it will be built).
 | Receive, send, transfer, adjust (with reason), waste (with reason) | ✅ | |
 | Lots, expiry, first-expiry-first-out, bins and zones | ✅ | Warehouse floor |
 | Pick lists in bin order | ✅ | |
-| Pick list PDF | ⬜ | **NEXT (PDF round)** |
+| Pick list PDF (bin order, tick boxes, signatures) | ✅ | pick page → PDF |
 | Min / max per item and place, alerts (out of stock, low, below zero, expiring, expired) sent to the owner by email / WhatsApp / SMS | ✅ | Inventory control; channels in Outbox → What goes out |
 | Stock takes (blind), variance and its value | ✅ | |
-| Stock take sheet PDF (to count on paper) and result PDF | ⬜ | **NEXT (PDF round)** |
+| Count sheet PDF (to count on paper, blind) | ✅ | Closing → Count sheet; stock-take result PDF ⬜ |
 | Valuation (item cost, lot cost), ABC, days of cover, waste by reason | ✅ | |
 | 3D warehouse: racks, cartons, expiry, fill, pick routes, keys, snapshot | ✅ | |
 | Barcode scanning | ✅ | camera scan in item pickers |
@@ -88,7 +88,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Feature | Status | Where / what is missing |
 |---|---|---|
 | Closing: counts, sales by type, issues, one per day, review | ✅ | Closing |
-| Closing report PDF with every detail (counts vs system, variances and value, sales, waste, issues, who) | ⬜ | **NEXT (PDF round - first)** |
+| Closing report PDF with every detail (counts vs system, differences and their value, sales, issues, who, signatures) | ✅ | Home → Closings → PDF |
 | Cash-up: float, cash counted, card / UPI totals, over / short | ⬜ | |
 
 ## 8. Selling and money
@@ -102,6 +102,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Monthly money summary, profit by product and customer | ✅ | Money |
 | Daily cost of goods, labour, rent, other; COGS range flags; cost landscape in 3D | ✅ | Costs |
 | Funds: partners' / investors' capital, owner's capital, loans, grants; promises with due dates, money in, money put to use (outlet, project), paid back, interest, fund costs; pending and overdue promises, available, loan balance, each party's share, month-by-month flow; reversing keeps history; amounts carry their currency (one per fund now, more later) | ✅ | Money → Funds (fund-service, reusable) |
+| Funds - utilisation (spent of what was put to use, per use); plan per fund (expected EBITDA per use, start, ramp, horizon, discount, payout, hurdle) with payback month, ROI, IRR, NPV, money multiple, cash-back curve; actual EBITDA per outlet against plan; each investor's expected payout and return; balance sheet of the funds (assets = liabilities + equity) | ✅ | Funds → a fund → Plan & returns; Funds overview |
 | Several currencies in one fund (conversion at a rate) | ⬜ | the amounts already carry their currency |
 | Quotations for catering events | ⬜ | |
 | Full double-entry accounts (ledger, balance sheet) | ➖ | the general ERP's accounting module; the kitchen keeps sub-ledgers (AR, AP) |
@@ -116,7 +117,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Leave: types (annual, sick, casual, unpaid, own), yearly allowance pro-rated for new joiners, carry-over, balances, request / approve / cancel, month calendar, no rostering on approved leave | ✅ | People → Leave (leave-service, reusable) |
 | Payroll: monthly run from salary or clocked hours, joiners / leavers pro-rated, unpaid leave, overtime, bonuses, advances, payslips (print); locking the month puts each outlet's labour cost into Costs | ✅ | People → Payroll (payroll-service, reusable) |
 | Statutory rules per country as plug-ins - India (EPF, ESI, Professional Tax, TDS new regime), Australia (PAYG + Medicare, super), Singapore (CPF, SDL), Basic - every rate in one settings page | ✅ | People → Payroll → Country & rates |
-| Payslip PDF sent by email / WhatsApp; staff see their own payslips | ⬜ | with the PDF round / mobile app |
+| Payslip PDF | ✅ | Payroll → payslip → PDF; sending it by email / WhatsApp and staff seeing their own ⬜ |
 | Staff see their own shifts and payslips; mobile app screens | ⬜ | at the end, with the mobile app |
 
 ## 10. Messages (email, WhatsApp, SMS)

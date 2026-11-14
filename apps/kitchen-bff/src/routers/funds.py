@@ -4,6 +4,8 @@
 
 """Funds (fund-service), for the owner: every fund and the business's totals, one fund in full, funds, parties and
 movements. Amounts go out in minor units (cents / paise) with their currency; the web shows them as money."""
+from datetime import date, timedelta
+
 import grepx_contracts as gc
 from fastapi import APIRouter, Depends
 
@@ -22,9 +24,41 @@ def overview(k: Kitchen = Depends(owner)):
     return {**ask(k, "OVERVIEW"), "currency": k.business.get("currency", "")}
 
 
+def last_months(n: int = 3) -> list[str]:
+    today = date.today().replace(day=1)
+    out = []
+    for _ in range(n):
+        today = (today - timedelta(days=1)).replace(day=1)
+        out.append(today.isoformat()[:7])
+    return out
+
+
+def actual_ebitda(k: Kitchen, fund_id: str) -> dict[str, list[float]]:
+    """A use named like one of the business's places gets that place's EBITDA (sales less ingredients, labour, rent and
+    other costs) for each of the last three months that had sales - the Costs page's own numbers."""
+    plan = (k.one(gc.fund.FUNDS, fund_id) or {}).get("plan") or {}
+    places = {r.get("name", ""): r["_key"] for r in k.rows(gc.business.LOCATIONS)}
+    out: dict[str, list[float]] = {}
+    for use in plan.get("uses") or []:
+        loc = places.get(use.get("purpose", ""))
+        if not loc:
+            continue
+        for m in last_months():
+            s = k.cmd(gc.costing.REQUESTS, gc.costing.SERVICE, {"action": "SUMMARY", "month": m, "location_id": loc})["summary"]
+            if s.get("sales") and s.get("net_profit") is not None:
+                out.setdefault(use["purpose"], []).append(float(s["net_profit"]))
+    return out
+
+
 @router.get("/{fund_id}")
 def one(fund_id: str, k: Kitchen = Depends(owner)):
-    return {**ask(k, "FUND", fund_id=fund_id), "people": ask(k, "OVERVIEW")["parties"]}
+    return {**ask(k, "FUND", fund_id=fund_id, actuals=actual_ebitda(k, fund_id)), "people": ask(k, "OVERVIEW")["parties"],
+            "places": sorted(r.get("name", "") for r in k.rows(gc.business.LOCATIONS))}
+
+
+@router.put("/{fund_id}/plan")
+def plan(fund_id: str, body: dict, k: Kitchen = Depends(owner)):
+    return ask(k, "SET_PLAN", fund_id=fund_id, plan=body)["plan"]
 
 
 @router.post("")

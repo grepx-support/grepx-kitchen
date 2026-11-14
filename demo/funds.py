@@ -22,4 +22,6 @@ def run(site, d, ids: dict, say) -> None:
             site.post(f"/funds/{fund['fund_id']}/entries", {"kind": what, "amount": amount, "party_id": parties.get(who, ""), "date": day(days_ago),
                                                             **({"due": day(extra)} if what == "commit" else {"purpose": extra} if extra else {})}, "owner")
             moved += 1
+        if name in getattr(d, "FUND_PLANS", {}):
+            site.put(f"/funds/{fund['fund_id']}/plan", d.FUND_PLANS[name], "owner")
     say(f"{len(funds)} funds, {len(parties)} parties, {moved} movements (one promise overdue)")

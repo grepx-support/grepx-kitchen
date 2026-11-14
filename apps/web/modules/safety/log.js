@@ -12,6 +12,7 @@ import { area, head } from "../lib/areas.js";
 import { biz } from "../lib/business.js";
 import { downloadCsv } from "../lib/csv.js";
 import { TABS } from "./today.js";
+import { openPdf } from "../money/common.js";
 
 export async function logPage(el, q) {
   const b = await biz();
@@ -22,12 +23,13 @@ export async function logPage(el, q) {
   el.innerHTML = String(html`${pageHead({ ...head("safety"), title: "Food safety log", subtitle: `${first} to ${last}${q.site ? ` · ${place(q.site)}` : " · every place"}`,
     actions: html`<form class="row sf-range"><input type="date" name="first" value="${first}"><input type="date" name="last" value="${last}"><select name="site"><option value="">Every place</option>${b.locations.map((l) =>
       html`<option value="${l.id}" ${q.site === l.id ? "selected" : ""}>${l.name}</option>`)}</select><button class="btn">Show</button></form>
-      <button class="btn" data-csv>${icon("download", { size: 15 })} CSV</button><button class="btn" onclick="print()">${icon("printer", { size: 15 })} Print</button>` })}
+      <button class="btn" data-csv>${icon("download", { size: 15 })} CSV</button><button class="btn" data-pdf>${icon("printer", { size: 15 })} PDF</button>` })}
     ${tabs(TABS, "log")}${kpiRow([{ label: "Records", value: h.total, icon: "clipboard", area: area("safety") },
       { label: "Out of range", value: h.failed, icon: "alert", area: h.failed ? "#e11d48" : "#94a3b8" },
       { label: "In range", value: h.total ? `${Math.round((1 - h.failed / h.total) * 100)}%` : "-", icon: "check", area: "#16a34a" }])}
     <section class="card k-section"><div class="t"></div></section>`);
   el.querySelector(".sf-range").onsubmit = (e) => { e.preventDefault(); location.hash = `#/safety/log?${new URLSearchParams(new FormData(e.target))}`; };
+  el.querySelector("[data-pdf]").onclick = () => openPdf(`/pdf/safety?first=${first}&last=${last}&site_id=${q.site || ""}`);
   el.querySelector("[data-csv]").onclick = () => downloadCsv(`food-safety-${first}-${last}.csv`, [["When", "Place", "Check", "Value", "In range", "Action taken", "By"],
     ...h.records.map((r) => [r.at, place(r.site_id), r.point_name, r.value ?? (r.failed || []).join("; "), r.ok ? "yes" : "no", r.action_taken, r.by])]);
   new DataTable({ rows: h.records, columns: [

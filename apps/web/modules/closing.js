@@ -7,6 +7,7 @@
 // Staff closing: few steps - count what you see, enter sales, note issues, check, submit (CLS-01..09).
 import { api } from "/assets/app.js";
 import { html, icon, pageHead } from "/assets/kit/index.js";
+import { openPdf } from "./money/common.js";
 import { area, head } from "./lib/areas.js";
 import { biz } from "./lib/business.js";
 import { picker, remember, remembered } from "./lib/place.js";
@@ -22,8 +23,9 @@ async function closing(el, q) {
   remember(loc);
   const f = await api(`/closing/form?location_id=${loc}`);
   el.innerHTML = String(html`${pageHead({ ...head("closing"), title: "Closing", subtitle: `${f.location.name} · counts every ${f.location.count_every_days} day(s)${f.last_closing ? ` · last ${f.last_closing}` : ""}`,
-    actions: picker(b.locations, loc, sells) })}<div class="k-body"></div>`);
+    actions: html`${picker(b.locations, loc, sells)} <button class="btn" data-sheet>${icon("printer", { size: 15 })} Count sheet</button>` })}<div class="k-body"></div>`);
   el.querySelector("[data-pick]").onchange = (e) => closing(el, { location: e.target.value });
+  el.querySelector("[data-sheet]").onclick = () => openPdf(`/pdf/count-sheet?location_id=${loc}`);
   const body = el.querySelector(".k-body");
   if (f.submitted_today) {
     body.innerHTML = String(html`<section class="card k-done">${icon("check", { size: 54 })}<h2>Done for today</h2><p>${f.location.name} was closed on ${f.date}. Thank you!</p></section>`);

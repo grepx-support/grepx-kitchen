@@ -8,6 +8,7 @@
 import { api, run } from "/assets/app.js";
 import { confirm, html, icon, pageHead, pill, progress } from "/assets/kit/index.js";
 import { area, head } from "../lib/areas.js";
+import { openPdf } from "../money/common.js";
 import { fmt } from "../lib/format.js";
 
 export async function pickScreen(el, id) {
@@ -16,7 +17,7 @@ export async function pickScreen(el, id) {
   const done = p.lines.filter((l) => l.picked > 0).length;
   el.style.setProperty("--area", area("floor"));
   el.innerHTML = String(html`${pageHead({ ...head("floor"), title: `Pick for ${p.to_name}`, subtitle: `from ${p.from_name} · by ${p.by_name}`,
-      actions: pill(p.state, open ? "warn" : p.state === "done" ? "good" : "") })}
+      actions: html`${pill(p.state, open ? "warn" : p.state === "done" ? "good" : "")} <button class="btn small" data-pick-pdf>${icon("printer", { size: 15 })} PDF</button>` })}
     ${progress(done, p.lines.length, { label: "Picked" })}
     <div class="stack k-section">${p.lines.map((l) => html`<article class="card k-pickline ${l.picked > 0 ? "done" : ""}">
       <div><h3>${l.name}</h3><p class="muted">${fmt(l.qty)} ${l.unit}${l.short ? html` · <span class="bad">${fmt(l.short)} missing in stock</span>` : ""}</p>
@@ -26,6 +27,7 @@ export async function pickScreen(el, id) {
         : html`<b>${fmt(l.picked)} ${l.unit}</b>`}</article>`)}</div>
     ${open ? html`<div class="k-nav"><button class="btn" data-cancel>Cancel list</button><button class="btn primary" data-done>${icon("send", { size: 16 })} Done - send</button></div>` : ""}`);
   const again = () => pickScreen(el, id);
+  el.querySelector("[data-pick-pdf]").onclick = () => openPdf(`/pdf/pick/${id}`);
   el.querySelectorAll("[data-pick]").forEach((btn) => btn.onclick = async () => {
     const qty = el.querySelector(`[data-qty="${CSS.escape(btn.dataset.pick)}"]`).value;
     if (await run(() => api(`/warehouse/picks/${id}/pick`, { method: "POST", body: { item_id: btn.dataset.pick, qty } }))) again();

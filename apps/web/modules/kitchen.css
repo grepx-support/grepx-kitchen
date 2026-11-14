@@ -587,3 +587,9 @@
 .fd-months i { flex: 1; border-radius: 4px 4px 0 0; } .fd-months .in { background: #16a34a; } .fd-months .out { background: #0ea5e9; }
 .fd-months span { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10px; color: var(--muted); }
 .fd-kind { font-size: 12px; font-weight: 700; color: var(--k); }
+.bs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; } @media (max-width: 800px) { .bs-grid { grid-template-columns: 1fr; } }
+.bs-side h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 6px 0; }
+.bs-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+.bs-total { font-weight: 800; border-bottom: 2px solid var(--area); }
+.pl-use { align-items: end; } .pl-use label { min-width: 120px; }
+.pl-use .btn { flex: 0 0 auto; width: auto; align-self: end; margin-bottom: 4px; }

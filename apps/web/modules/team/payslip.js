@@ -7,6 +7,7 @@
 // One payslip as the person sees it: earnings, deductions, net, and what the employer pays on top - printable.
 import { html, openDialog } from "/assets/kit/index.js";
 import { money } from "../lib/format.js";
+import { openPdf } from "../money/common.js";
 
 const rows = (b, lines) => lines.map((l) => html`<tr><td>${l.label}</td><td class="num">${money(b, l.amount)}</td></tr>`);
 
@@ -22,4 +23,5 @@ export function payslipBody(b, s) {
 }
 
 export const showPayslip = (b, s) => openDialog({ title: `${s.name} - ${s.month}`, wide: true, body: payslipBody(b, s),
-  actions: [{ label: "Close", value: "" }, { label: "Print", value: "print", primary: true }] }).then((v) => v === "print" && print());
+  actions: [{ label: "Close", value: "" }, { label: "PDF", value: "pdf", primary: true }] })
+  .then((v) => v === "pdf" && openPdf(`/pdf/payslip?month=${s.month}&employee_id=${s.employee_id}`));

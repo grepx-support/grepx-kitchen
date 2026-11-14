@@ -10,6 +10,7 @@ import { html } from "/assets/kit/index.js";
 import { area } from "../lib/areas.js";
 import { has, on } from "../lib/business.js";
 import { fmt, today } from "../lib/format.js";
+import { openPdf } from "../money/common.js";
 
 export default {
   id: "closings", title: "Closings", icon: "clipboard", area: area("closing"), href: "#/closing",
@@ -19,7 +20,8 @@ export default {
     const done = new Set(d.closings.filter((c) => c.date === today()).map((c) => c.location_id));
     const sells = b.locations.filter((l) => !l.holding || l.kind !== "warehouse");
     return html`<div class="k-dots">${sells.map((l) => html`<span class="${done.has(l.id) ? "on" : ""}" title="${l.name}">${l.name}</span>`)}</div>
-      ${d.closings.slice(0, 3).map((c) => html`<div class="k-row"><b>${c.date.slice(5)}</b><span>${c.location_name} · ${c.staff_name}</span><span>${fmt(c.total_sales, 0)}</span></div>
+      ${d.closings.slice(0, 3).map((c) => html`<div class="k-row"><b>${c.date.slice(5)}</b><span>${c.location_name} · ${c.staff_name}</span><span>${fmt(c.total_sales, 0)}</span><button class="btn small" data-pdf="${c.closing_id}" title="Closing report PDF">PDF</button></div>
         ${c.issues ? html`<p class="k-issue">⚠ ${c.issues}</p>` : ""}`)}${d.closings.length ? "" : html`<p class="muted">No closings yet.</p>`}`;
   },
+  mounted: (el) => el.addEventListener("click", (e) => { const id = e.target.closest("[data-pdf]")?.dataset.pdf; if (id) openPdf(`/pdf/closing/${encodeURIComponent(id)}`); }),
 };
