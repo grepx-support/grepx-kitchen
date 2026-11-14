@@ -9,6 +9,7 @@ from enum import Enum
 class Table(str, Enum):
     CUSTOMERS = "customers"
     INVOICES = "invoices"
+    PRICE_BREAKS = "price_breaks"
     QUOTES = "quotes"
 
 
@@ -67,3 +68,7 @@ class ReasonCode(str, Enum):
     QUOTE_EXPIRED = "QUOTE_EXPIRED"
     WRONG_STATE = "WRONG_STATE"
     INVALID_EVENT = "INVALID_EVENT"
+    INVALID_CHARGE = "INVALID_CHARGE"
+    INVALID_PRICE = "INVALID_PRICE"
+    INVALID_DISCOUNT = "INVALID_DISCOUNT"
+    INVALID_QUANTITY = "INVALID_QUANTITY"

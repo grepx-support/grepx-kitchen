@@ -33,7 +33,8 @@ export async function quoteEditor(el, id) {
     <div data-lines></div><label>Notes on the quotation (menu details, dietary needs, set-up...)<textarea name="notes" rows="3">${q?.notes || ""}</textarea></label>
     <div class="k-nav"><a class="btn" href="#/sales/quotes">Cancel</a><button class="btn primary">${icon("check", { size: 16 })} Save</button></div></form>`);
   const lines = new LineEditor({ items: items.map((i) => ({ id: i.id, name: i.name, unit: i.unit, price: i.price || "" })), currency, taxRate: rate,
-    lines: (q?.lines || []).map((l) => ({ ...l, unit_price: (l.unit_price / 100).toFixed(2) })) });
+    lines: (q?.lines || []).map((l) => ({ ...l, unit_price: (l.unit_price / 100).toFixed(2) })), charges: true,
+    priceFor: (item, qty) => api(`/sales/price?item_id=${item}&qty=${qty}&customer_id=${body.querySelector("[name=customer_id]").value}`) });
   lines.mount(body.querySelector("[data-lines]"));
   const form = body.querySelector("form");
   form.tax_rate.oninput = () => lines.setTaxRate(form.tax_rate.value);

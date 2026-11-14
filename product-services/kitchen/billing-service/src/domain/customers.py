@@ -2,10 +2,13 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""A customer as kept: name, contacts, billing address, tax number, payment terms (days)."""
+"""A customer as kept: name, contacts, billing address, tax number, payment terms (days), their prices (discount %,
+fixed prices per item)."""
 import re
 
 from dto import ReasonCode
+
+from .pricing import clean_pricing
 
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -25,4 +28,5 @@ def clean_customer(body: dict) -> dict:
         raise ValueError(ReasonCode.INVALID_TERMS)
     text = lambda k, n=200: str(body.get(k) or "").strip()[:n]   # noqa: E731
     return {"name": name, "email": email, "phone": text("phone", 30), "address": text("address", 400), "tax_number": text("tax_number", 40),
-            "contact": text("contact", 80), "terms_days": terms, "active": body.get("active") is not False}
+            "contact": text("contact", 80), "terms_days": terms, "active": body.get("active") is not False,
+            "pricing": clean_pricing(body.get("pricing"))}

@@ -210,9 +210,9 @@ Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ n
 | **Orders (selling)** | | |
 | Sales quotes → orders | ✅ | catering quotations |
 | Sales orders from all channels, invoicing | 🟡 | invoices ✅; standing / online orders from outlets and B2B customers ⬜ (order-service, product) |
-| Freight and charges on quotes / orders | ⬜ | billing-service: charge lines kept apart in reports |
-| Customer pricing (fixed price or % per customer) | ⬜ | billing-service price lists |
-| Quantity discounts (price breaks) | ⬜ | billing-service price lists |
+| Freight and charges on quotes / orders | ✅ | billing-service charge lines (delivery, freight, service) totalled apart; "Add a charge" on invoices and quotes |
+| Customer pricing (fixed price or % per customer) | ✅ | billing-service customer pricing; Money → Price lists; lines fill the customer's price |
+| Quantity discounts (price breaks) | ✅ | billing-service price_breaks; repriced as the quantity changes |
 | **Purchasing** | | |
 | Suppliers with prices, currencies, lead times, performance | 🟡 | suppliers, price history ✅; lead time, supplier currency, on-time rate ⬜ (item- / purchase-service) |
 | Landed cost (duty, freight, labour on a purchase) | ⬜ | purchase-service: costs spread over the lines into the unit cost |
@@ -237,5 +237,5 @@ Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ n
 | Accounting (Xero / QuickBooks) | ⬜ | integration-service: invoices, bills, payments out |
 | E-commerce / delivery apps (Shopify, Grab, Swiggy...) | ⬜ | integration-service: orders in, stock out |
 
-**Suggested next, in order:** (1) customer price lists, quantity breaks and charge lines; (2) landed cost and recosting on the bill; (3) supplier returns; (4) disassembly and combo items; (5) attachments on any record; (6) recall report by lot; (7) API keys; (8) accounting link.
+**Suggested next, in order:** ~~(1) customer price lists, quantity breaks and charge lines~~ done; (2) landed cost and recosting on the bill; (3) supplier returns; (4) disassembly and combo items; (5) attachments on any record; (6) recall report by lot; (7) API keys; (8) accounting link.
 

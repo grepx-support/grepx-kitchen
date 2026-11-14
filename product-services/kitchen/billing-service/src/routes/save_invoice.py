@@ -6,7 +6,7 @@
 goods are sent from (then issuing it takes them out of stock there). Totals are worked out here."""
 from grepx_service import RequestContext, new_key, now_iso
 
-from domain import clean_lines, priced
+from domain import priced
 from dto import InvoiceState, Kind, ReasonCode, Table
 from .common import Stop, run
 
@@ -21,7 +21,7 @@ def handle(ctx: RequestContext) -> None:
         place = books.location(ctx.text("location_id")) if ctx.text("location_id") else {}
         key = key or new_key()
         doc = priced({"invoice_id": key, "kind": Kind.INVOICE.value, "state": InvoiceState.DRAFT.value, "customer_id": customer["customer_id"],
-                      "customer_name": customer["name"], "lines": clean_lines(ctx.get("lines"), books.items()),
+                      "customer_name": customer["name"], "lines": books.lines(ctx.get("lines"), customer),
                       "tax_rate": str(ctx.get("tax_rate") or 0), "discount_rate": str(ctx.get("discount_rate") or 0),
                       "notes": ctx.text("notes")[:500], "reference": ctx.text("reference")[:60],
                       "location_id": ctx.text("location_id") if place else "", "location_name": place.get("name", ""), "currency": books.business.get("currency", ""),

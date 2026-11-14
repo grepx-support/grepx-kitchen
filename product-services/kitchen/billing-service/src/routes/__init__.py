@@ -14,6 +14,7 @@ from . import margins
 from . import statement
 from . import send_reminder
 from . import save_quote, send_quote, accept_quote, decline_quote, cancel_quote, invoice_order, quotes
+from . import prices
 
 TABLE = "billing_requests"
 ROUTES = {
@@ -35,5 +36,8 @@ ROUTES = {
     BillingAction.CANCEL_QUOTE: cancel_quote.handle,
     BillingAction.INVOICE_ORDER: invoice_order.handle,
     BillingAction.QUOTES: quotes.handle,
+    BillingAction.SET_PRICE_BREAKS: prices.set_breaks,
+    BillingAction.PRICE: prices.price,
+    BillingAction.PRICE_LIST: prices.price_list,
 }
 handle = ActionDispatcher(ROUTES, BillingAction, TABLE)

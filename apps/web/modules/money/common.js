@@ -22,6 +22,7 @@ export const canPay = () => has("payables") || has("manage_business");
 
 const TABS = () => [canSell() && { id: "sales", label: "Invoices", icon: "receipt", href: "#/sales" },
   canSell() && { id: "quotes", label: "Quotations", icon: "send", href: "#/sales/quotes" },
+  canSell() && { id: "prices", label: "Price lists", icon: "coin", href: "#/sales/prices" },
   canSell() && { id: "customers", label: "Customers", icon: "users", href: "#/sales/customers" },
   canPay() && { id: "bills", label: "Supplier bills", icon: "inbox", href: "#/bills" },
   has("manage_business") && { id: "report", label: "Summary", icon: "chart", href: "#/money/report" },

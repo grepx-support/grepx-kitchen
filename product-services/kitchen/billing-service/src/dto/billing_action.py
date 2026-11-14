@@ -24,4 +24,7 @@ class BillingAction(str, Enum):
     DECLINE_QUOTE = "DECLINE_QUOTE"    # the customer said no (reason kept)
     CANCEL_QUOTE = "CANCEL_QUOTE"      # withdrawn by the business (a quote or an order not yet invoiced)
     INVOICE_ORDER = "INVOICE_ORDER"    # the order becomes a draft invoice with the same lines
-    QUOTES = "QUOTES"                  # quotes and orders as a reader sees them (expired...), the pipeline and win rate
+    QUOTES = "QUOTES"
+    SET_PRICE_BREAKS = "SET_PRICE_BREAKS"  # an item's quantity price breaks (cheaper per unit from N up)
+    PRICE = "PRICE"                    # what an item costs a customer for a quantity (their price, a break, or the list price)
+    PRICE_LIST = "PRICE_LIST"          # every sold item: list price, its breaks, and which customers have their own price                  # quotes and orders as a reader sees them (expired...), the pipeline and win rate

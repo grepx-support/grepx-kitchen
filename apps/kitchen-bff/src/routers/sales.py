@@ -32,7 +32,7 @@ def overview(k: Kitchen = Depends(seller)):
 @router.post("/customers")
 def save_customer(body: dict, k: Kitchen = Depends(seller)):
     return ask(k, A.SAVE_CUSTOMER, **{f: body.get(f) for f in ("customer_id", "name", "email", "phone", "address", "tax_number", "contact",
-                                                                "terms_days", "active")})
+                                                                "terms_days", "active", "pricing")})
 
 
 @router.post("/invoices")
@@ -77,3 +77,39 @@ def pdf(invoice_id: str, k: Kitchen = Depends(seller)):
     data = render(InvoicePdf(doc, brand(k), clean(k.one(gc.billing.CUSTOMERS, doc["customer_id"])) or {}))
     name = (doc.get("number") or "draft").replace("/", "-")
     return Response(data, media_type="application/pdf", headers={"Content-Disposition": f'inline; filename="{name}.pdf"'})
+
+
+@router.get("/price")
+def price(item_id: str, qty: float = 1, customer_id: str = "", k: Kitchen = Depends(seller)):
+    """What an item costs this customer for this many: their own price, a quantity break, or the list price."""
+    return ask(k, A.PRICE, item_id=item_id, qty=qty, customer_id=customer_id)
+
+
+@router.get("/prices")
+def price_list(k: Kitchen = Depends(seller)):
+    """Every item you sell: list price, quantity breaks, and customers with their own price or a standing discount."""
+    return ask(k, A.PRICE_LIST)
+
+
+@router.put("/prices/{item_id}/breaks")
+def set_breaks(item_id: str, body: dict, k: Kitchen = Depends(seller)):
+    return ask(k, A.SET_PRICE_BREAKS, item_id=item_id, breaks=body.get("breaks") or [])
+
+
+@router.put("/customers/{customer_id}/pricing")
+def customer_pricing(customer_id: str, body: dict, k: Kitchen = Depends(seller)):
+    """Set a customer's standing discount and / or their own price for one item ({item_id, price}; price null removes it)."""
+    c = clean(k.one(gc.billing.CUSTOMERS, customer_id))
+    if not c:
+        raise ApiError("UNKNOWN_CUSTOMER", 404)
+    pricing = dict(c.get("pricing") or {"discount_pct": "0", "prices": {}})
+    prices = dict(pricing.get("prices") or {})
+    if body.get("item_id"):
+        if body.get("price") in (None, ""):
+            prices.pop(body["item_id"], None)
+        else:
+            prices[body["item_id"]] = body["price"]
+    if body.get("discount_pct") is not None:
+        pricing["discount_pct"] = body["discount_pct"]
+    fields = ("name", "email", "phone", "address", "tax_number", "contact", "terms_days", "active")
+    return ask(k, A.SAVE_CUSTOMER, customer_id=customer_id, **{f: c.get(f) for f in fields}, pricing={**pricing, "prices": prices})["customer"]

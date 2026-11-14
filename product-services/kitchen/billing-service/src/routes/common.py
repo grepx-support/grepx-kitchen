@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import grepx_contracts as gc
 from grepx_service import RequestContext, state_of
 
+from domain import clean_lines, fill_prices, tag_charges
 from dto import ReasonCode, Table
 
 
@@ -42,6 +43,9 @@ class Books:
     def customer(self, key: str) -> dict:
         return self.mine(Table.CUSTOMERS.value, key, ReasonCode.UNKNOWN_CUSTOMER)
 
+    def customers(self) -> list[dict]:
+        return [{**state_of(r), "customer_id": r["_key"]} for r in self.read.accepted(Table.CUSTOMERS.value, tenant_id=self.tenant)]
+
     def invoice(self, key: str) -> dict:
         return self.mine(Table.INVOICES.value, key, ReasonCode.UNKNOWN_INVOICE)
 
@@ -56,6 +60,15 @@ class Books:
 
     def invoices(self) -> list[dict]:
         return [state_of(r) for r in self.read.accepted(Table.INVOICES.value, tenant_id=self.tenant)]
+
+    def breaks(self) -> dict[str, list]:
+        return {r["_key"]: r.get("breaks") or [] for r in self.read.accepted(Table.PRICE_BREAKS.value, tenant_id=self.tenant)}
+
+    def lines(self, raw: list, customer: dict | None) -> list[dict]:
+        """Document lines with the customer's prices filled in where none was typed, charges tagged, amounts worked out."""
+        items = self.items()
+        filled = fill_prices(raw, items, (customer or {}).get("pricing"), self.breaks())
+        return tag_charges(filled, clean_lines(filled, items))
 
     def items(self) -> dict[str, dict]:
         return {r["_key"]: r for r in self.read.accepted(gc.item.ITEMS, tenant_id=self.tenant)}
