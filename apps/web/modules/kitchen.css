@@ -569,3 +569,21 @@
 .sf-home { list-style: none; padding: 0; margin: 0; } .sf-home li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
 .sf-home li a { flex: 1; font-weight: 600; } .sf-home .warn { color: #b45309; } .sf-home .ok { color: #15803d; }
 .sf-range { gap: 6px; } .sf-range input, .sf-range select { width: auto; }
+
+/* Funds */
+.fd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.fd-card { color: inherit; text-decoration: none; display: flex; flex-direction: column; gap: 6px; border-top: 3px solid var(--area); transition: transform .15s, box-shadow .15s; }
+.fd-card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,.12); } .fd-loan { border-top-color: #e11d48; } .fd-grant { border-top-color: #7c3aed; }
+.fd-card header { display: flex; flex-direction: column; } .fd-big { font-size: 26px; font-weight: 800; }
+.fd-bar { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 15%, transparent); overflow: hidden; }
+.fd-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--area), #22c55e); border-radius: 999px; transition: width .8s; }
+.fd-mini { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; font-size: 13px; margin: 4px 0 0; } .fd-mini dt { color: var(--muted); } .fd-mini dd { margin: 0; text-align: right; }
+.fd-late div { padding: 4px 0; }
+.fd-two { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; } @media (max-width: 1000px) { .fd-two { grid-template-columns: 1fr; } }
+.fd-use { display: grid; grid-template-columns: 140px 1fr auto; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; }
+.fd-use i { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 15%, transparent); } .fd-use b { display: block; height: 100%; background: #0ea5e9; border-radius: 999px; }
+.fd-months { display: flex; gap: 6px; align-items: flex-end; height: 120px; padding-top: 6px; }
+.fd-months > div { flex: 1; display: flex; gap: 2px; align-items: flex-end; height: 100%; position: relative; padding-bottom: 16px; }
+.fd-months i { flex: 1; border-radius: 4px 4px 0 0; } .fd-months .in { background: #16a34a; } .fd-months .out { background: #0ea5e9; }
+.fd-months span { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10px; color: var(--muted); }
+.fd-kind { font-size: 12px; font-weight: 700; color: var(--k); }

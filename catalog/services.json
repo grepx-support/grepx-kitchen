@@ -223,6 +223,23 @@
     "reacts_to": []
   },
   {
+    "name": "fund-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/fund-service",
+    "request_table": "fund_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Funds and capital for any business: funds (equity, loans, grants, owner's capital), the parties who put money in, promises and when they are due, money received, where it was put (projects, places, purposes), money paid back, loan balances; what is pending, overdue, available, each party's share. Amounts carry their currency. Keywords: capital, investors, portfolio, funding, loans, partners",
+    "routes": [
+      "record",
+      "save",
+      "views"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "access-service",
     "layer": "common",
     "product": "",

@@ -17,7 +17,7 @@ function reading(p) {
 }
 
 function checklist(p) {
-  return html`<ul class="sf-items">${p.questions.map((i) => html`<li><label class="check"><input type="checkbox" name="item" value="${i}"> ${i}</label></li>`)}</ul>`;
+  return html`<ul class="sf-items">${(p.questions || []).map((i) => html`<li><label class="check"><input type="checkbox" name="item" value="${i}"> ${i}</label></li>`)}</ul>`;
 }
 
 export const card = (p, canEdit) => html`<form class="card sf-card ${p.failed_today ? "failed" : p.due ? "due" : "done"}" data-point="${p.point_id}">

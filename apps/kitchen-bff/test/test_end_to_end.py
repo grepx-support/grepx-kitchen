@@ -26,7 +26,7 @@ COMMON = ["common-services/identity", "common-services/people-service", "common-
           "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service",
           "common-services/media-service", "common-services/employee-service", "common-services/roster-service",
           "common-services/leave-service", "common-services/payroll-service",
-          "common-services/compliance-service"]
+          "common-services/compliance-service", "common-services/fund-service"]
 MONTH = date.today().isoformat()[:7]
 
 
@@ -429,5 +429,14 @@ def test_team_and_roster_across_outlets(env):
     assert api.post("/api/v1/safety/record", headers=owner, json={"point_id": fridge["point_id"], "value": 8}).status_code == 409
     assert ok(api.post("/api/v1/safety/record", headers=owner, json={"point_id": fridge["point_id"], "value": 8, "action_taken": "Door fixed"}))["ok"] is False
     assert ok(api.get(f"/api/v1/safety/day?site_id={k1}", headers=owner))["failed"] == 1
+    # --- funds: a partner's promise, money in, put to a new outlet ---
+    seed = ok(api.post("/api/v1/funds", headers=owner, json={"name": "Partners' capital", "kind": "equity", "target": 1000000}))
+    assert seed["currency"] == "INR"
+    asha = ok(api.post("/api/v1/funds/parties", headers=owner, json={"name": "Asha Mehta", "kind": "partner"}))["party_id"]
+    for e in ({"kind": "commit", "party_id": asha, "amount": 600000, "due": "2026-01-01"}, {"kind": "receive", "party_id": asha, "amount": 400000},
+              {"kind": "allocate", "amount": 150000, "purpose": "Outlet fit-out"}):
+        ok(api.post(f"/api/v1/funds/{seed['fund_id']}/entries", headers=owner, json=e))
+    view = ok(api.get("/api/v1/funds", headers=owner))
+    assert view["totals"]["INR"]["pending"] == 20000000 and view["totals"]["INR"]["available"] == 25000000 and view["overdue"][0]["name"] == "Asha Mehta"
     labour = ok(api.get("/api/v1/setup", headers=owner))["overheads"]
     assert labour[0]["labour"] == done["cost_by_site"][k1] and labour[0]["location_id"] == k1

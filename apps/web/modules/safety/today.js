@@ -48,7 +48,7 @@ export async function safetyPage(el, q) {
       e.preventDefault();
       const body = { point_id: p.point_id };
       if (p.kind === "reading") body.value = form.value.value;
-      else { const ticked = new Set([...form.querySelectorAll("[name=item]:checked")].map((c) => c.value)); body.answers = Object.fromEntries(p.questions.map((i) => [i, ticked.has(i)])); }
+      else { const ticked = new Set([...form.querySelectorAll("[name=item]:checked")].map((c) => c.value)); body.answers = Object.fromEntries((p.questions || []).map((i) => [i, ticked.has(i)])); }
       const bad = p.kind === "reading" ? (p.min != null && Number(body.value) < p.min) || (p.max != null && Number(body.value) > p.max) : Object.values(body.answers).includes(false);
       if (bad) { body.action_taken = await actionTaken(p.name); if (!body.action_taken) return; }
       if (await run(() => api("/safety/record", { method: "POST", body }), bad ? "Recorded - flagged" : "Recorded")) again();

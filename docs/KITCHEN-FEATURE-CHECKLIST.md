@@ -101,6 +101,8 @@ Next up is marked **NEXT** (in the order it will be built).
 | Payment reminders (manual and automatic) | ✅ | |
 | Monthly money summary, profit by product and customer | ✅ | Money |
 | Daily cost of goods, labour, rent, other; COGS range flags; cost landscape in 3D | ✅ | Costs |
+| Funds: partners' / investors' capital, owner's capital, loans, grants; promises with due dates, money in, money put to use (outlet, project), paid back, interest, fund costs; pending and overdue promises, available, loan balance, each party's share, month-by-month flow; reversing keeps history; amounts carry their currency (one per fund now, more later) | ✅ | Money → Funds (fund-service, reusable) |
+| Several currencies in one fund (conversion at a rate) | ⬜ | the amounts already carry their currency |
 | Quotations for catering events | ⬜ | |
 | Full double-entry accounts (ledger, balance sheet) | ➖ | the general ERP's accounting module; the kitchen keeps sub-ledgers (AR, AP) |
 | POS sales import (Square), delivery apps (Swiggy / Zomato / Uber Eats) | 🔒 | F1 / F9: need the partner accounts |

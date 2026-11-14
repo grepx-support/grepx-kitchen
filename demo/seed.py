@@ -24,6 +24,7 @@ import india  # noqa: E402
 import history  # noqa: E402
 import setup  # noqa: E402
 import floor  # noqa: E402
+import funds  # noqa: E402
 import money  # noqa: E402
 import safety  # noqa: E402
 import team  # noqa: E402
@@ -64,6 +65,7 @@ def one(site, d, args: list[str], days: int, resume: bool = False) -> None:
     money.run(site, d, ids, say)
     team.run(site, d, ids, say)
     safety.run(site, d, ids, say)
+    funds.run(site, d, ids, say)
 
 
 def main(args: list[str]) -> int:
