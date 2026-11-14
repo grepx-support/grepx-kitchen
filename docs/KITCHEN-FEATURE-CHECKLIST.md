@@ -31,9 +31,10 @@ Next up is marked **NEXT** (in the order it will be built).
 | Items: ingredients, made products, supplies; unit, barcode, shelf life, sale price | ✅ | Setup → Items |
 | Recipes (ingredients per batch, batch size) | ✅ | Setup → Recipes |
 | Cost per portion from the recipe | ✅ | used by Profit by product |
-| Recipe cost card (line by line, cost history) | ⬜ | **NEXT (step 2 of the plan)** |
+| Recipe cards: method steps (tick as you go), station, prep / cook time, yield after trim, portion, plating, holding time; scale to any amount; cost per portion and margin; print | ✅ | Chef → Recipe book |
+| Cost history per dish | ⬜ | |
 | Menu engineering (stars / plough-horses / puzzles / dogs) | ⬜ | **NEXT (step 2)** |
-| Allergens and dietary tags on dishes | ⬜ | |
+| Allergens (the 14) and veg / egg / non-veg / vegan marks on ingredients; dishes take theirs from the recipe; allergen chart to print | ✅ | Setup → Items; Chef → Allergen chart |
 | Several units per item (case of 12 = 12 each) | ⬜ | one unit per item today |
 
 ## 3. Kitchen production
@@ -43,7 +44,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Record batches made; ingredients used come off stock | ✅ | Kitchen screen, Terminal |
 | Kitchen terminal (big screen, timers) | ✅ | Terminal |
 | Forecast per dish per outlet per day, most accurate method chosen; "use as targets" | ✅ | forecast-service; Kitchen → Forecast |
-| Prep lists per station / shift | ⬜ | |
+| Prep list for today by station (the week's target over the days left, in whole batches), made today, links to the card | ✅ | Chef → Prep list |
 | Food safety records (fridge temperatures, cleaning checks, HACCP) | ⬜ | |
 
 ## 4. Buying (procure to pay)

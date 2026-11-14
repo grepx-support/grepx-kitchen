@@ -453,3 +453,46 @@
 .au-bar .check { width: auto; display: inline-flex; gap: 6px; align-items: center; }
 .au-fields th { text-align: left; white-space: nowrap; text-transform: capitalize; color: var(--muted); padding-right: 14px; }
 .au-fields td { word-break: break-word; }
+
+/* Chef: recipe book, card, prep board, allergen chart */
+.ch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.ch-card { display: flex; flex-direction: column; gap: 6px; color: inherit; text-decoration: none; border-top: 3px solid var(--area);
+  transition: transform .15s, box-shadow .15s; }
+.ch-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+.ch-card.draft { border-top-style: dashed; opacity: .85; }
+.ch-card header, .ch-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ch-card header b { flex: 1; }
+.ch-st { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--area) 15%, transparent); color: var(--area); font-weight: 700; }
+.ch-nums { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+.ch-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.ch-al { font-size: 11px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, #f59e0b 16%, transparent); white-space: nowrap; }
+.ch-diet { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--d); }
+.ch-diet i { width: 14px; height: 14px; border: 2px solid var(--d); border-radius: 3px; display: grid; place-items: center; }
+.ch-diet i::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--d); }
+.ch-diet.unknown { width: 18px; height: 18px; justify-content: center; border: 2px dashed var(--muted); border-radius: 3px; color: var(--muted); }
+.ch-head { justify-content: space-between; }
+.ch-figs { display: flex; gap: 18px; flex-wrap: wrap; } .ch-figs span { font-size: 13px; color: var(--muted); } .ch-figs b { font-size: 18px; color: var(--text); }
+.ch-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 12px; margin-top: 12px; }
+@media (max-width: 900px) { .ch-two { grid-template-columns: 1fr; } }
+.ch-scale { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; } .ch-scale input { width: 90px; }
+.ch-steps { counter-reset: s; list-style: none; padding: 0; }
+.ch-steps li { counter-increment: s; position: relative; padding: 8px 8px 8px 40px; border-bottom: 1px solid var(--border); }
+.ch-steps li::before { content: counter(s); position: absolute; left: 4px; top: 7px; width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--area); color: #fff; font-weight: 700; font-size: 13px; }
+.ch-steps li:has(input:checked) { opacity: .45; text-decoration: line-through; }
+.ch-steps input { margin-right: 6px; }
+.ch-edit textarea { width: 100%; font: inherit; }
+.ch-board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 10px; overflow-x: auto; align-items: start; }
+.ch-col header { display: flex; justify-content: space-between; align-items: baseline; text-transform: capitalize; border-bottom: 2px solid var(--area); padding-bottom: 6px; }
+.ch-col ul { list-style: none; padding: 0; margin: 0; max-height: calc(100vh - 260px); overflow: auto; }
+.ch-task { display: flex; flex-direction: column; gap: 2px; padding: 8px 4px; border-bottom: 1px solid var(--border); }
+.ch-task.done { opacity: .5; } .ch-task.done b::after { content: " ✓"; color: #16a34a; }
+.ch-q { font-weight: 700; color: var(--area); }
+.ch-chart { overflow: auto; } .ch-chart table { font-size: 13px; }
+.ch-rot { height: 120px; vertical-align: bottom; white-space: nowrap; } .ch-rot span { writing-mode: vertical-rl; transform: rotate(180deg); }
+.ch-x { text-align: center; color: #dc2626; font-size: 16px; }
+.ch-chart tbody tr:hover { background: color-mix(in srgb, var(--area) 8%, transparent); }
+.ch-pick { display: flex; flex-wrap: wrap; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+.ch-al-pick { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; width: auto; }
+@media print { .ch-board { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); } .ch-col ul { max-height: none; } }

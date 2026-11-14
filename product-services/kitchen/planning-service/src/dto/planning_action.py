@@ -8,6 +8,7 @@ from enum import Enum
 
 class PlanningAction(str, Enum):
     PRODUCTION_TARGET = "PRODUCTION_TARGET"
+    PREP_LIST = "PREP_LIST"      # today's prep list by station
     SET_TARGET = "SET_TARGET"
     WAREHOUSE_OUT = "WAREHOUSE_OUT"
     WAREHOUSE_IN = "WAREHOUSE_IN"

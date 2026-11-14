@@ -83,3 +83,27 @@ def test_an_item_keeps_its_selling_price():
     assert clean_item({"name": "Beef", "kind": "ingredient", "unit": "kg"})["price"] == 0
     with pytest.raises(ValueError, match="INVALID_PRICE"):
         clean_item({"name": "Beef", "kind": "ingredient", "unit": "kg", "price": -1})
+
+
+def test_recipe_card_allergens_and_veg_marks(h):
+    from domain import dish_marks
+    paneer = call(h, action="SAVE_ITEM", tenant_id="hft", name="Paneer", kind="ingredient", unit="kg", allergens=["Milk"], diet="veg").fields["item"]
+    egg = call(h, action="SAVE_ITEM", tenant_id="hft", name="Egg", kind="ingredient", unit="each", allergens=["eggs"], diet="egg").fields["item"]
+    assert paneer["allergens"] == ["milk"] and paneer["diet"] == "veg"
+    assert call(h, action="SAVE_ITEM", tenant_id="hft", name="X", kind="ingredient", unit="kg", allergens=["chalk"]).reason == "INVALID_ALLERGEN"
+    assert call(h, action="SAVE_ITEM", tenant_id="hft", name="Y", kind="ingredient", unit="kg", diet="meaty").reason == "INVALID_DIET"
+    dish = call(h, action="SAVE_ITEM", tenant_id="hft", name="Paneer bhurji", kind="finished", unit="portion").fields["item"]["item_id"]
+    lines = [{"item_id": paneer["item_id"], "qty": 2}, {"item_id": egg["item_id"], "qty": 6}]
+    assert call(h, action="SAVE_RECIPE", tenant_id="hft", item_id=dish, batch_output=10, ingredients=lines).ok
+    card = call(h, action="SAVE_RECIPE_CARD", tenant_id="hft", item_id=dish, steps=["Crumble paneer", " ", "Scramble eggs"], station="Curry",
+                prep_min=10, cook_min=8, yield_pct=95, portion="180 g", hold_hours=3)
+    assert card.ok and card.fields["recipe"]["steps"] == ["Crumble paneer", "Scramble eggs"] and card.fields["recipe"]["station"] == "curry"
+    assert card.fields["recipe"]["batch_output"] == 10 and len(card.fields["recipe"]["ingredients"]) == 2      # ingredients kept
+    again = call(h, action="SAVE_RECIPE", tenant_id="hft", item_id=dish, batch_output=12, ingredients=lines).fields["recipe"]
+    assert again["steps"] == ["Crumble paneer", "Scramble eggs"] and again["batch_output"] == 12                 # card kept
+    assert call(h, action="SAVE_RECIPE_CARD", tenant_id="hft", item_id=dish, yield_pct=0).reason == "INVALID_YIELD"
+    assert call(h, action="SAVE_RECIPE_CARD", tenant_id="hft", item_id=paneer["item_id"]).reason == "NOT_FINISHED_GOOD"
+    assert call(h, action="SAVE_RECIPE_CARD", tenant_id="cafe", item_id=dish).reason == "UNKNOWN_ITEM"
+    items = {paneer["item_id"]: paneer, egg["item_id"]: egg}
+    assert dish_marks(lines, items) == {"allergens": ["eggs", "milk"], "diet": "egg"}
+    assert dish_marks(lines + [{"item_id": "unmarked"}], items)["diet"] == ""

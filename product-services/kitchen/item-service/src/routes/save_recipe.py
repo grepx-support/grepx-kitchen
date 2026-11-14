@@ -28,6 +28,8 @@ def handle(ctx: RequestContext) -> None:
         ingredient = mine(ctx, Table.ITEMS.value, line["item_id"], tenant)
         if ingredient is None or ingredient.get("kind") == ItemKind.FINISHED.value or line["item_id"] == item_id:
             return ctx.reject(ReasonCode.UNKNOWN_ITEM, line["item_id"])
-    full = {"item_id": item_id, "tenant_id": tenant, **row}
+    card = {k: v for k, v in (ctx.read.accepted_one(Table.RECIPES.value, item_id) or {}).items()
+            if k not in ("batch_output", "ingredients", "status") and not k.startswith("_")}   # the chef's card stays
+    full = {**card, "item_id": item_id, "tenant_id": tenant, **row}
     ctx.emitter.submit(Table.RECIPES.value, item_id, "ACCEPTED", full)
     ctx.accept({"recipe": full})

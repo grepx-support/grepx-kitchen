@@ -35,10 +35,13 @@ def create(site, d, ops_email: str, ops_password: str, say) -> dict:
         ids["item"][key] = site.post("/setup/items", {"name": name, "kind": kind, "unit": unit, "cost": cost, "category": category,
                                                       "supplier_id": ids["supplier"].get(sup, ""),
                                                       "shelf_life_days": d.SHELF_LIFE.get(key), "barcode": d.BARCODE.get(key, ""),
-                                                      "price": d.WHOLESALE.get(key, 0)}, "owner")["item_id"]
+                                                      "price": d.WHOLESALE.get(key, 0), "diet": getattr(d, "MARKS", {}).get(key, ("", []))[0],
+                                                      "allergens": getattr(d, "MARKS", {}).get(key, ("", []))[1]}, "owner")["item_id"]
     for product, (output, parts) in d.RECIPES.items():
         site.post("/setup/recipes", {"item_id": ids["item"][product], "batch_output": output,
                                      "ingredients": [{"item_id": ids["item"][k], "qty": q} for k, q in parts.items()]}, "owner")
+        if product in getattr(d, "CARDS", {}):
+            site.put(f"/chef/recipes/{ids['item'][product]}/card", d.CARDS[product], "owner")
     say(f"{len(d.PLACES)} places, {len(d.SUPPLIERS)} suppliers, {len(d.ITEMS)} items, {len(d.RECIPES)} recipes")
     for role, name, email in d.STAFF:
         phone = d.PHONE.format(n=10 + len(ids["user"]))

@@ -72,3 +72,6 @@ class Site:
 
     def patch(self, path, body, who):
         return self.call("PATCH", path, body, who=who)
+
+    def put(self, path, body, who):
+        return self.call("PUT", path, body, who=who)

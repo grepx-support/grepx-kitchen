@@ -6,11 +6,12 @@
 from grepx_service import ActionDispatcher
 
 from dto import PlanningAction
-from . import production_target, reorder, set_target, warehouse_in, warehouse_out
+from . import production_target, reorder, set_target, warehouse_in, warehouse_out, prep_list
 
 TABLE = "planning_requests"
 ROUTES = {
     PlanningAction.PRODUCTION_TARGET: production_target.handle,
+    PlanningAction.PREP_LIST: prep_list.handle,
     PlanningAction.SET_TARGET: set_target.handle,
     PlanningAction.WAREHOUSE_OUT: warehouse_out.handle,
     PlanningAction.WAREHOUSE_IN: warehouse_in.handle,

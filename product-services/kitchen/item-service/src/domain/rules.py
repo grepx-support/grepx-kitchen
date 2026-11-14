@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from dto import ItemKind
 
+from .chef import allergens, diet
+
 KINDS = {k.value for k in ItemKind}
 
 
@@ -42,6 +44,7 @@ def clean_item(raw: dict, current: dict | None = None) -> dict:
             "category": " ".join(str(merged.get("category") or "").split())[:40],
             "shelf_life_days": _days(merged.get("shelf_life_days")),           # warehouse-service dates new lots with it
             "barcode": "".join(str(merged.get("barcode") or "").split())[:40],   # scanned on the warehouse screens
+            "allergens": allergens(merged.get("allergens")), "diet": diet(merged.get("diet")),   # dishes carry them (domain/chef.py)
             **({"sort": merged["sort"]} if isinstance(merged.get("sort"), int) else {})}   # listing order (REORDER)
 
 

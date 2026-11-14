@@ -89,3 +89,17 @@ def test_service_end_to_end(h):
     assert call(h, action="REORDER", location_id="k1").reason == "NOT_HOLDING_LOCATION"
     assert call(h, action="WAREHOUSE_IN", location_id="wh").ok
     assert call(h, action="PRODUCTION_TARGET", tenant_id="other", location_id="k1").reason == "UNKNOWN_BUSINESS"
+
+
+def test_prep_list_spreads_the_week_over_the_days_left_by_station(h):
+    from domain.prep import UNASSIGNED, prep_list, today_qty
+    assert today_qty(35, 7, 10) == (10, 1) and today_qty(35, 2, 10) == (20, 2) and today_qty(5, 1, None) == (5, None) and today_qty(0, 3, 10) == (0, 0)
+    lines = [{"item_id": "a", "name": "Dal", "target": 40}, {"item_id": "b", "name": "Naan", "target": 90}, {"item_id": "c", "target": 0}]
+    recipes = {"a": {"batch_output": 10, "station": "curry", "prep_min": 20, "cook_min": 40, "steps": ["x"]}, "b": {"batch_output": 30}}
+    got = prep_list(lines, recipes, 2, {"a": 10})
+    assert [(s["station"], [(t["name"], t["qty"], t["batches"], t["minutes"]) for t in s["tasks"]]) for s in got["stations"]] == [
+        ("curry", [("Dal", 20, 2, 60)]), (UNASSIGNED, [("Naan", 60, 2, 0)])]
+    assert got["stations"][0]["tasks"][0]["made_today"] == 10 and got["stations"][0]["tasks"][0]["has_card"]
+    p = call(h, action="PREP_LIST", location_id="k1")
+    assert p.ok and p.fields["plan"]["stations"][0]["tasks"][0]["item_id"] == "birria"
+    assert call(h, action="PREP_LIST", location_id="s1").reason == "NOT_A_KITCHEN"

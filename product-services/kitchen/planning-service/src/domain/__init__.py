@@ -4,6 +4,7 @@
 
 """Planning rules (pure)."""
 from .usage import Usage, week_start
+from .prep import prep_list
 from .plans import production_target, reorder, warehouse_in, warehouse_out
 
-__all__ = ["Usage", "production_target", "reorder", "warehouse_in", "warehouse_out", "week_start"]
+__all__ = ["Usage", "prep_list", "production_target", "reorder", "warehouse_in", "warehouse_out", "week_start"]

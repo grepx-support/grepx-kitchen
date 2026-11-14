@@ -9,6 +9,7 @@
   "areas": {
     "home": "#0d9488",
     "kitchen": "#f97316",
+    "chef": "#ea580c",
     "stock": "#0ea5e9",
     "out": "#06b6d4",
     "in": "#14b8a6",
@@ -38,6 +39,7 @@
     "core/auth",
     "kitchen/today",
     "kitchen/kitchen",
+    "kitchen/chef",
     "kitchen/stock",
     "kitchen/orders",
     "kitchen/closing",

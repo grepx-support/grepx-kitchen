@@ -8,6 +8,7 @@
 import { html } from "/assets/kit/index.js";
 import { fmt } from "../lib/format.js";
 import { option, post, sortList, values, wireSort } from "./common.js";
+import { itemFields, pickedAllergens } from "../chef/marks.js";
 
 const TAG = { ingredient: "🥩", finished: "🌮", supply: "📦" };
 
@@ -19,6 +20,7 @@ const form = (i = {}, suppliers) => html`<form class="card accent k-section"><h2
     <label>Category<input name="category" value="${i.category || ""}" placeholder="e.g. Meat, Dry goods"></label>
     <label>Shelf life (days)<input name="shelf_life_days" type="number" min="0" step="1" value="${i.shelf_life_days ?? ""}" placeholder="sets expiry when received"></label>
     <label>Barcode<input name="barcode" value="${i.barcode || ""}" placeholder="for the scanner" maxlength="40"></label></div>
+  <div class="row">${itemFields(i)}</div>
   ${i.id ? html`<label class="check"><input type="checkbox" name="archived" ${i.active === false ? "checked" : ""}> Archived</label>` : ""}
   <p><button class="btn primary">Save</button> ${i.id ? html`<a class="btn" href="#/setup?tab=items">New instead</a>` : ""}</p></form>`;
 
@@ -36,7 +38,8 @@ export default {
       const v = values(e.target);
       if (await post("/setup/items", { item_id: v.id || undefined, name: v.name, kind: v.kind, unit: v.unit, cost: Number(v.cost || 0), price: Number(v.price || 0),
         supplier_id: v.supplier, category: v.category, active: !v.archived,
-        shelf_life_days: v.shelf_life_days === "" ? null : Number(v.shelf_life_days), barcode: v.barcode }, "Item saved")) location.hash = "#/setup?tab=items";
+        shelf_life_days: v.shelf_life_days === "" ? null : Number(v.shelf_life_days), barcode: v.barcode,
+        diet: v.diet || "", allergens: pickedAllergens(e.target) }, "Item saved")) location.hash = "#/setup?tab=items";
     };
   },
 };

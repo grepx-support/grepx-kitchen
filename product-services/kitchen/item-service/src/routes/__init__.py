@@ -6,13 +6,14 @@
 from grepx_service import ActionDispatcher
 
 from dto import ItemAction
-from . import reorder, save_item, save_recipe, save_supplier
+from . import reorder, save_item, save_recipe, save_recipe_card, save_supplier
 
 TABLE = "item_requests"
 ROUTES = {
     ItemAction.SAVE_ITEM: save_item.handle,
     ItemAction.SAVE_SUPPLIER: save_supplier.handle,
     ItemAction.SAVE_RECIPE: save_recipe.handle,
+    ItemAction.SAVE_RECIPE_CARD: save_recipe_card.handle,
     ItemAction.REORDER: reorder.handle,
 }
 handle = ActionDispatcher(ROUTES, ItemAction, TABLE)

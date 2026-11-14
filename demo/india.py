@@ -81,6 +81,27 @@ _COST = {r[0]: r[4] for r in _RAW}
 ITEMS = _RAW + [(k, name, "finished", unit, round(sum(q * _COST[i] for i, q in RECIPES[k][1].items()) / RECIPES[k][0], 2), "", cat)
                 for k, name, unit, cat in DISHES]
 
+# veg mark and allergens of each ingredient (dishes take theirs from these)
+MARKS = {"chicken": ("non_veg", []), "mutton": ("non_veg", []), "paneer": ("veg", ["milk"]), "curd": ("veg", ["milk"]),
+         "cream": ("veg", ["milk"]), "ghee": ("veg", ["milk"]), "rice": ("vegan", []), "maida": ("vegan", ["gluten"]),
+         "dal": ("vegan", []), "masala": ("vegan", ["mustard"]), "onion": ("vegan", []), "tomato": ("vegan", []), "coriander": ("vegan", [])}
+# the chef's card of each dish
+CARDS = {
+    "biryani": {"station": "rice", "prep_min": 40, "cook_min": 55, "yield_pct": 95, "portion": "350 g handi", "hold_hours": 3,
+                "steps": ["Marinate chicken in curd, masala and salt - 2 hours, chilled", "Soak basmati 30 minutes, par-boil to 70%",
+                          "Fry onions golden (birista) in ghee", "Layer chicken, rice, birista, coriander", "Seal the handi; dum 25 minutes on low heat"],
+                "plating": "Handi with raita and salan on the side; birista and mint on top"},
+    "butter": {"station": "curry", "prep_min": 25, "cook_min": 35, "yield_pct": 92, "portion": "250 g bowl", "hold_hours": 4,
+               "steps": ["Tandoor the marinated chicken (tikka)", "Cook tomato, butter and cashew-free makhani gravy 20 minutes",
+                         "Blend smooth, add cream and kasuri methi", "Fold in the tikka; simmer 5 minutes"], "plating": "Swirl of cream, butter cube"},
+    "dalmakhani": {"station": "curry", "prep_min": 15, "cook_min": 240, "yield_pct": 90, "portion": "250 g bowl", "hold_hours": 6,
+                   "steps": ["Soak urad dal overnight", "Pressure-cook soft", "Slow-cook 3-4 hours with tomato, butter and cream"]},
+    "paneer_tikka": {"station": "tandoor", "prep_min": 30, "cook_min": 20, "yield_pct": 96, "portion": "250 g bowl", "hold_hours": 3,
+                     "steps": ["Cube paneer, marinate in curd and masala", "Skewer and tandoor 6-8 minutes", "Finish in masala gravy"]},
+    "naan": {"station": "tandoor", "prep_min": 20, "cook_min": 15, "yield_pct": 98, "portion": "1 piece",
+             "steps": ["Knead maida, curd, salt; rest 2 hours", "Divide 80 g balls", "Slap on the tandoor wall 90 seconds", "Brush with butter"]},
+}
+
 PRICE = {"biryani": 260, "butter": 290, "dalmakhani": 180, "paneer_tikka": 260, "naan": 35}       # menu price at the outlets
 WHOLESALE = {"biryani": 240, "butter": 280, "dalmakhani": 190, "paneer_tikka": 250, "naan": 40}   # catering price on invoices
 DAILY_SALES = {"bandra": {"biryani": 30, "butter": 22, "dalmakhani": 18, "paneer_tikka": 16, "naan": 70},
