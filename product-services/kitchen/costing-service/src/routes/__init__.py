@@ -6,11 +6,14 @@
 from grepx_service import ActionDispatcher
 
 from dto import CostingAction
-from . import set_overhead, summary
+from . import copy_overheads, overheads, set_overhead, share_overhead, summary
 
 TABLE = "costing_requests"
 ROUTES = {
     CostingAction.SET_OVERHEAD: set_overhead.handle,
     CostingAction.SUMMARY: summary.handle,
+    CostingAction.SHARE_OVERHEAD: share_overhead.handle,
+    CostingAction.COPY_OVERHEADS: copy_overheads.handle,
+    CostingAction.OVERHEADS: overheads.handle,
 }
 handle = ActionDispatcher(ROUTES, CostingAction, TABLE)

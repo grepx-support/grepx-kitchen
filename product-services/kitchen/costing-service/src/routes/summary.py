@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from grepx_service import RequestContext
 
-from domain import month_summary
+from domain import breakdown, days_in_month, month_summary
 from dto import ReasonCode, Table
 from .common import business, location, overhead
 
@@ -44,6 +44,8 @@ def handle(ctx: RequestContext) -> None:
                    if d.get("location_id") in ids and d.get("date", "").startswith(month)), key=lambda d: (d["date"], d["location_id"]))
     today = _today(biz)
     through = today.day if today.isoformat()[:7] == month else None          # the running month: overheads to date
-    result = month_summary(days, {i: overhead(ctx.read, i, month) for i in ids}, month, biz.get("settings") or {}, through)
+    rows = {i: overhead(ctx.read, i, month) for i in ids}
+    result = month_summary(days, rows, month, biz.get("settings") or {}, through)
+    result["cost_lines"] = breakdown([r for r in rows.values() if r], min(1.0, through / days_in_month(month)) if through else 1.0)
     ctx.accept({"summary": {**result, "location_id": ctx.text("location_id"), "currency": biz.get("currency", ""),
                             "days": [{k: v for k, v in d.items() if not k.startswith("_") and k not in ("status",)} for d in days]}})

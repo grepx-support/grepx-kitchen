@@ -163,3 +163,14 @@ the BFF only joins and checks access; the web is split into small modules. Nothi
 | Several currencies: money in another currency converted at its rate, the original kept; funds in another currency counted in the business currency at their rate | ✅ | Record; New fund / Change |
 | Investor statement PDF per party; sent by email / WhatsApp with the PDF attached (each send kept) | ✅ | a fund → Who put money in → printer / send icons |
 | Every movement as CSV | ✅ | a fund → Every movement → CSV |
+
+## Monthly costs in full (round 5c)
+
+| Feature | Status | Where |
+|---|---|---|
+| Costs as lines per place and month: 21 standard categories (salaries, overtime, staff meals, benefits, rent, service charge, property tax, electricity, gas, water, internet, delivery-app commission, card / UPI fees, marketing, repairs, cleaning, licences, insurance, software, accounting, fuel) plus your own, in three groups (staff / premises / running costs), a note each | ✅ | Setup → Monthly costs → click a cell |
+| Six months side by side per place with the change on the month before; totals per month; this month by cost | ✅ | Setup → Monthly costs |
+| Share a cost paid once for several places: equally, by sales, or by weights | ✅ | Setup → Monthly costs → Share a cost |
+| Start a month from the month before | ✅ | Setup → Monthly costs → Copy |
+| The Costs page shows the month's costs line by line | ✅ | Costs |
+

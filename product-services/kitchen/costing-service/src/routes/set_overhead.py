@@ -2,14 +2,16 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""SET_OVERHEAD - labour, rent and other costs of one location for one month (COS-02, Q10); recosts that month's days."""
-import re
-
-import grepx_contracts as gc
+"""SET_OVERHEAD - one place's costs for one month (COS-02, Q10) as lines - category, group (staff / premises / running
+costs), amount, note - or, as before, just labour, rent and other. The place's shares of costs paid for several places
+(SHARE_OVERHEAD) are kept. Recosts that month's days."""
 from grepx_service import RequestContext
 
-from dto import ReasonCode, Table
-from .common import business, compute_day, location
+from domain import MONTH, clean_lines
+from dto import ReasonCode
+from .common import business, lines_of, location, save_overhead
+
+LEGACY = {"labour": "Salaries and wages", "rent": "Rent", "other": "Other"}
 
 
 def handle(ctx: RequestContext) -> None:
@@ -22,19 +24,14 @@ def handle(ctx: RequestContext) -> None:
     if place is None:
         return ctx.reject(ReasonCode.UNKNOWN_LOCATION)
     month = ctx.text("month")
-    if not re.fullmatch(r"20\d\d-(0[1-9]|1[0-2])", month):
+    if not MONTH.match(month):
         return ctx.reject(ReasonCode.INVALID_MONTH)
-    row = {"tenant_id": tenant, "location_id": place["_key"], "month": month}
-    for line in ("labour", "rent", "other"):
-        try:
-            value = float(ctx.get(line))
-        except (TypeError, ValueError):
-            return ctx.reject(ReasonCode.INVALID_AMOUNT, line)
-        if value < 0:
-            return ctx.reject(ReasonCode.INVALID_AMOUNT, line)
-        row[line] = round(value, 2)
-    ctx.emitter.submit(Table.OVERHEADS.value, f"{place['_key']}:{month}", "ACCEPTED", row)
-    for closing in ctx.read.accepted(gc.closing.CLOSINGS, tenant_id=tenant, location_id=place["_key"]):
-        if closing.get("date", "").startswith(month):
-            compute_day(ctx.read, ctx.emitter, tenant, place["_key"], closing["date"])
-    ctx.accept({"overhead": row})
+    raw = ctx.get("lines")
+    if raw is None:                                       # the old form: three amounts
+        raw = [{"category": LEGACY[g], "group": g, "amount": ctx.get(g), "keep": True} for g in LEGACY]
+    try:
+        mine = [l for l in clean_lines(raw) if not l.get("shared")]
+    except ValueError as exc:
+        return ctx.reject(str(exc))
+    shared = [l for l in lines_of(ctx.read, place["_key"], month) if l.get("shared")]
+    ctx.accept({"overhead": save_overhead(ctx.read, ctx.emitter, tenant, place, month, mine + shared)})

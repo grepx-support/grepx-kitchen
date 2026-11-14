@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import grepx_contracts as gc
 
-from domain import cost_day
+from domain import cost_day, legacy_lines, totals
 from dto import Table
 
 
@@ -40,3 +40,17 @@ def compute_day(read, emitter, tenant: str, location_id: str, day: str) -> dict 
     row = {"tenant_id": tenant, "location_id": location_id, "location_name": place.get("name", ""), **row}
     emitter.submit(Table.COST_DAYS.value, f"{location_id}:{day}", "ACCEPTED", row)
     return row
+
+
+def save_overhead(read, emitter, tenant: str, place: dict, month: str, lines: list[dict]) -> dict:
+    """Keep a place's cost lines for a month (with their three group totals) and recost that month's closed days."""
+    row = {"tenant_id": tenant, "location_id": place["_key"], "location_name": place.get("name", ""), "month": month, "lines": lines, **totals(lines)}
+    emitter.submit(Table.OVERHEADS.value, f"{place['_key']}:{month}", "ACCEPTED", row)
+    for closing in read.accepted(gc.closing.CLOSINGS, tenant_id=tenant, location_id=place["_key"]):
+        if closing.get("date", "").startswith(month):
+            compute_day(read, emitter, tenant, place["_key"], closing["date"])
+    return row
+
+
+def lines_of(read, location_id: str, month: str) -> list[dict]:
+    return legacy_lines(overhead(read, location_id, month))

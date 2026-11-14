@@ -50,4 +50,7 @@ COPY = {
     "NEEDS_APPROVAL": "This order is above your approval amount - the owner approves it first (Approvals).",
     "NOTHING_TO_APPROVE": "This order is not waiting for approval.",
     "NOTE_REQUIRED": "Add a note saying why.",
+    "INVALID_GROUP": "Put each cost under staff, premises or running costs.",
+    "INVALID_SPLIT": "Choose how to split it - equally, by sales, or by the weights you give - and name the cost.",
+    "NO_PLACES": "Pick the places that share this cost (with sales, or weights above zero).",
 }

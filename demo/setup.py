@@ -18,14 +18,28 @@ def months_back(today: date, n: int) -> list[str]:
     return list(reversed(out))
 
 
+SPLIT = {"labour": [("Salaries and wages", .82), ("Overtime and casual staff", .06), ("Staff meals", .04), ("Staff benefits (PF / CPF / super)", .08)],
+         "rent": [("Rent", .9), ("Service charge / maintenance", .1)],
+         "other": [("Electricity", .3), ("Gas", .12), ("Water", .04), ("Delivery-app commission", .28), ("Internet and phone", .05),
+                   ("Repairs and maintenance", .11), ("Cleaning and pest control", .1)]}
+
+
+def cost_lines(labour: float, rent: float, other: float) -> list[dict]:
+    """A place's three monthly amounts as the cost lines an owner would enter."""
+    amounts = {"labour": labour, "rent": rent, "other": other}
+    return [{"category": c, "group": g, "amount": round(amounts[g] * share, 2)} for g, parts in SPLIT.items() for c, share in parts]
+
+
 def monthly_costs(site, d, ids: dict) -> None:
-    """Six months of each place's labour, rent and other costs (creeping up a little each month): Funds links them to
-    the money each place was given."""
+    """Six months of each place's costs as lines (creeping up a little each month), and the accountant's fee shared
+    over the places by sales: Funds links them to the money each place was given."""
     for n, month in enumerate(months_back(date.today(), 6)):
         lift = 1 + 0.03 * n
         for key, (labour, rent, other) in d.OVERHEADS.items():
-            site.post("/setup/overheads", {"location_id": ids["place"][key], "month": month, "labour": round(labour * lift), "rent": rent,
-                                           "other": round(other * lift)}, "owner")
+            site.post("/setup/overheads", {"location_id": ids["place"][key], "month": month, "lines": cost_lines(labour * lift, rent, other * lift)}, "owner")
+        fee = round(sum(sum(v) for v in d.OVERHEADS.values()) * 0.02, -2)
+        site.post("/setup/overheads/share", {"month": month, "category": "Accountant", "group": "other", "amount": fee, "rule": "equal",
+                                             "location_ids": [ids["place"][k] for k in d.OVERHEADS], "note": "monthly bookkeeping"}, "owner")
 
 
 def month_before(d: date) -> str:

@@ -807,14 +807,20 @@
     "path": "product-services/kitchen/costing-service",
     "request_table": "costing_requests",
     "actions": [
+      "COPY_OVERHEADS",
+      "OVERHEADS",
       "SET_OVERHEAD",
+      "SHARE_OVERHEAD",
       "SUMMARY"
     ],
     "reasons": [],
     "other_tables": [],
     "summary": "Cost of goods sold for every count period (ingredient cost used / sales), costing average with labour, rent and other costs, acceptable COGS range alert, monthly summary with net profit that is never shown while a cost line is missing. Keywords: COGS, food cost, margin, profit and loss, P&L, overheads, labour, rent",
     "routes": [
+      "copy_overheads",
+      "overheads",
       "set_overhead",
+      "share_overhead",
       "summary"
     ],
     "reacts_to": []

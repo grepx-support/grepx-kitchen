@@ -34,12 +34,10 @@ def test_demo_funds_fill_the_funds_page(env, d):
     stack, api = env
     owner = open_business(api, d.BUSINESS["name"] + " funds", f"funds@{d.BUSINESS['currency'].lower()}.test", d.BUSINESS["currency"], d.BUSINESS["timezone"])["owner"]
     site = Site(api, owner)
-    for key, name, kind, *_ in d.PLACES:
-        place = site.post("/setup/locations", {"name": name, "kind": kind}, "owner")["location_id"]
-        if key in d.OVERHEADS:
-            labour, rent, other = d.OVERHEADS[key]
-            for month in setup.months_back(date.today(), 6)[:-1]:
-                site.post("/setup/overheads", {"location_id": place, "month": month, "labour": labour, "rent": rent, "other": other}, "owner")
+    places = {key: site.post("/setup/locations", {"name": name, "kind": kind}, "owner")["location_id"] for key, name, kind, *_ in d.PLACES}
+    setup.monthly_costs(site, d, {"place": places})                      # the demo's six months of cost lines and a shared fee
+    page = ok(api.get(f"/api/v1/setup/overheads?month={date.today().isoformat()[:7]}", headers=owner))
+    assert len(page["by_category"]) > 10 and "Accountant" in {c["category"] for c in page["by_category"]}
     funds.run(site, d, {}, lambda *_: None)
     o = ok(api.get("/api/v1/funds", headers=owner))
     p = o["position"]

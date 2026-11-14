@@ -24,7 +24,7 @@ async function setup(el, q) {
   el.style.setProperty("--area", area("setup"));
   el.innerHTML = String(html`${pageHead({ ...head("setup"), title: "Setup", subtitle: s.business.name })}
     ${tabs(TABS.map((t) => ({ id: t.id, label: t.label, icon: t.icon, href: `#/setup?tab=${t.id}` })), tab.id)}<div class="k-body"></div>`);
-  tab.render(el.querySelector(".k-body"), s, q, { redraw: () => setup(el, { tab: tab.id }) });
+  await tab.render(el.querySelector(".k-body"), s, q, { redraw: (extra = {}) => setup(el, { tab: tab.id, ...extra }) });
 }
 
 export const routes = [

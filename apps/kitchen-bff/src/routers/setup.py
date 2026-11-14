@@ -75,7 +75,29 @@ def order(body: dict, k: Kitchen = Depends(owner)):
 
 @router.post("/overheads")
 def overhead(body: dict, k: Kitchen = Depends(owner)):
+    """One place's costs for a month: lines [{category, group, amount, note}] (or labour / rent / other)."""
     return k.cmd(gc.costing.REQUESTS, gc.costing.SERVICE, {"action": "SET_OVERHEAD", **body})["overhead"]
+
+
+def costing(k: Kitchen, action: str, **fields) -> dict:
+    return k.cmd(gc.costing.REQUESTS, gc.costing.SERVICE, {"action": action, **fields})
+
+
+@router.get("/overheads")
+def overheads(month: str, months: int = 6, k: Kitchen = Depends(owner)):
+    """The monthly costs page: lines and totals per place and month, change on the month before, categories."""
+    return costing(k, "OVERHEADS", month=month, months=months)
+
+
+@router.post("/overheads/share")
+def share_overhead(body: dict, k: Kitchen = Depends(owner)):
+    """A cost paid once for several places, split equally, by sales, or by weights."""
+    return costing(k, "SHARE_OVERHEAD", **{f: body.get(f) for f in ("month", "category", "group", "amount", "rule", "location_ids", "weights", "note")})
+
+
+@router.post("/overheads/copy")
+def copy_overheads(body: dict, k: Kitchen = Depends(owner)):
+    return costing(k, "COPY_OVERHEADS", from_month=body.get("from_month"), to_month=body.get("to_month"), overwrite=bool(body.get("overwrite")))
 
 
 class NewUser(BaseModel):

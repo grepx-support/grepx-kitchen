@@ -6,7 +6,7 @@
 
 // Daily COGS and costing average, monthly summary (never a profit with a missing cost), one location or all (COS-03..09).
 import { api } from "/assets/app.js";
-import { DataTable, html, icon, kpiRow, pageHead } from "/assets/kit/index.js";
+import { barList, DataTable, html, icon, kpiRow, pageHead } from "/assets/kit/index.js";
 import { area, head } from "./lib/areas.js";
 import { biz } from "./lib/business.js";
 import { byDay } from "./lib/days.js";
@@ -36,6 +36,8 @@ async function costs(el, q) {
     <section class="card k-section c3" data-landscape></section>
     <div class="grid two"><section class="card accent"><h2>${icon("trend")} COGS by count period</h2>${d.days.length ? chart.trend(d.days, s) : html`<p class="muted">No closings this month.</p>`}</section>
       <section class="card accent"><h2>${icon("coin")} Where the money went</h2>${chart.split(s, b)}</section></div>
+    ${s.cost_lines?.length ? html`<section class="card k-section"><h2>${icon("list")} Costs this month, line by line <a class="small" href="#/setup?tab=costs">change</a></h2>
+      ${barList({ rows: s.cost_lines.map((c) => ({ label: c.category, value: c.amount })) })}</section>` : ""}
     <section class="card accent k-section"><h2>${icon("chart")} Sales by count period</h2>${d.days.length ? chart.sales(d.days) : html`<p class="muted">No sales yet.</p>`}</section>
     <section class="card k-section" id="days"><h2>Each count period ${day ? html`<a class="kit-chip on" href="#/costs?month=${month}${loc ? `&location=${loc}` : ""}" title="Show the whole month">${day} ✕</a>` : ""}</h2><div class="days"></div></section>`);
   costLandscape(el.querySelector("[data-landscape]"), d.days, { ...s, cogs_range: d.cogs_range?.[0] != null ? d.cogs_range : s.cogs_range }, b.business?.currency || d.currency || "");
