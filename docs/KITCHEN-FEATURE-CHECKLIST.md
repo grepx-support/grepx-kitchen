@@ -111,8 +111,8 @@ Next up is marked **NEXT** (in the order it will be built).
 | Employees across outlets: position, home outlet and others, pay basis (monthly / hourly), emergency contact, documents with expiry warnings, leaving | ✅ | People → Team (employee-service, reusable by any product) |
 | Weekly roster per outlet: click to add, drag to move, presets, copy last week, publish, clash check across outlets, open shifts, hours and labour cost, 48-hour warning | ✅ | People → Roster (roster-service, reusable) |
 | Clock in / out with a PIN on the terminal, late minutes, worked hours | ✅ | People → Clock in / out |
-| Leave: types, allowance, balance, request / approve, calendar, roster clash | ⬜ | **NEXT** (leave-service) |
-| Payroll: monthly run, overtime, unpaid leave, deductions, payslips, labour cost into Costs | ⬜ | after leave (payroll-service; statutory rules per country as plug-ins) |
+| Leave: types (annual, sick, casual, unpaid, own), yearly allowance pro-rated for new joiners, carry-over, balances, request / approve / cancel, month calendar, no rostering on approved leave | ✅ | People → Leave (leave-service, reusable) |
+| Payroll: monthly run, overtime, unpaid leave, deductions, payslips, labour cost into Costs; several countries' tax rules (India, Australia, Singapore...) as plug-ins, rates in one settings page | ⬜ | **NEXT** (payroll-service) |
 | Staff see their own shifts and payslips; mobile app screens | ⬜ | at the end, with the mobile app |
 
 ## 10. Messages (email, WhatsApp, SMS)

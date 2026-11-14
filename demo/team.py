@@ -3,7 +3,7 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """Demo team: employees across the outlets (d.TEAM), documents (one expired, one expiring), this week's roster
-(published at the kitchen), one open shift, and clock PINs 1234."""
+(published at the kitchen), one open shift, leave (approved and waiting), and clock PINs 1234."""
 from __future__ import annotations
 
 from datetime import date, timedelta
@@ -33,4 +33,9 @@ def run(site, d, ids: dict, say) -> None:
                                  "role": "Extra hand"}, "owner")
     kitchen = next(k for k, _, kind, *_ in d.PLACES if kind == "kitchen")
     site.post("/roster/publish", {"site_id": ids["place"][kitchen], "week": monday.isoformat()}, "owner")
+    for name, kind, start, end, approve in getattr(d, "TEAM_LEAVE", []):
+        leave = site.post("/leave", {"employee_id": people[name], "type_id": kind, "first": (date.today() + timedelta(days=start)).isoformat(),
+                                     "last": (date.today() + timedelta(days=end)).isoformat()}, "owner")
+        if approve:
+            site.post(f"/leave/{leave['leave_id']}/decide", {"approve": True}, "owner")
     say(f"{len(people)} people across the outlets, {shifts} shifts this week, clock PIN 1234")

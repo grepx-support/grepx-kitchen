@@ -119,7 +119,8 @@
       "END",
       "REMOVE_DOCUMENT",
       "SAVE",
-      "SET_DOCUMENT"
+      "SET_DOCUMENT",
+      "TEAM"
     ],
     "reasons": [
       "ALREADY_ENDED",
@@ -139,7 +140,8 @@
       "end",
       "remove_document",
       "save",
-      "set_document"
+      "set_document",
+      "team"
     ],
     "reacts_to": []
   },
@@ -301,6 +303,26 @@
     "other_tables": [],
     "summary": "Enquiries from a product's public website (request a demo, contact us): kept as leads the platform operator follows up (new, contacted, won, lost) and announced by email to the addresses the deployment names. Keywords: lead, enquiry, demo request, contact form, sales, CRM",
     "routes": [],
+    "reacts_to": []
+  },
+  {
+    "name": "leave-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/leave-service",
+    "request_table": "leave_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Leave for any business: leave types with a yearly allowance and carry-over, requests, approval, balances, a calendar; refuses overlaps and requests past the balance. Keywords: time off, vacation, absence, holidays",
+    "routes": [
+      "balances",
+      "calendar",
+      "cancel",
+      "decide",
+      "request",
+      "save_type"
+    ],
     "reacts_to": []
   },
   {

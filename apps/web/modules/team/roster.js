@@ -39,7 +39,8 @@ export async function rosterPage(el, q) {
     <div class="kit-chips"><a class="kit-chip ${site ? "" : "on"}" href="#/roster?week=${week}">All outlets</a>${b.locations.map((l) =>
       html`<a class="kit-chip ${site === l.id ? "on" : ""}" href="#/roster?week=${week}&site=${l.id}">${l.name}</a>`)}</div>
     <section class="card rs-wrap"><table class="rs-grid"><thead><tr><th>Person</th>${days.map((d, i) => html`<th>${DAYS[i]} <span class="muted">${d.slice(8)}</span></th>`)}<th>Week</th></tr></thead>
-      <tbody>${rows.map((r) => html`<tr><th><b>${r.name}</b><span class="muted small">${r.sub || ""}</span></th>${days.map((d) => html`<td data-cell="${r.id}|${d}">${w.shifts
+      <tbody>${rows.map((r) => html`<tr><th><b>${r.name}</b><span class="muted small">${r.sub || ""}</span></th>${days.map((d) => html`<td data-cell="${r.id}|${d}">${w.leaves.filter((l) => l.employee_id === r.id && l.first <= d && d <= l.last).map((l) =>
+          html`<div class="rs-leave ${l.state}">${l.type_name}</div>`)}${w.shifts
         .filter((s) => (s.employee_id || "") === r.id && s.date === d).map((s) => chip(s, b))}</td>`)}
         <td class="${sum[r.id]?.over_limit ? "bad" : ""}">${sum[r.id] ? html`<b>${hours(sum[r.id].minutes)}</b><span class="muted small">${money(b, sum[r.id].cost)}</span>` : ""}</td></tr>`)}</tbody></table></section>`);
   const again = () => rosterPage(el, q);

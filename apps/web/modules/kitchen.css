@@ -529,3 +529,12 @@
 .ck-keys button { font-size: 26px; padding: 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--card, #fff); cursor: pointer; }
 .ck-keys button:active { background: color-mix(in srgb, var(--area) 20%, transparent); }
 .ck-big { font-size: 30px; font-weight: 800; color: var(--area); }
+.rs-leave { font-size: 11px; padding: 3px 6px; border-radius: 6px; margin-bottom: 4px; background: repeating-linear-gradient(45deg, rgba(100,116,139,.15) 0 6px, transparent 6px 12px);
+  color: var(--muted); font-weight: 600; } .rs-leave.pending { border: 1px dashed var(--muted); }
+.lv-req { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid var(--border); } .lv-act { margin-left: auto; display: flex; gap: 6px; }
+.lv-cal { overflow-x: auto; }
+.lv-grid { display: grid; grid-template-columns: 150px repeat(var(--n), minmax(26px, 1fr)); gap: 4px 0; align-items: center; min-width: 900px; }
+.lv-d { font-size: 11px; text-align: center; color: var(--muted); } .lv-d.off { color: #e11d48; }
+.lv-name { grid-column: 1; font-weight: 600; font-size: 13px; }
+.lv-bar { height: 24px; border-radius: 999px; background: var(--c); color: #fff; font-size: 11px; display: flex; align-items: center; padding: 0 10px; white-space: nowrap; overflow: hidden; }
+.lv-bar.pending { background: repeating-linear-gradient(45deg, var(--c) 0 8px, color-mix(in srgb, var(--c) 60%, #fff) 8px 16px); }

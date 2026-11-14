@@ -24,7 +24,8 @@ ROOT = Path(__file__).resolve().parents[3]
 COMMON = ["common-services/identity", "common-services/people-service", "common-services/notification-service",
           "common-services/template-service", "common-services/task-service", "common-services/audit-log-service",
           "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service",
-          "common-services/media-service", "common-services/employee-service", "common-services/roster-service"]
+          "common-services/media-service", "common-services/employee-service", "common-services/roster-service",
+          "common-services/leave-service"]
 MONTH = date.today().isoformat()[:7]
 
 
@@ -407,3 +408,9 @@ def test_team_and_roster_across_outlets(env):
     assert ok(api.post("/api/v1/roster/clock", headers=owner, json={"employee_id": meera, "pin": "2468", "site_id": k1}))["clocked"] == "in"
     assert api.post("/api/v1/roster/clock", headers=owner, json={"employee_id": meera, "pin": "1111", "site_id": k1}).status_code == 409
     assert ok(api.get("/api/v1/roster/people", headers=owner))["people"][0]["name"] == "Meera Iyer"
+    leave = ok(api.post("/api/v1/leave", headers=owner, json={"employee_id": meera, "type_id": "annual", "first": "2026-11-18", "last": "2026-11-19"}))
+    ok(api.post(f"/api/v1/leave/{leave['leave_id']}/decide", headers=owner, json={"approve": True}))
+    on_leave = api.post("/api/v1/roster/shifts", headers=owner, json={"site_id": k1, "employee_id": meera, "date": "2026-11-19", "start": "08:00", "end": "16:00"})
+    assert on_leave.status_code == 409 and "ON_LEAVE" in on_leave.text
+    view = ok(api.get("/api/v1/leave?first=2026-11-01&last=2026-11-30&year=2026", headers=owner))
+    assert view["leaves"][0]["days"] == 2 and view["people"][0]["types"][0]["taken"] == 2 and view["pending"] == []
