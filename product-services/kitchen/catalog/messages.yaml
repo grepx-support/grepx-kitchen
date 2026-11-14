@@ -26,6 +26,18 @@ templates:
     channels: [email, sms, whatsapp]
     subject: "{org} order {number}"
     text: "{text}"
+  payslip:
+    label: A payslip sent to a team member (the PDF attached)
+    placeholders: [org, name, month, net, link]
+    channels: [email, whatsapp, sms]
+    subject: "{org} payslip for {month}"
+    text: "Dear {name},\n\nYour payslip for {month} is attached. Net pay: {net}.\n\n{org}"
+  catering_quote:
+    label: A catering quotation emailed to a customer (the PDF attached)
+    placeholders: [org, customer, number, total, valid_until, event, link]
+    channels: [email]
+    subject: "Quotation {number} from {org}"
+    text: "Dear {customer},\n\nThank you for your enquiry. Please find our quotation {number} for your event on {event}: {total}, valid until {valid_until}.\n\nReply to this email to confirm, or call us with any changes.\n{org}"
   customer_invoice:
     label: An invoice emailed to a customer
     placeholders: [org, customer, number, total, due, link]

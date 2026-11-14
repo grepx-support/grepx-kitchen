@@ -14,13 +14,14 @@ import { has } from "../lib/business.js";
 export const cash = (cents, currency = "") => `${currency ? `${currency} ` : ""}${((cents || 0) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const TONE = { draft: "", open: "info", "part paid": "warn", overdue: "bad", paid: "good", void: "", entered: "warn", approved: "info",
-  matched: "good", check: "bad", no_order: "" };
+  matched: "good", check: "bad", no_order: "", sent: "info", expired: "warn", ordered: "good", invoiced: "good", declined: "bad", cancelled: "" };
 export const badge = (word) => pill(word === "no_order" ? "no order" : word, TONE[word] ?? "");
 
 export const canSell = () => has("billing") || has("manage_business");
 export const canPay = () => has("payables") || has("manage_business");
 
 const TABS = () => [canSell() && { id: "sales", label: "Invoices", icon: "receipt", href: "#/sales" },
+  canSell() && { id: "quotes", label: "Quotations", icon: "send", href: "#/sales/quotes" },
   canSell() && { id: "customers", label: "Customers", icon: "users", href: "#/sales/customers" },
   canPay() && { id: "bills", label: "Supplier bills", icon: "inbox", href: "#/bills" },
   has("manage_business") && { id: "report", label: "Summary", icon: "chart", href: "#/money/report" },

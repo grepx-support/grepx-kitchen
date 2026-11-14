@@ -4,7 +4,10 @@
 
 """Printable documents (PDF, rendered with the open-source fpdf2 library: https://github.com/py-pdf/fpdf2, LGPL-3.0)."""
 from . import specs
+from .branding import brand
+from .pdf_file import PdfFile
 from .invoice import BillPdf, InvoicePdf, render
+from .quote import QuotePdf
 from .report import ReportPdf
 
-__all__ = ["BillPdf", "InvoicePdf", "ReportPdf", "render", "specs"]
+__all__ = ["brand", "BillPdf", "InvoicePdf", "PdfFile", "QuotePdf", "ReportPdf", "render", "specs"]

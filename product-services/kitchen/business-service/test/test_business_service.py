@@ -92,3 +92,11 @@ def test_close_and_reopen_keeps_the_business(h):
     opened = call(h, action="SET_CLOSED", tenant_id="hft", closed=False).fields["business"]
     assert opened["closed"] is False and opened["currency"] == "AUD"
     assert call(h, action="SET_CLOSED", tenant_id="nope", closed=True).reason == "UNKNOWN_BUSINESS"
+
+
+def test_logo_on_documents_is_a_media_id():
+    from domain.rules import clean_billing
+    assert clean_billing({"logo_id": "abc123"}, {"legal_name": "X"}) == {"legal_name": "X", "logo_id": "abc123"}
+    assert clean_billing({"logo_id": ""}, {"logo_id": "abc123"})["logo_id"] == ""
+    with pytest.raises(ValueError):
+        clean_billing({"logo_id": "../../etc/passwd"}, {})

@@ -12,6 +12,7 @@ from datetime import datetime
 
 from fpdf import FPDF
 
+from .branding import draw_image
 from .layout import ACCENT, INK, LINE, MUTED, text
 
 BAD = (190, 18, 60)
@@ -40,16 +41,12 @@ class ReportPdf(FPDF):
         name = (self.business.get("billing") or {}).get("legal_name") or self.business.get("name", "")
         self.set_fill_color(*ACCENT)
         self.rect(0, 0, 300, 5, "F")
-        self.set_xy(16, 12)
-        self.set_fill_color(*ACCENT)
-        self.set_text_color(255, 255, 255)
-        self.set_font("Helvetica", "B", 13)
-        self.cell(11, 11, text("".join(w[0] for w in name.split()[:2]).upper() or "B"), fill=True, align="C")
+        left = 16 + (draw_image(self, self.business.get("logo_bytes"), 16, 12, 11, 34) or self.initials(name)) + 3
         self.set_text_color(*INK)
-        self.set_xy(30, 12)
+        self.set_xy(left, 12)
         self.set_font("Helvetica", "B", 13)
         self.cell(0, 5.5, text(name), new_x="LMARGIN", new_y="NEXT")
-        self.set_x(30)
+        self.set_x(left)
         self.set_font("Helvetica", "", 8.5)
         self.set_text_color(*MUTED)
         self.cell(0, 5, text(self.spec.get("subtitle", "")), new_x="LMARGIN", new_y="NEXT")
@@ -58,6 +55,14 @@ class ReportPdf(FPDF):
         self.set_text_color(*ACCENT)
         self.cell(self.width, 11, text(self.spec["title"].upper()), align="R", new_x="LMARGIN", new_y="NEXT")
         self.ln(6)
+
+    def initials(self, name: str) -> float:
+        self.set_xy(16, 12)
+        self.set_fill_color(*ACCENT)
+        self.set_text_color(255, 255, 255)
+        self.set_font("Helvetica", "B", 13)
+        self.cell(11, 11, text("".join(w[0] for w in name.split()[:2]).upper() or "B"), fill=True, align="C")
+        return 11
 
     def facts(self, facts: list):
         if not facts:
@@ -122,21 +127,24 @@ class ReportPdf(FPDF):
             self.line(16, self.get_y(), 16 + self.width, self.get_y())
         self.ln(4)
 
-    def signatures(self, names: list[str]):
-        if not names:
+    def signatures(self, lines: list):
+        """Signature lines: a label each ("Checked by"), or {"label", "image": bytes} to print a signature drawn on a phone."""
+        if not lines:
             return
-        if self.get_y() > self.h - 40:
+        if self.get_y() > self.h - 50:
             self.add_page()
         self.ln(10)
-        w = self.width / len(names)
-        y = self.get_y()
-        for n, name in enumerate(names):
+        w = self.width / len(lines)
+        y = self.get_y() + (12 if any(isinstance(l, dict) and l.get("image") for l in lines) else 0)
+        for n, line in enumerate(lines):
+            label, image = (line.get("label", ""), line.get("image")) if isinstance(line, dict) else (line, None)
+            draw_image(self, image, 16 + n * w, y - 12, 20, w - 14)
             self.set_draw_color(*MUTED)
             self.line(16 + n * w, y + 10, 16 + n * w + w - 10, y + 10)
             self.set_xy(16 + n * w, y + 11)
             self.set_font("Helvetica", "", 8)
             self.set_text_color(*MUTED)
-            self.cell(w - 10, 5, text(name))
+            self.cell(w - 10, 5, text(label))
 
     def footer(self):
         self.set_y(-12)

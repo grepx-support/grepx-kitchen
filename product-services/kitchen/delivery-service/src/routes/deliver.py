@@ -2,7 +2,8 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""DELIVER - proof of delivery: who received it (and their signature); the trip is marked delivered in stock."""
+"""DELIVER - proof of delivery: who received it, their signature and the driver's (both optional, printed on the delivery
+note); the trip is marked delivered in stock."""
 import grepx_contracts as gc
 from grepx_service import RequestContext
 
@@ -18,6 +19,7 @@ def handle(ctx: RequestContext) -> None:
         if len(receiver) < 2:
             raise Stop(ReasonCode.RECEIVER_REQUIRED)
         run, stop = change(fleet, StopState.DELIVERED.value, {"receiver": receiver, "signature": check_signature(ctx.get("signature")),
+                                                            "driver_signature": check_signature(ctx.get("driver_signature")),
                                                             "note": ctx.text("note")[:300], "driver": ctx.text("actor_name")})
         ctx.request(gc.stock.REQUESTS, f"pod-{stop['delivery_id']}",
                     {"action": gc.stock.StockAction.DELIVERED.value, "tenant_id": fleet.tenant, "delivery_id": stop["delivery_id"],

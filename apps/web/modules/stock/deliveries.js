@@ -8,6 +8,7 @@
 import { api, run } from "/assets/app.js";
 import { html, KanbanBoard } from "/assets/kit/index.js";
 import { fmt, time, today } from "../lib/format.js";
+import { openPdf } from "../money/common.js";
 import { frame } from "./common.js";
 
 export async function deliveries(el, q) {
@@ -22,7 +23,9 @@ export async function deliveries(el, q) {
       { id: "delivered", title: "Delivered", icon: "check", color: "#16a34a", accepts: (c, from) => from === "sent" }],
     card: (t) => html`<p><b>${t.from} → ${t.to}</b></p><p class="muted small">${t.date} ${time(t.at)} · sent by ${t.by}</p>
       ${t.lines.map((l) => html`<div class="k-row"><span>${l.item_name}</span><b>${fmt(l.qty)} ${l.unit}</b></div>`)}
-      ${t.state === "delivered" && t.delivered_by ? html`<p class="ok small">✓ ${t.delivered_by} ${time(t.delivered_at)}</p>` : ""}`,
+      ${t.state === "delivered" && t.delivered_by ? html`<p class="ok small">✓ ${t.delivered_by} ${time(t.delivered_at)}</p>` : ""}
+      <p><a href="javascript:void 0" class="small" data-note="${t.id}">Delivery note (PDF)</a></p>`,
     onMove: async (t) => !!(await run(() => api(`/stock/deliveries/${t.id}/delivered`, { method: "POST", body: {} }), `Delivered to ${t.to}`)),
   }).mount(body);
+  body.addEventListener("click", (e) => { const a = e.target.closest("[data-note]"); if (a) { e.stopPropagation(); openPdf(`/pdf/delivery/${a.dataset.note}`); } });
 }

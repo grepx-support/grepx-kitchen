@@ -42,9 +42,12 @@ async function proof(post, stopId) {
   const box = h("div");
   box.innerHTML = '<label>Received by<input name="receiver" placeholder="Name of the person"></label><label>Note (optional)<input name="note"></label><p class="muted small">Signature</p>';
   const pad = new SignaturePad({ label: "Signature of the receiver" }).appendTo(box);
+  box.append(Object.assign(h("p"), { className: "muted small", textContent: "Your signature (driver)" }));
+  const mine = new SignaturePad({ label: "Signature of the driver" }).appendTo(box);
   const go = await openDialog({ title: "Proof of delivery", body: box, actions: [{ label: "Back", value: "" }, { label: "Delivered", value: "yes", primary: true }] });
   if (go !== "yes") return false;
-  return post(`/stops/${stopId}/deliver`, { receiver: box.querySelector("[name=receiver]").value, note: box.querySelector("[name=note]").value, signature: pad.toDataURL() }, "Delivered");
+  return post(`/stops/${stopId}/deliver`, { receiver: box.querySelector("[name=receiver]").value, note: box.querySelector("[name=note]").value, signature: pad.toDataURL(),
+    driver_signature: mine.toDataURL() }, "Delivered - the delivery note has both signatures");
 }
 
 async function problem(post, stopId) {

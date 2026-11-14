@@ -6,6 +6,9 @@
 (title, facts, sections of tables or text, signature lines)."""
 from __future__ import annotations
 
+import base64
+import binascii
+
 
 def num(v, places: int = 2) -> str:
     if v in (None, ""):
@@ -101,3 +104,33 @@ def safety_log(h: dict, places: dict, first: str, last: str, place: str) -> dict
             "sections": [{"heading": "Every record", "columns": [("When", 1.6, "L"), ("Place", 2, "L"), ("Check", 2.6, "L"), ("Reading", 1.5, "R"), ("In range", 1, "C"),
                                                                 ("Action taken", 3.4, "L"), ("By", 1.6, "L")], "rows": rows}],
             "signatures": ["Manager", "Inspector"]}
+
+
+def picture(data_url: str) -> bytes | None:
+    """A signature drawn on a phone (a PNG / JPEG data URL) as bytes; None when there is none or it is not one."""
+    head, _, body = str(data_url or "").partition(",")
+    if not head.startswith("data:image/") or ";base64" not in head:
+        return None
+    try:
+        return base64.b64decode(body, validate=True)
+    except (binascii.Error, ValueError):
+        return None
+
+
+def delivery_note(trip: dict, stop: dict | None, run: dict | None) -> dict:
+    """What left the warehouse for one place, and - once handed over - who received it, when, and both signatures."""
+    stop, run = stop or {}, run or {}
+    rows = [[l.get("item_name", ""), l.get("unit", ""), num(l.get("qty"))] for l in trip.get("lines") or []]
+    done = stop.get("state") == "delivered" or trip.get("state") == "delivered"
+    at = (stop.get("delivered_at") or trip.get("delivered_at") or "")[:16].replace("T", " ")
+    proof = (f"Received by {stop['receiver']} on {at}." if stop.get("receiver") else f"Marked delivered by {trip.get('delivered_by') or '-'} on {at}."
+             ) if done else "Not delivered yet - to be signed on arrival."
+    return {"title": "Delivery note", "subtitle": f"{trip.get('from', '')} to {trip.get('to', '')} - {trip.get('date', '')}",
+            "facts": [("Note no.", str(trip.get("id", ""))[-8:].upper()), ("Date", trip.get("date", "")), ("From", trip.get("from", "")), ("To", trip.get("to", "")),
+                      ("Driver", stop.get("driver") or run.get("driver_name") or "-"), ("Vehicle", run.get("vehicle") or "-"),
+                      ("Sent by", trip.get("by", "")), ("Lines", str(len(rows)))],
+            "sections": [{"heading": "Deliver to", "text": "\n".join(filter(None, [trip.get("to", ""), trip.get("to_address", "")]))},
+                         {"heading": "Goods", "columns": [("Item", 6, "L"), ("Unit", 1.5, "L"), ("Qty", 1.5, "R")], "rows": rows},
+                         {"heading": "Proof of delivery", "text": proof + (f"\nNote: {stop['note']}" if stop.get("note") else "")}],
+            "signatures": [{"label": f"Driver - {stop.get('driver') or run.get('driver_name') or ''}".rstrip(" -"), "image": picture(stop.get("driver_signature"))},
+                           {"label": f"Received by - {stop.get('receiver', '')}".rstrip(" -"), "image": picture(stop.get("signature"))}]}

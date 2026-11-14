@@ -22,6 +22,7 @@ export function payslipBody(b, s) {
     ${s.employer.length ? html`<p class="muted small">Employer pays on top: ${s.employer.map((l) => `${l.label} ${money(b, l.amount)}`).join(" · ")} - cost ${money(b, s.cost)}</p>` : ""}</div>`;
 }
 
-export const showPayslip = (b, s) => openDialog({ title: `${s.name} - ${s.month}`, wide: true, body: payslipBody(b, s),
-  actions: [{ label: "Close", value: "" }, { label: "PDF", value: "pdf", primary: true }] })
-  .then((v) => v === "pdf" && openPdf(`/pdf/payslip?month=${s.month}&employee_id=${s.employee_id}`));
+/** send: optional function that sends this payslip (offered once the month is locked). */
+export const showPayslip = (b, s, send) => openDialog({ title: `${s.name} - ${s.month}`, wide: true, body: payslipBody(b, s),
+  actions: [{ label: "Close", value: "" }, ...(send ? [{ label: "Send…", value: "send" }] : []), { label: "PDF", value: "pdf", primary: true }] })
+  .then((v) => (v === "pdf" ? openPdf(`/pdf/payslip?month=${s.month}&employee_id=${s.employee_id}`) : v === "send" && send()));

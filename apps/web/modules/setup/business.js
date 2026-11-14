@@ -9,6 +9,7 @@ import { api, run } from "/assets/app.js";
 import { html } from "/assets/kit/index.js";
 import { resetBiz } from "../lib/business.js";
 import { values } from "./common.js";
+import { logoBlock, wireLogo } from "./logo.js";
 
 const MODULES = { kitchen: "Kitchen", inventory: "Inventory", orders: "Reorder and purchase orders", costing: "Costing and sales", closing: "Staff closing" };
 
@@ -26,6 +27,7 @@ export default {
         <label>COGS range from %<input name="cogs_min" type="number" min="0" max="100" value="${st.cogs_min}"></label>
         <label>to %<input name="cogs_max" type="number" min="0" max="100" value="${st.cogs_max}"></label></div>
       <label>Sales types at closing (comma separated)<input name="sales_types" value="${(st.sales_types || []).join(", ")}"></label>
+      ${logoBlock(bl.logo_id)}
       <h2 class="k-section">Invoicing details <span class="muted small">(printed on invoices)</span></h2><div class="row">
         <label>Legal name<input name="legal_name" value="${bl.legal_name || ""}" placeholder="${b.name}"></label>
         <label>Tax name<input name="tax_label" value="${bl.tax_label || ""}" placeholder="GST" maxlength="12"></label>
@@ -35,6 +37,7 @@ export default {
         <label class="grow">How to pay (bank, PayNow ...)<textarea name="payment_note" rows="2">${bl.payment_note || ""}</textarea></label></div>
       <label class="check"><input type="checkbox" name="auto_reminders" ${bl.auto_reminders ? "checked" : ""}> Remind customers when an invoice is 1, 7, 14 and 30 days overdue (email by default; channels and words in Outbox → What goes out)</label>
       <p><button class="btn primary">Save</button></p></form>`);
+    wireLogo(el, redraw);
     el.querySelector("form").onsubmit = async (e) => {
       e.preventDefault();
       const v = values(e.target);

@@ -9,6 +9,7 @@ import { api, run } from "/assets/app.js";
 import { confirm, html, icon, pageHead, pill, progress, SortableList } from "/assets/kit/index.js";
 import { area, head } from "../lib/areas.js";
 import { time } from "../lib/format.js";
+import { openPdf } from "../money/common.js";
 
 const TONE = { pending: "", arrived: "info", delivered: "good", failed: "bad" };
 
@@ -31,12 +32,14 @@ export async function runPage(el, id) {
       <ol class="k-sort k-stops">${r.stops.map((s, n) => html`<li data-id="${s.stop_id}" class="${s.state}">
         ${r.state === "planned" && s.state === "pending" ? html`<button type="button" class="kit-grip" aria-label="Move ${s.name}">${icon("grip", { size: 16 })}</button>` : html`<span></span>`}
         <span class="tag">${n + 1}</span><span class="who"><b>${s.name}</b><small>${s.address || "no address"} · ${s.lines} lines</small>
-          ${s.receiver ? html`<small class="ok">✓ ${s.receiver} at ${time(s.delivered_at)}</small>` : ""}${s.fail_reason ? html`<small class="bad">✗ ${s.fail_reason}</small>` : ""}</span>
+          ${s.receiver ? html`<small class="ok">✓ ${s.receiver} at ${time(s.delivered_at)}</small>` : ""}
+          <a href="javascript:void 0" class="small" data-note="${s.delivery_id}">${icon("printer", { size: 13 })} Delivery note</a>${s.fail_reason ? html`<small class="bad">✗ ${s.fail_reason}</small>` : ""}</span>
         <span>${s.eta ? pill(`ETA ${s.eta}`, "warn") : pill(s.state, TONE[s.state])}</span></li>`)}</ol></section>
     <div class="k-nav"><a class="btn" href="#/runs">${icon("board", { size: 15 })} All runs</a><span>
       ${r.state === "planned" ? html`<button class="btn" data-cancel>Cancel run</button> <button class="btn primary" data-start>${icon("truck", { size: 16 })} Start run</button>` : ""}
       ${r.state === "on_road" ? html`<a class="btn primary" href="#/driver">${icon("truck", { size: 16 })} Driver view</a>` : ""}</span></div>`);
   const again = () => runPage(el, id);
+  el.querySelectorAll("[data-note]").forEach((a) => a.addEventListener("click", () => openPdf(`/pdf/delivery/${a.dataset.note}`)));
   if (r.state === "planned") {
     new SortableList(el.querySelector(".k-stops"), { onChange: async (ids) => {
       if (await run(() => api(`/runs/${id}/stops`, { method: "POST", body: { delivery_ids: ids } }), "Order saved")) again();

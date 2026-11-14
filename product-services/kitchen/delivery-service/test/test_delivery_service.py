@@ -61,7 +61,10 @@ def test_a_run_from_plan_to_proof_of_delivery(h):
     assert call(h, action="START_RUN", tenant_id="hft", run_id=rid).ok
     assert call(h, action="DELIVER", tenant_id="hft", run_id=rid, stop_id="d1", receiver="").reason == "RECEIVER_REQUIRED"
     assert call(h, action="ARRIVE", tenant_id="hft", run_id=rid, stop_id="d1").ok
-    done = call(h, action="DELIVER", tenant_id="hft", run_id=rid, stop_id="d1", receiver="Tia", signature="data:image/png;base64,AAA")
+    assert call(h, action="DELIVER", tenant_id="hft", run_id=rid, stop_id="d1", receiver="Tia", driver_signature="http://x").reason == "SIGNATURE_TOO_LARGE"
+    done = call(h, action="DELIVER", tenant_id="hft", run_id=rid, stop_id="d1", receiver="Tia", signature="data:image/png;base64,AAA",
+                driver_signature="data:image/png;base64,BBB")
+    assert done.fields["run"]["stops"][0]["driver_signature"].endswith("BBB")
     assert done.ok and done.fields["run"]["stops"][0]["receiver"] == "Tia"
     pod = h.rows("stock_requests")[0]
     assert (pod["action"], pod["delivery_id"]) == ("DELIVERED", "d1")

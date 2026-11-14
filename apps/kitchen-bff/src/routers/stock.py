@@ -114,16 +114,27 @@ def deliveries(date: str = "", k: Kitchen = Depends(DELIVERY)):
     trips: dict = defaultdict(list)
     for r in sorted(rows, key=lambda r: r.get("at", ""), reverse=True)[:500]:
         trips[(r.get("date"), r.get("request_id"))].append(r)
-    out = []
-    for (day, request_id), moves in trips.items():
-        first, track = moves[0], tracked.get(request_id) or {}
-        out.append({"id": request_id, "date": day, "at": first.get("at"), "from": places.get(first["location_id"], {}).get("name", ""),
-                    "to": places.get(first.get("other_location_id", ""), {}).get("name", ""), "by": first.get("user_name", ""),
-                    "state": track.get("state", "delivered"), "delivered_by": track.get("delivered_by", ""),
-                    "delivered_at": track.get("delivered_at", ""), "tracked": bool(track),
-                    "lines": [{"item_name": items.get(m["item_id"], {}).get("name", m["item_id"]), "unit": items.get(m["item_id"], {}).get("unit", ""),
-                               "qty": -m["qty"]} for m in moves]})
-    return {"deliveries": out}
+    return {"deliveries": [trip_view(request_id, day, moves, tracked.get(request_id) or {}, places, items) for (day, request_id), moves in trips.items()]}
+
+
+def trip_view(request_id: str, day: str, moves: list[dict], track: dict, places: dict, items: dict) -> dict:
+    first = moves[0]
+    return {"id": request_id, "date": day, "at": first.get("at"), "from": places.get(first["location_id"], {}).get("name", ""),
+            "to": places.get(first.get("other_location_id", ""), {}).get("name", ""), "by": first.get("user_name", ""),
+            "to_address": places.get(first.get("other_location_id", ""), {}).get("address", ""),
+            "state": track.get("state", "delivered"), "delivered_by": track.get("delivered_by", ""),
+            "delivered_at": track.get("delivered_at", ""), "tracked": bool(track),
+            "lines": [{"item_name": items.get(m["item_id"], {}).get("name", m["item_id"]), "unit": items.get(m["item_id"], {}).get("unit", ""),
+                       "qty": -m["qty"]} for m in moves]}
+
+
+def trip(delivery_id: str, k: Kitchen) -> dict:
+    """One trip that left the warehouse (the delivery note's lines)."""
+    moves = sorted((r for r in k.rows(gc.stock.STOCK_MOVEMENTS, kind="send_out") if r.get("request_id") == delivery_id), key=lambda r: r.get("at", ""))
+    if not moves:
+        raise ApiError("UNKNOWN_DELIVERY", 404)
+    places = {r["_key"]: r for r in k.rows(gc.business.LOCATIONS)}
+    return trip_view(delivery_id, moves[0].get("date", ""), moves, k.one(gc.stock.DELIVERIES, delivery_id) or {}, places, k.items())
 
 
 @router.post("/deliveries/{delivery_id}/delivered")

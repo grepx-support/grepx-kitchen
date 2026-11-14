@@ -4,6 +4,6 @@
 
 """Single import door for billing-service vocabulary."""
 from .billing_action import BillingAction
-from .vocabulary import InvoiceState, Kind, Method, ReasonCode, Table
+from .vocabulary import InvoiceState, Kind, Method, QuoteState, ReasonCode, Table
 
-__all__ = ["BillingAction", "InvoiceState", "Kind", "Method", "ReasonCode", "Table"]
+__all__ = ["BillingAction", "InvoiceState", "Kind", "Method", "QuoteState", "ReasonCode", "Table"]

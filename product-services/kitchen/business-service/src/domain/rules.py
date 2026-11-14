@@ -59,8 +59,14 @@ def clean_settings(raw: dict, current: dict) -> dict:
 
 
 def clean_billing(raw: dict, current: dict) -> dict:
-    """What invoices print about the business: legal name, address, tax label / number / rate (%), how to pay."""
+    """What documents print about the business: legal name, address, tax label / number / rate (%), how to pay, and the
+    logo (a media id from media-service; "" removes it)."""
     out = dict(current or {})
+    if "logo_id" in (raw or {}):
+        logo = str(raw.get("logo_id") or "")
+        if not re.fullmatch(r"[A-Za-z0-9:_-]{0,64}", logo):
+            raise ValueError("INVALID_SETTING")
+        out["logo_id"] = logo
     for key, limit in (("legal_name", 120), ("address", 400), ("tax_label", 12), ("tax_number", 40), ("payment_note", 600)):
         if key in (raw or {}):
             out[key] = str(raw.get(key) or "").strip()[:limit]

@@ -7,9 +7,10 @@
 // One purchase order: the text for WhatsApp, its lines, and change / copy / cancel / receive; everything about it
 // (lines ordered against received, bills, timeline); previous / next order (buttons, or J / K).
 import { api, run, toast } from "/assets/app.js";
-import { Basket, confirm, html, icon, openDialog, pageHead, pill } from "/assets/kit/index.js";
+import { Basket, confirm, html, icon, pageHead, pill } from "/assets/kit/index.js";
 import { head } from "../lib/areas.js";
 import { biz, has } from "../lib/business.js";
+import { pickChannels } from "../lib/channels.js";
 import { money, stamp } from "../lib/format.js";
 import { receive } from "./common.js";
 import { openPdf } from "../money/common.js";
@@ -61,12 +62,8 @@ export async function detail(el, id) {
     if (await confirm({ title: `Cancel ${o.number}?`, ok: "Cancel order", cancel: "Keep it", danger: true }) && await run(() => api(`/orders/${o.id}/cancel`, { method: "POST" }), "Cancelled")) again();
   });
   el.querySelector("[data-send]")?.addEventListener("click", async () => {
-    const form = document.createElement("div");
-    form.innerHTML = String(html`<p class="muted">The order goes to ${o.supplier_name} on each channel ticked. Without a provider set up it is only written to the outbox.</p>
-      ${[["email", "Email"], ["whatsapp", "WhatsApp"], ["sms", "SMS"]].map(([k, t], n) => html`<label class="check"><input type="checkbox" value="${k}" ${n < 2 ? "checked" : ""}> ${t}</label>`)}`);
-    if (await openDialog({ title: `Send ${o.number}`, body: form, actions: [{ label: "Back", value: "" }, { label: "Send", value: "send", primary: true }] }) !== "send") return;
-    const channels = [...form.querySelectorAll("input:checked")].map((i) => i.value);
-    if (channels.length && await run(() => api(`/orders/${o.id}/send`, { method: "POST", body: { channels } }), "Sent")) again();
+    const channels = await pickChannels({ title: `Send ${o.number}`, text: `The order goes to ${o.supplier_name} on each channel ticked.` });
+    if (channels && await run(() => api(`/orders/${o.id}/send`, { method: "POST", body: { channels } }), "Sent")) again();
   });
   el.querySelector("[data-receive]")?.addEventListener("click", async () => { if (await receive({ ...o, lines: o.lines.map((l) => ({ ...l, qty: basket.lines(true).find((x) => x.item_id === l.item_id)?.qty ?? l.qty })) })) again(); });
   el.querySelector("[data-save]")?.addEventListener("click", async () => { if (await run(() => api(`/orders/${o.id}`, { method: "POST", body: { lines: basket.lines() } }), "Saved")) again(); });

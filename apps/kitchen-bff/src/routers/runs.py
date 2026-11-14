@@ -70,4 +70,5 @@ def stop_verb(run_id: str, stop_id: str, verb: str, body: dict | None = None, k:
         raise ApiError("NOT_FOUND", 404)
     body = body or {}
     return cmd(k, {"action": action, "run_id": run_id, "stop_id": stop_id, "receiver": body.get("receiver", ""),
-                   "signature": body.get("signature", ""), "note": body.get("note", ""), "reason": body.get("reason", "")})
+                   "signature": body.get("signature", ""), "driver_signature": body.get("driver_signature", ""), "note": body.get("note", ""),
+                   "reason": body.get("reason", "")})

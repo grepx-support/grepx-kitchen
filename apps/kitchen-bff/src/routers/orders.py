@@ -101,12 +101,6 @@ def copy(po_id: str, k: Kitchen = Depends(buyer)):
     return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "COPY", "po_id": po_id})["order"]
 
 
-@router.post("/{po_id}/send")
-def send(po_id: str, body: dict, k: Kitchen = Depends(buyer)):
-    """Send the order to the supplier (email / WhatsApp / SMS; only logged until the business connects a provider)."""
-    return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "SEND", "po_id": po_id, "channels": body.get("channels") or []})["order"]
-
-
 @router.post("/{po_id}/cancel")
 def cancel(po_id: str, k: Kitchen = Depends(buyer)):
     return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "CANCEL", "po_id": po_id})["order"]

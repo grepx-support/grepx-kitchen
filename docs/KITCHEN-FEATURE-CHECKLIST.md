@@ -15,7 +15,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Outlets, central kitchens, warehouses, vans | ✅ | Setup → Locations (kind, holds stock, address) |
 | Currency, time zone, tax (GST) per business | ✅ | Setup → Business; invoices use the tax rate |
 | Modules on / off per business | ✅ | BUS-03 |
-| Branding: logo on documents | ⬜ | PDFs use the legal name only - **NEXT (with the PDF round)** |
+| Branding: logo on documents | ✅ | Setup → Business → Logo (PNG kept with its clear background, media-service); printed on every PDF - invoices, bills, orders, payslips, reports; initials when there is none |
 | Close / reopen a business (operator) | ✅ | Platform → Businesses |
 | Roles per business, permissions ticked by the owner | ✅ | Setup → Roles |
 | Profile photos, login, password | ✅ | |
@@ -52,7 +52,7 @@ Next up is marked **NEXT** (in the order it will be built).
 |---|---|---|
 | Suppliers (contact, phone, email) | ✅ | Setup → Suppliers |
 | Recommended orders per supplier from usage | ✅ | Orders → Recommended |
-| Purchase orders: save, change, copy, cancel, send by email / WhatsApp / SMS | ✅ | Orders |
+| Purchase orders: save, change, copy, cancel, send by email / WhatsApp / SMS with the order PDF attached | ✅ | Orders |
 | Purchase order PDF | ✅ | order page → PDF |
 | Orders list: stage tabs, search, supplier and date filters, prev / next, J / K keys; board cards open a side drawer | ✅ | Orders → Board, List |
 | Order timeline (made, sent, received, billed, approved, paid) and ordered-against-received lines | ✅ | order page, drawer, list |
@@ -81,8 +81,8 @@ Next up is marked **NEXT** (in the order it will be built).
 | Feature | Status | Where / what is missing |
 |---|---|---|
 | Delivery runs (driver, vehicle, stop order, ETA) | ✅ | Delivery runs |
-| Driver phone screen, proof of delivery with signature | ✅ | My deliveries |
-| Delivery note PDF with the signature | ⬜ | **NEXT (PDF round)** |
+| Driver phone screen, proof of delivery with the receiver's and the driver's signatures | ✅ | My deliveries |
+| Delivery note PDF: goods, from / to, driver and vehicle; once handed over who received it and when, with the driver's and the receiver's signatures | ✅ | a run's stop → Delivery note; Deliveries board card → Delivery note |
 
 ## 7. Closing the day (end of day)
 | Feature | Status | Where / what is missing |
@@ -104,7 +104,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Funds: partners' / investors' capital, owner's capital, loans, grants; promises with due dates, money in, money put to use (outlet, project), paid back, interest, fund costs; pending and overdue promises, available, loan balance, each party's share, month-by-month flow; reversing keeps history; amounts carry their currency (one per fund now, more later) | ✅ | Money → Funds (fund-service, reusable) |
 | Funds - utilisation (spent of what was put to use, per use); plan per fund (expected EBITDA per use, start, ramp, horizon, discount, payout, hurdle) with payback month, ROI, IRR, NPV, money multiple, cash-back curve; actual EBITDA per outlet against plan; each investor's expected payout and return; balance sheet of the funds (assets = liabilities + equity) | ✅ | Funds → a fund → Plan & returns; Funds overview |
 | Several currencies in one fund (conversion at a rate) | ⬜ | the amounts already carry their currency |
-| Quotations for catering events | ⬜ | |
+| Catering quotations: event (date, time, venue, guests), menu lines, valid for N days; sent by email with the PDF; the customer says yes → order (SO number), or no (reason kept); expired quotes must be sent again; the order becomes a draft invoice with the same lines; pipeline, win rate, events coming up | ✅ | Money → Quotations (billing-service: SAVE / SEND / ACCEPT / DECLINE / CANCEL_QUOTE, INVOICE_ORDER, QUOTES) |
 | Full double-entry accounts (ledger, balance sheet) | ➖ | the general ERP's accounting module; the kitchen keeps sub-ledgers (AR, AP) |
 | POS sales import (Square), delivery apps (Swiggy / Zomato / Uber Eats) | 🔒 | F1 / F9: need the partner accounts |
 
@@ -117,7 +117,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Leave: types (annual, sick, casual, unpaid, own), yearly allowance pro-rated for new joiners, carry-over, balances, request / approve / cancel, month calendar, no rostering on approved leave | ✅ | People → Leave (leave-service, reusable) |
 | Payroll: monthly run from salary or clocked hours, joiners / leavers pro-rated, unpaid leave, overtime, bonuses, advances, payslips (print); locking the month puts each outlet's labour cost into Costs | ✅ | People → Payroll (payroll-service, reusable) |
 | Statutory rules per country as plug-ins - India (EPF, ESI, Professional Tax, TDS new regime), Australia (PAYG + Medicare, super), Singapore (CPF, SDL), Basic - every rate in one settings page | ✅ | People → Payroll → Country & rates |
-| Payslip PDF | ✅ | Payroll → payslip → PDF; sending it by email / WhatsApp and staff seeing their own ⬜ |
+| Payslip PDF; sent by email / WhatsApp / SMS with the PDF attached, once the month is locked (one person or everyone; who could not be reached is listed; each send kept) | ✅ | Payroll → Send payslips…, or a payslip → Send… (payroll-service SEND_PAYSLIP) |
 | Staff see their own shifts and payslips; mobile app screens | ⬜ | at the end, with the mobile app |
 
 ## 10. Messages (email, WhatsApp, SMS)
@@ -127,7 +127,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Operator connects providers, tests the connection, sends a test message; keys sealed | ✅ | Integrations page (platform admin) |
 | Each business chooses which automatic messages go out, on which channels, in its own words | ✅ | Outbox → What goes out |
 | Failed sends tried again by themselves (5 min, 30 min, 2 h), "Try again now", tries shown | ✅ | Outbox → Sent |
-| Files attached to emails (PDFs) | ✅ | used by the PDF round |
+| Files attached to messages (PDFs): email attachment; WhatsApp document (Meta: uploaded; Twilio: a link that works 14 days) | ✅ | `notify(..., attachments=)`; links: grepx-bff `shared_files` |
 | Delivery receipts from the provider (delivered / read) | 🔒 | needs the provider's webhook address on the live server |
 
 ## 11. Experience

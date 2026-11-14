@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from fpdf import FPDF
 
+from .branding import draw_image
+
 INK, MUTED, LINE, ACCENT = (17, 24, 39), (100, 116, 139), (226, 232, 240), (13, 148, 136)
 
 
@@ -52,15 +54,18 @@ class MoneyDocument(FPDF):
         b = self.billing
         self.set_fill_color(*ACCENT)
         self.rect(0, 0, 210, 6, "F")
-        self.set_xy(16, 14)
+        logo = draw_image(self, self.business.get("logo_bytes"), 16, 12, 14, 44)
+        self.set_xy(16 + (logo + 4 if logo else 0), 14)
         self.set_font("Helvetica", "B", 18)
         self.set_text_color(*INK)
-        self.cell(110, 9, text(b.get("legal_name") or self.business.get("name", "")))
+        self.cell(110 - (logo + 4 if logo else 0), 9, text(b.get("legal_name") or self.business.get("name", "")))
         self.set_font("Helvetica", "B", 22)
         self.set_text_color(*ACCENT)
         self.cell(0, 9, text(self.title_word.upper()), align="R", new_x="LMARGIN", new_y="NEXT")
         self.set_font("Helvetica", "", 9)
         self.set_text_color(*MUTED)
+        if logo:
+            self.set_y(max(self.get_y(), 27))
         details = [*filter(None, (b.get("address") or "").splitlines()),
                    f"{b.get('tax_label') or 'Tax'} no. {b['tax_number']}" if b.get("tax_number") else ""]
         for line in filter(None, details):

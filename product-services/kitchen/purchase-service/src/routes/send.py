@@ -3,7 +3,8 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """SEND - send an open order to its supplier on the chosen channels (email to the supplier's email, WhatsApp / SMS to
-their phone). notification-service sends it - or only logs it until the business connects a provider."""
+their phone), with the order's PDF attached when the caller made one (attachments=[{name, mime, data_b64, url}]).
+notification-service sends it - or only logs it until the business connects a provider."""
 import grepx_contracts as gc
 from grepx_service import RequestContext, notify, now_iso
 
@@ -23,6 +24,7 @@ def handle(ctx: RequestContext) -> None:
             raise Stop(ReasonCode.INVALID_CHANNEL)
         sent = notify(ctx.emitter, "purchase_order", email=supplier.get("email", ""), phone=supplier.get("phone", ""), channels=channels,
                       ref=f"po-{po['po_id']}-{len(po.get('sent') or [])}", tenant_id=biz["_key"], auto=False,
+                      attachments=[a for a in ctx.get("attachments") or [] if isinstance(a, dict)] or None,
                       values={"org": biz.get("name", ""), "supplier": supplier.get("name", ""), "number": po.get("number", ""),
                               "text": po.get("text", "")})
         if not sent:

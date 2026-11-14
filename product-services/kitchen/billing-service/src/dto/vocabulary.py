@@ -9,6 +9,7 @@ from enum import Enum
 class Table(str, Enum):
     CUSTOMERS = "customers"
     INVOICES = "invoices"
+    QUOTES = "quotes"
 
 
 class Kind(str, Enum):
@@ -21,6 +22,17 @@ class InvoiceState(str, Enum):
     ISSUED = "issued"
     PAID = "paid"
     VOID = "void"
+
+
+class QuoteState(str, Enum):
+    """quote -> order -> invoice: a draft is sent as a quotation; when the customer says yes it becomes an order
+    (event confirmed, order number); the order is then invoiced. Declined / cancelled stay on record."""
+    DRAFT = "draft"
+    SENT = "sent"
+    ORDERED = "ordered"
+    INVOICED = "invoiced"
+    DECLINED = "declined"
+    CANCELLED = "cancelled"
 
 
 class Method(str, Enum):
@@ -51,3 +63,7 @@ class ReasonCode(str, Enum):
     INVALID_METHOD = "INVALID_METHOD"
     INVALID_DATE = "INVALID_DATE"
     NO_EMAIL = "NO_EMAIL"
+    UNKNOWN_QUOTE = "UNKNOWN_QUOTE"
+    QUOTE_EXPIRED = "QUOTE_EXPIRED"
+    WRONG_STATE = "WRONG_STATE"
+    INVALID_EVENT = "INVALID_EVENT"

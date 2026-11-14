@@ -11,6 +11,7 @@ import { DataTable, empty, html, icon, kpiRow, openDialog, pill } from "/assets/
 import { biz } from "../lib/business.js";
 import { money } from "../lib/format.js";
 import { addDays, frame } from "./common.js";
+import { pickChannels } from "../lib/channels.js";
 import { showPayslip } from "./payslip.js";
 
 const shift = (m, n) => addDays(`${m}-15`, n * 30).slice(0, 7);
@@ -24,6 +25,20 @@ async function adjust(month, team) {
   return run(() => api("/payroll/adjust", { method: "POST", body: { ...Object.fromEntries(new FormData(box)), month } }), "Added");
 }
 
+/** Send a locked month's payslips (everyone, or the ids given) with the PDF attached; says who could not be reached. */
+async function send(month, ids) {
+  const channels = await pickChannels({ title: ids ? "Send payslip" : `Send ${month} payslips`, ticked: ["email"],
+    text: ids ? "The payslip goes to the person on each channel ticked." : "Each person gets their own payslip on each channel ticked that they have an address for." });
+  if (!channels) return false;
+  const out = await run(() => api("/payroll/payslips/send", { method: "POST", body: { month, channels, ...(ids ? { employee_ids: ids } : {}) } }));
+  if (!out) return false;
+  const missed = out.results.filter((r) => !r.ok);
+  await openDialog({ title: `${out.sent} payslip${out.sent === 1 ? "" : "s"} sent`, body: missed.length
+    ? html`<p>Not sent:</p><ul>${missed.map((r) => html`<li>${r.name || r.employee_id}: ${r.message}</li>`)}</ul>` : html`<p>Everyone was sent their payslip.</p>`,
+    actions: [{ label: "OK", value: "", primary: true }] });
+  return true;
+}
+
 export async function payrollPage(el, q) {
   const b = await biz();
   const month = q.month || new Date().toISOString().slice(0, 7);
@@ -32,6 +47,7 @@ export async function payrollPage(el, q) {
   const body = frame(el, "payroll", "Payroll", `${month} · ${st.settings.country_name}${locked ? " · locked" : r ? " · draft" : ""}`,
     html`<a class="btn" href="#/payroll?month=${shift(month, -1)}">‹</a><a class="btn" href="#/payroll?month=${shift(month, 1)}">›</a>
       <a class="btn" href="#/payroll/settings">${icon("settings", { size: 15 })} Country & rates</a>
+      ${locked ? html`<button class="btn primary" data-send-all>${icon("send", { size: 15 })} Send payslips…</button>` : ""}
       ${locked ? "" : html`<button class="btn" data-adj>${icon("plus", { size: 15 })} Bonus / advance</button><button class="btn" data-run>${icon("refresh", { size: 15 })} Work out</button>
         ${r ? html`<button class="btn primary" data-lock>${icon("lock", { size: 15 })} Lock month</button>` : ""}`}`);
   body.innerHTML = String(html`${kpiRow([{ label: "People paid", value: r?.people ?? 0, icon: "users", area: "#0891b2" },
@@ -49,12 +65,15 @@ export async function payrollPage(el, q) {
       { key: "gross", label: "Gross", render: (s) => html`${money(b, s.gross)}` },
       { key: "deductions", label: "Deductions", render: (s) => html`${money(b, s.deductions.reduce((x, l) => x + l.amount, 0))}` },
       { key: "net", label: "Net", render: (s) => html`<b>${money(b, s.net)}</b>` },
-      { key: "cost", label: "Cost", render: (s) => html`${money(b, s.cost)}` }] }).mount(body.querySelector(".t"));
-    body.querySelector(".t").addEventListener("click", (e) => { const s = m.payslips.find((x) => x.employee_id === e.target.closest("[data-slip]")?.dataset.slip); if (s) showPayslip(b, s); });
+      { key: "cost", label: "Cost", render: (s) => html`${money(b, s.cost)}` },
+      { key: "sent", label: "Sent", render: (s) => html`${s.sent?.length ? pill(s.sent.at(-1).channels.join(", "), "good") : html`<span class="muted small">${locked ? "not yet" : "-"}</span>`}` }] })
+      .mount(body.querySelector(".t"));
+    body.querySelector(".t").addEventListener("click", (e) => { const s = m.payslips.find((x) => x.employee_id === e.target.closest("[data-slip]")?.dataset.slip); if (s) showPayslip(b, s, locked && (() => send(month, [s.employee_id]).then(again))); });
   }
   const press = (sel, fn) => el.querySelector(sel)?.addEventListener("click", async () => { if (await fn()) again(); });
   press("[data-run]", () => run(() => api("/payroll/run", { method: "POST", body: { month } }), "Worked out"));
   press("[data-lock]", () => run(() => api("/payroll/finalise", { method: "POST", body: { month } }), "Month locked - labour cost is in Costs"));
   press("[data-adj]", () => adjust(month, t.team.filter((p) => p.active !== false)));
+  press("[data-send-all]", () => send(month));
   body.querySelectorAll("[data-rm]").forEach((x) => x.addEventListener("click", async () => { if (await run(() => api(`/payroll/adjust/${x.dataset.rm}`, { method: "DELETE" }))) again(); }));
 }

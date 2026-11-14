@@ -5,10 +5,11 @@
 service_name: billing-service
 snapshot_table: billing_requests
 project: kitchen
-description: "Customer billing (accounts receivable): customers with payment terms, invoices (draft, issue with a gapless number, due date), credit notes, payments with partial payment, void, ageing and overdue. Money in whole cents with half-up rounding; tax rate per invoice from the business. Keywords: invoice, accounts receivable, AR, customer, credit note, payment, receipt, overdue, ageing, GST, tax invoice, dunning"
-owns: [customers, invoices]
+description: "Customer billing (accounts receivable) and catering quotations (quote -> order -> invoice): customers with payment terms, invoices (draft, issue with a gapless number, due date), credit notes, payments with partial payment, void, ageing and overdue. Money in whole cents with half-up rounding; tax rate per invoice from the business. Keywords: quotation, quote, estimate, catering, event order, invoice, accounts receivable, AR, customer, credit note, payment, receipt, overdue, ageing, GST, tax invoice, dunning"
+owns: [customers, invoices, quotes]
 tables:
   customers: [tenant_id, active]
   invoices: [tenant_id, customer_id, state, kind]
+  quotes: [tenant_id, customer_id, state]
 subscriptions:                        # the scheduler's daily tick: payment reminders for overdue invoices
   - {table: ticks, handler: jobs.handle_tick, when: "to_service = '{service}' AND status = 'NEW'"}

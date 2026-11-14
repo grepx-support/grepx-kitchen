@@ -9,7 +9,7 @@ from fastapi.responses import Response
 from grepx_bff.errors import ApiError
 from grepx_bff.views import clean
 
-from documents import InvoicePdf, render
+from documents import InvoicePdf, brand, render
 from kitchen import Kitchen, allow
 
 router = APIRouter(prefix="/sales", tags=["sales"])
@@ -74,6 +74,6 @@ def pdf(invoice_id: str, k: Kitchen = Depends(seller)):
     if row is None:
         raise ApiError("UNKNOWN_INVOICE", 404)
     doc = clean(row)
-    data = render(InvoicePdf(doc, k.business, clean(k.one(gc.billing.CUSTOMERS, doc["customer_id"])) or {}))
+    data = render(InvoicePdf(doc, brand(k), clean(k.one(gc.billing.CUSTOMERS, doc["customer_id"])) or {}))
     name = (doc.get("number") or "draft").replace("/", "-")
     return Response(data, media_type="application/pdf", headers={"Content-Disposition": f'inline; filename="{name}.pdf"'})

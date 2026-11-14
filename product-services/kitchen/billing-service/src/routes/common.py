@@ -45,6 +45,12 @@ class Books:
     def invoice(self, key: str) -> dict:
         return self.mine(Table.INVOICES.value, key, ReasonCode.UNKNOWN_INVOICE)
 
+    def quote(self, key: str) -> dict:
+        return self.mine(Table.QUOTES.value, key, ReasonCode.UNKNOWN_QUOTE)
+
+    def quotes(self) -> list[dict]:
+        return [state_of(r) for r in self.read.accepted(Table.QUOTES.value, tenant_id=self.tenant)]
+
     def location(self, key: str) -> dict:
         return self.mine(gc.business.LOCATIONS, key, ReasonCode.UNKNOWN_LOCATION)
 

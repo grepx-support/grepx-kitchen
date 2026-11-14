@@ -9,6 +9,8 @@ import { bill, bills, newBill } from "./money/bills.js";
 import { detail, editor } from "./money/invoice.js";
 import { customers, sales } from "./money/sales.js";
 import { margins } from "./money/margins.js";
+import { quoteEditor } from "./money/quote-editor.js";
+import { quote, quotes } from "./money/quotes.js";
 import { report } from "./money/report.js";
 import { statementPage } from "./money/statement.js";
 
@@ -17,6 +19,10 @@ const PAY = { auth: "staff", tenant: true, area: "money", group: "Money", perm: 
 
 export const routes = [
   { path: "/sales", nav: "Invoices", key: "n", icon: "receipt", ...SELL, keywords: "customer receivable ar billing", render: sales },
+  { path: "/sales/quotes", nav: "Quotations", icon: "send", ...SELL, keywords: "quote catering event order estimate", render: quotes },
+  { path: "/sales/quotes/new", ...SELL, render: (el) => quoteEditor(el, "") },
+  { path: "/sales/quotes/edit/:id", ...SELL, render: (el, { args }) => quoteEditor(el, args[0]) },
+  { path: "/sales/quote/:id", ...SELL, render: (el, { args }) => quote(el, args[0]) },
   { path: "/sales/customers", ...SELL, render: customers },
   { path: "/sales/customer/:id", ...SELL, render: (el, { args }) => statementPage(el, args[0]) },
   { path: "/sales/new", ...SELL, render: (el) => editor(el, "") },
