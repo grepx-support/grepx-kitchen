@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[3]
 COMMON = ["common-services/identity", "common-services/people-service", "common-services/notification-service",
           "common-services/template-service", "common-services/task-service", "common-services/audit-log-service",
           "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service",
-          "common-services/media-service"]
+          "common-services/media-service", "common-services/employee-service", "common-services/roster-service"]
 MONTH = date.today().isoformat()[:7]
 
 
@@ -381,3 +381,29 @@ def test_invoices_and_supplier_bills(env):
     ok(api.post(f"/api/v1/platform/businesses/{biz['id']}/reopen", headers=ops, json={}))
     stack.settle()
     assert api.get("/api/v1/sales", headers=owner).status_code == 200
+
+
+def test_team_and_roster_across_outlets(env):
+    """Employees working at two outlets, a roster with a clash across outlets refused, clocking in with a PIN."""
+    stack, api = env
+    ops = login(api, "ops@grepx.sg", "operator-pw")
+    ok(api.post("/api/v1/platform/businesses", headers=ops, json={"name": "Team Kitchen", "currency": "INR", "timezone": "Asia/Kolkata",
+        "owner": {"name": "Tara Team", "email": "owner@team.in", "phone": "+919800000099", "password": "team-pass"}}))
+    owner = login(api, "owner@team.in", "team-pass")
+    ok(api.post("/api/v1/setup/locations", headers=owner, json={"name": "Store", "kind": "warehouse"}))
+    k1 = ok(api.post("/api/v1/setup/locations", headers=owner, json={"name": "Kitchen", "kind": "kitchen"}))["location_id"]
+    s1 = ok(api.post("/api/v1/setup/locations", headers=owner, json={"name": "Outlet", "kind": "store"}))["location_id"]
+    meera = ok(api.post("/api/v1/team", headers=owner, json={"name": "Meera Iyer", "position": "Sous chef", "home_site": k1, "sites": [s1],
+                                                            "pay": {"basis": "hourly", "rate": 250}}))["employee_id"]
+    ok(api.post(f"/api/v1/team/{meera}/documents", headers=owner, json={"kind": "Food licence", "expires_on": "2020-01-01"}))
+    team = ok(api.get("/api/v1/team", headers=owner))
+    assert team["team"][0]["sites"] == [k1, s1] and team["documents_due"][0]["state"] == "expired"
+    ok(api.post("/api/v1/roster/shifts", headers=owner, json={"site_id": k1, "employee_id": meera, "date": "2026-11-16", "start": "08:00", "end": "16:00"}))
+    clash = api.post("/api/v1/roster/shifts", headers=owner, json={"site_id": s1, "employee_id": meera, "date": "2026-11-16", "start": "15:00", "end": "22:00"})
+    assert clash.status_code == 409
+    week = ok(api.get(f"/api/v1/roster?week=2026-11-16", headers=owner))
+    assert week["summary"]["cost"] == 2000.0 and len(week["shifts"]) == 1
+    ok(api.post(f"/api/v1/team/{meera}/pin", headers=owner, json={"pin": "2468"}))
+    assert ok(api.post("/api/v1/roster/clock", headers=owner, json={"employee_id": meera, "pin": "2468", "site_id": k1}))["clocked"] == "in"
+    assert api.post("/api/v1/roster/clock", headers=owner, json={"employee_id": meera, "pin": "1111", "site_id": k1}).status_code == 409
+    assert ok(api.get("/api/v1/roster/people", headers=owner))["people"][0]["name"] == "Meera Iyer"

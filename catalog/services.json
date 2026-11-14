@@ -110,6 +110,40 @@
     "reacts_to": []
   },
   {
+    "name": "employee-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/employee-service",
+    "request_table": "employee_requests",
+    "actions": [
+      "END",
+      "REMOVE_DOCUMENT",
+      "SAVE",
+      "SET_DOCUMENT"
+    ],
+    "reasons": [
+      "ALREADY_ENDED",
+      "DUPLICATE_EMAIL",
+      "INVALID_DATE",
+      "INVALID_DOCUMENT",
+      "INVALID_EMAIL",
+      "INVALID_NAME",
+      "INVALID_PAY",
+      "INVALID_SITE",
+      "MISSING_TENANT",
+      "UNKNOWN_EMPLOYEE"
+    ],
+    "other_tables": [],
+    "summary": "Employees of any business: profile, position, home site and other sites they work at, pay basis, documents with expiry. Keywords: staff, HR, workforce, people records",
+    "routes": [
+      "end",
+      "remove_document",
+      "save",
+      "set_document"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "event-report-service",
     "layer": "common",
     "product": "",
@@ -212,21 +246,29 @@
       "CHANGE_PASSWORD",
       "LINK_EXTERNAL",
       "LOGIN",
+      "LOGIN_CODE",
       "LOGIN_EXTERNAL",
       "REGISTER",
       "RESET_CONFIRM",
       "RESET_REQUEST",
-      "SET_PASSWORD"
+      "SET_PASSWORD",
+      "TWO_STEP_DISABLE",
+      "TWO_STEP_ENABLE",
+      "TWO_STEP_START",
+      "TWO_STEP_STATUS"
     ],
     "reasons": [
+      "CHALLENGE_EXPIRED",
       "EMAIL_TAKEN",
       "INVALID_CREDENTIALS",
       "INVALID_TOKEN",
       "MISSING_FIELD",
+      "NOT_STARTED",
       "PROVIDER_NOT_CONFIGURED",
       "UNKNOWN_PROVIDER",
       "UNKNOWN_USER",
-      "WEAK_PASSWORD"
+      "WEAK_PASSWORD",
+      "WRONG_CODE"
     ],
     "other_tables": [],
     "summary": "Login credentials, sessions (JWT), password change/reset links. Keywords: login, password, token, authentication",
@@ -234,11 +276,17 @@
       "change_password",
       "link_external",
       "login",
+      "login_code",
       "login_external",
       "register",
       "reset_confirm",
       "reset_request",
-      "set_password"
+      "set_password",
+      "two_step",
+      "two_step_disable",
+      "two_step_enable",
+      "two_step_start",
+      "two_step_status"
     ],
     "reacts_to": []
   },
@@ -289,20 +337,28 @@
     "path": "common-services/notification-service",
     "request_table": "notifications",
     "actions": [
+      "RETRY",
       "SEND",
-      "TEST_CHANNEL"
+      "TEST_CHANNEL",
+      "TEST_SEND"
     ],
     "reasons": [
+      "ALREADY_RETRIED",
+      "ATTACHMENT_TOO_LARGE",
       "CHECK_FAILED",
       "MISSING_RECIPIENT",
       "NOT_CONFIGURED",
+      "NOT_FAILED",
+      "UNKNOWN_CHANNEL",
       "UNKNOWN_TEMPLATE"
     ],
     "other_tables": [],
     "summary": "Sends email/SMS/WhatsApp from templates with admin on/off + channel settings; circuit breaker per channel. Keywords: message, email, sms, whatsapp",
     "routes": [
+      "retry",
       "send",
-      "test_channel"
+      "test_channel",
+      "test_send"
     ],
     "reacts_to": []
   },
@@ -409,6 +465,27 @@
     "summary": "Invite-a-friend points (weights in config) and leaderboard. Keywords: referral, leaderboard, invite",
     "routes": [
       "score"
+    ],
+    "reacts_to": []
+  },
+  {
+    "name": "roster-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/roster-service",
+    "request_table": "roster_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Rosters for any business with several sites: shifts per person per site, clash checks, publishing a week, clock in / out with a PIN, worked against rostered hours and their cost. Keywords: shifts, scheduling, timesheet, attendance",
+    "routes": [
+      "clock",
+      "copy_week",
+      "publish_week",
+      "remove_shift",
+      "save_shift",
+      "set_pin",
+      "week"
     ],
     "reacts_to": []
   },
@@ -717,6 +794,7 @@
       "REORDER",
       "SAVE_ITEM",
       "SAVE_RECIPE",
+      "SAVE_RECIPE_CARD",
       "SAVE_SUPPLIER"
     ],
     "reasons": [],
@@ -726,6 +804,7 @@
       "reorder",
       "save_item",
       "save_recipe",
+      "save_recipe_card",
       "save_supplier"
     ],
     "reacts_to": []
@@ -764,6 +843,7 @@
     "path": "product-services/kitchen/planning-service",
     "request_table": "planning_requests",
     "actions": [
+      "PREP_LIST",
       "PRODUCTION_TARGET",
       "REORDER",
       "SET_TARGET",
@@ -774,6 +854,7 @@
     "other_tables": [],
     "summary": "Recommendations from past usage: weekly production target (finished goods, batches, ingredients to buy), warehouse out (what to send each location for its days of cover), warehouse in (what the holding place needs for the week), reorder quantities per supplier with the previous recommendation and large changes flagged; manual targets when there is no history. Keywords: forecast, par level, replenishment, reorder point, production plan, demand",
     "routes": [
+      "prep_list",
       "production_target",
       "reorder",
       "set_target",

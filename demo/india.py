@@ -102,6 +102,14 @@ CARDS = {
              "steps": ["Knead maida, curd, salt; rest 2 hours", "Divide 80 g balls", "Slap on the tandoor wall 90 seconds", "Brush with butter"]},
 }
 
+# name, position, home place, other places, pay basis, rate (monthly INR or hourly INR)
+TEAM = [("Meera Iyer", "Head chef", "kit", ["bandra"], "monthly", 85000), ("Sanjay Rao", "Sous chef", "kit", [], "monthly", 55000),
+        ("Imran Shaikh", "Tandoor cook", "kit", ["bandra"], "hourly", 180), ("Pooja Nair", "Cashier", "bandra", ["parel"], "hourly", 150),
+        ("Ravi Kumar", "Store keeper", "wh", [], "monthly", 30000), ("Arjun Singh", "Driver", "van", ["kit", "wh"], "monthly", 28000)]
+TEAM_DOCS = [("Imran Shaikh", "Food handler licence", 16), ("Pooja Nair", "Health certificate", -20), ("Meera Iyer", "Food handler licence", 300)]
+TEAM_SHIFTS = {"Meera Iyer": ("kit", "08:00", "17:00"), "Sanjay Rao": ("kit", "13:00", "22:00"), "Imran Shaikh": ("kit", "10:00", "19:00"),
+               "Pooja Nair": ("bandra", "11:00", "20:00"), "Ravi Kumar": ("wh", "07:00", "15:00")}
+
 PRICE = {"biryani": 260, "butter": 290, "dalmakhani": 180, "paneer_tikka": 260, "naan": 35}       # menu price at the outlets
 WHOLESALE = {"biryani": 240, "butter": 280, "dalmakhani": 190, "paneer_tikka": 250, "naan": 40}   # catering price on invoices
 DAILY_SALES = {"bandra": {"biryani": 30, "butter": 22, "dalmakhani": 18, "paneer_tikka": 16, "naan": 70},
