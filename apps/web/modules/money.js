@@ -10,6 +10,7 @@ import { detail, editor } from "./money/invoice.js";
 import { customers, sales } from "./money/sales.js";
 import { margins } from "./money/margins.js";
 import { prices } from "./money/prices.js";
+import { accounting } from "./money/accounting.js";
 import { quoteEditor } from "./money/quote-editor.js";
 import { quote, quotes } from "./money/quotes.js";
 import { report } from "./money/report.js";
@@ -33,6 +34,8 @@ export const routes = [
   { path: "/bills", feature: "purchasing", nav: "Supplier bills", key: "b", icon: "inbox", ...PAY, keywords: "payable ap supplier invoice", render: bills },
   { path: "/bills/new", feature: "purchasing", ...PAY, render: newBill },
   { path: "/bills/:id", feature: "purchasing", ...PAY, render: (el, { args }) => bill(el, args[0]) },
+  { path: "/money/accounting", nav: "Accounting", icon: "book", auth: "staff", tenant: true, area: "money", group: "Money", perm: "manage_business",
+    keywords: "accounting journal ledger trial balance xero quickbooks export accountant gst", render: accounting },
   { path: "/money/report", nav: "Money summary", icon: "chart", auth: "staff", tenant: true, area: "money", group: "Money", perm: "manage_business",
     keywords: "profit loss p&l gst vat tax month sales purchases", render: report },
   { path: "/money/margins", nav: "Profit by product", icon: "trend", auth: "staff", tenant: true, area: "money", group: "Money", perm: "manage_business",

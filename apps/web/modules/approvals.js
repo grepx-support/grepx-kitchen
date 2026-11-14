@@ -26,18 +26,19 @@ async function approvals(el) {
   const [b, d] = await Promise.all([biz(), api("/approvals")]);
   el.innerHTML = String(html`${pageHead({ ...head("orders"), title: "Approvals", subtitle: d.waiting ? `${d.waiting} waiting for you` : "Nothing waiting" })}
     ${d.waiting || d.rises.length ? "" : empty({ icon: "check", title: "All clear", text: "Orders above your approval amount, bills and leave requests appear here." })}
-    ${section("Purchase orders above your amount", "cart", d.orders, (o) => html`<div class="k-row"><a href="#/orders/${o.po_id}"><b>${o.number}</b> ${o.supplier_name}</a>
+    ${section("Purchase orders above your amount", "cart", d.orders, (o) => html`<div class="k-row k-click" data-href="#/orders/${o.po_id}"><a href="#/orders/${o.po_id}"><b>${o.number}</b> ${o.supplier_name}</a>
       <span>${money(b, o.value)} <small class="muted">over ${money(b, o.limit)} · ${o.by}</small></span>
       <span><button class="btn small primary" data-po="${o.po_id}" data-yes="1">Approve</button> <button class="btn small" data-po="${o.po_id}">Reject</button></span></div>`)}
-    ${section("Supplier bills to approve", "inbox", d.bills, (x) => html`<div class="k-row"><a href="#/bills/${x.bill_id}"><b>${x.supplier_name}</b> ${x.supplier_ref}</a>
+    ${section("Supplier bills to approve", "inbox", d.bills, (x) => html`<div class="k-row k-click" data-href="#/bills/${x.bill_id}"><a href="#/bills/${x.bill_id}"><b>${x.supplier_name}</b> ${x.supplier_ref}</a>
       <span>${cash(x.total)} <small class="muted">due ${x.due}</small> ${x.match === "check" ? pill(`${x.issues} to check`, "bad") : pill(x.match.replace("_", " "), x.match === "matched" ? "good" : "")}
         ${x.jumps ? pill(`${x.jumps} price jump${x.jumps > 1 ? "s" : ""}`, "warn") : ""}</span>
       <span><button class="btn small primary" data-bill="${x.bill_id}" data-check="${x.match === "check" || x.jumps ? 1 : ""}">Approve</button></span></div>`)}
-    ${section("Leave requests", "calendar", d.leave, (l) => html`<div class="k-row"><b>${l.name}</b><span>${l.type} · ${l.first} to ${l.last}${l.days ? ` (${l.days} days)` : ""} ${l.note}</span>
+    ${section("Leave requests", "calendar", d.leave, (l) => html`<div class="k-row k-click" data-href="#/leave"><b>${l.name}</b><span>${l.type} · ${l.first} to ${l.last}${l.days ? ` (${l.days} days)` : ""} ${l.note}</span>
       <span><button class="btn small primary" data-leave="${l.leave_id}" data-yes="1">Approve</button> <button class="btn small" data-leave="${l.leave_id}">Decline</button></span></div>`)}
-    ${section("Supplier price rises (last 14 days)", "trend", d.rises, (r) => html`<div class="k-row"><b>${r.description}</b><span>${r.supplier_name} · ${r.date}</span>
+    ${section("Supplier price rises (last 14 days)", "trend", d.rises, (r) => html`<div class="k-row k-click" data-href="${r.item_id ? `#/setup?tab=items&edit=${r.item_id}` : "#/bills"}"><b>${r.description}</b><span>${r.supplier_name} · ${r.date}</span>
       <span>${cash(r.from)} → ${cash(r.to)} ${pill(`+${r.pct}%`, r.jump ? "bad" : "warn")}</span></div>`)}`);
   const again = () => approvals(el);
+  el.querySelectorAll("[data-href]").forEach((row) => row.addEventListener("click", (e) => { if (!e.target.closest("button,a")) location.hash = row.dataset.href; }));
   const on = (sel, fn) => el.querySelectorAll(sel).forEach((x) => x.addEventListener("click", async () => { if (await fn(x)) again(); }));
   on("[data-po]", async (x) => {
     const yes = !!x.dataset.yes, why = await note(yes ? "Approve this order" : "Reject this order", !yes);

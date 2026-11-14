@@ -16,7 +16,7 @@ function lines(o, b) {
   const total = o.line_view.reduce((n, l) => n + (l.value || 0), 0);
   return html`<table class="m-view o-lines"><thead><tr><th>Item</th><th class="end">Ordered</th><th class="end">Received</th>
       ${costs ? html`<th class="end">Unit cost</th><th class="end">Value</th>` : ""}</tr></thead>
-    <tbody>${o.line_view.map((l) => html`<tr><td><a href="#/stock?item=${l.item_id}">${l.name}</a></td><td class="end">${fmt(l.ordered)} ${l.unit}</td>
+    <tbody>${o.line_view.map((l) => html`<tr class="k-click" data-go="#/setup?tab=items&edit=${l.item_id}"><td>${l.image_id ? html`<img class="o-pic" src="/api/v1/media/${l.image_id}" alt="">` : ""}<a href="#/stock?item=${l.item_id}">${l.name}</a></td><td class="end">${fmt(l.ordered)} ${l.unit}</td>
       <td class="end">${l.received === null ? html`<span class="muted">-</span>` : html`${fmt(l.received)} ${l.unit}${l.difference ? html` <b class="${l.difference < 0 ? "bad" : "ok"}">(${l.difference > 0 ? "+" : ""}${fmt(l.difference)})</b>` : ""}`}</td>
       ${costs ? html`<td class="end">${fmt(l.unit_cost)}</td><td class="end">${fmt(l.value)}</td>` : ""}</tr>`)}</tbody>
     ${costs ? html`<tfoot><tr><th colspan="4">Value at current costs</th><th class="end">${money(b, total)}</th></tr></tfoot>` : ""}</table>`;

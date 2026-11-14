@@ -647,3 +647,78 @@
 .bd-chip.src { background: #8b5cf6; color: #fff; font-weight: 600; } .bd-chip input { width: 80px; }
 fieldset.pt { border: 1px dashed color-mix(in srgb, var(--area) 45%, transparent); border-radius: 12px; padding: 10px 12px; }
 fieldset.pt legend { font-weight: 600; padding: 0 6px; } .pt-row select { min-width: 180px; } .pt-row input { width: 90px; }
+
+/* Attachments */
+.at-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.at-card { position: relative; border-radius: 12px; padding: 8px; cursor: pointer; background: var(--surface, #fff); box-shadow: 0 1px 3px rgb(0 0 0 / .1); transition: transform .15s, box-shadow .15s; }
+.at-card:hover { transform: translateY(-3px) rotateX(4deg); box-shadow: 0 8px 18px rgb(0 0 0 / .14); }
+.at-thumb { height: 90px; border-radius: 8px; display: grid; place-items: center; background: color-mix(in srgb, var(--area) 10%, transparent) center / cover no-repeat; }
+.at-badge { color: #fff; font-weight: 700; padding: 6px 10px; border-radius: 6px; font-size: 13px; letter-spacing: .5px; }
+.at-name { font-size: 13px; font-weight: 600; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .at-meta { font-size: 11px; }
+.at-del { position: absolute; top: 4px; right: 4px; opacity: 0; } .at-card:hover .at-del { opacity: 1; }
+.at-drop { display: grid; place-items: center; gap: 4px; text-align: center; min-height: 130px; border: 2px dashed color-mix(in srgb, var(--area) 50%, transparent); border-radius: 12px; cursor: pointer; padding: 8px; }
+.at-drop.over { background: color-mix(in srgb, var(--area) 14%, transparent); border-style: solid; }
+.ak-key, .ak-ex { padding: 10px; border-radius: 8px; background: #0f172a; color: #a7f3d0; overflow-x: auto; font-size: 13px; user-select: all; }
+.fl-bar { gap: 8px; align-items: center; margin-bottom: 12px; }
+.ac-files { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.ac-file { padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--area) 8%, transparent); display: grid; gap: 6px; }
+tr[data-acct].on td { background: color-mix(in srgb, var(--area) 16%, transparent); }
+
+/* Setup -> Features */
+.ft-head { align-items: center; gap: 12px; margin-bottom: 12px; } .ft-count { font-size: 18px; color: var(--area); }
+.ft-row { display: flex; gap: 12px; align-items: flex-start; padding: 10px 6px; border-radius: 10px; transition: background .15s; }
+.ft-row.on { background: color-mix(in srgb, var(--area) 7%, transparent); }
+.ft-switch { position: relative; flex: none; width: 42px; height: 24px; margin-top: 2px; }
+.ft-switch input { opacity: 0; width: 0; height: 0; }
+.ft-knob { position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1; cursor: pointer; transition: .2s; }
+.ft-knob::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / .3); transition: .2s; }
+.ft-switch input:checked + .ft-knob { background: linear-gradient(135deg, var(--area), #22c55e); }
+.ft-switch input:checked + .ft-knob::before { transform: translateX(18px); }
+.ft-pages { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.ft-page { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--area) 14%, transparent); text-decoration: none; color: inherit; }
+.ft-page:hover { background: var(--area); color: #fff; }
+
+/* Anything clickable looks it */
+.k-click { cursor: pointer; transition: background .12s, transform .12s; }
+.k-click:hover { background: color-mix(in srgb, var(--area) 9%, transparent); }
+div.k-click:hover { transform: translateX(2px); }
+.o-pic { width: 28px; height: 28px; object-fit: cover; border-radius: 6px; vertical-align: middle; margin-right: 8px; }
+
+/* My work - the phone screen */
+.my { max-width: 640px; margin: 0 auto; padding: 12px; display: grid; gap: 14px; }
+.my-hero { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 22px; color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #ec4899 55%, #f59e0b); box-shadow: 0 12px 28px rgb(124 58 237 / .35); }
+.my-hero h1 { margin: 0; font-size: 30px; } .my-hero small, .my-hero span { opacity: .9; }
+.my-clock { position: relative; width: 104px; height: 104px; border-radius: 50%; border: 0; color: #fff; display: grid; place-items: center; align-content: center; gap: 2px;
+  background: radial-gradient(circle at 30% 30%, #34d399, #059669); box-shadow: 0 8px 0 #047857, 0 14px 24px rgb(0 0 0 / .3); cursor: pointer; transition: transform .1s, box-shadow .1s; }
+.my-clock:active { transform: translateY(6px); box-shadow: 0 2px 0 #047857, 0 6px 12px rgb(0 0 0 / .3); }
+.my-clock.in { background: radial-gradient(circle at 30% 30%, #fb7185, #e11d48); box-shadow: 0 8px 0 #9f1239, 0 14px 24px rgb(0 0 0 / .3); }
+.my-ring { position: absolute; inset: -6px; border-radius: 50%; border: 3px solid rgb(255 255 255 / .6); animation: my-pulse 2s infinite; }
+@keyframes my-pulse { 0% { transform: scale(.95); opacity: 1; } 100% { transform: scale(1.18); opacity: 0; } }
+.my-card { padding: 16px; border-radius: 18px; background: var(--surface, #fff); box-shadow: 0 2px 10px rgb(0 0 0 / .07); }
+.my-card h2 { display: flex; align-items: center; gap: 8px; font-size: 17px; margin: 0 0 10px; } .my-card h2 .btn { margin-left: auto; }
+.my-total { margin-left: auto; color: #7c3aed; }
+.my-shifts { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
+.my-shift { scroll-snap-align: start; flex: none; display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: linear-gradient(135deg, #eef2ff, #fdf4ff); }
+.my-date { display: grid; text-align: center; width: 52px; padding: 6px 0; border-radius: 12px; background: #7c3aed; color: #fff; line-height: 1.1; }
+.my-date b { font-size: 22px; }
+.my-bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; }
+.my-bar { flex: 1; display: grid; grid-template-rows: 1fr auto; height: 100%; text-align: center; }
+.my-bar i { align-self: end; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #a78bfa, #7c3aed); min-height: 3px; }
+.my-list { display: grid; gap: 6px; }
+.my-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; padding: 12px; border-radius: 12px; border: 0; background: #f8fafc; font: inherit; cursor: pointer; text-align: left; }
+.my-row:hover { background: #f1f5f9; }
+.my-rings { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; } .my-ringbox { display: grid; justify-items: center; gap: 4px; }
+.my-donut { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(#ec4899 calc(var(--p) * 1%), #fce7f3 0); position: relative; }
+.my-donut::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--surface, #fff); }
+.my-donut b { position: relative; z-index: 1; }
+.my-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.my-tiles a { display: grid; justify-items: center; gap: 6px; padding: 16px; border-radius: 16px; text-decoration: none; color: #fff; font-weight: 600;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1); box-shadow: 0 6px 0 rgb(0 0 0 / .12); transition: transform .12s; }
+.my-tiles a:nth-child(2) { background: linear-gradient(135deg, #22c55e, #0d9488); } .my-tiles a:nth-child(3) { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.my-tiles a:nth-child(4) { background: linear-gradient(135deg, #64748b, #334155); } .my-tiles a:active { transform: translateY(4px); }
+.my-pin { display: grid; gap: 12px; justify-items: center; } .my-dots { font-size: 28px; letter-spacing: 8px; }
+.my-keys { display: grid; grid-template-columns: repeat(3, 64px); gap: 10px; }
+.my-key { height: 64px; border-radius: 50%; border: 0; font-size: 22px; font-weight: 600; background: #f1f5f9; box-shadow: 0 4px 0 #cbd5e1; cursor: pointer; }
+.my-key:active { transform: translateY(3px); box-shadow: 0 1px 0 #cbd5e1; } .my-key:disabled { visibility: hidden; }
+@media (max-width: 480px) { .my-hero h1 { font-size: 24px; } .my-clock { width: 88px; height: 88px; } }

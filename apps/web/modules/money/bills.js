@@ -15,6 +15,7 @@ import { badge, cash, frame, openPdf } from "./common.js";
 import { LandedEditor, KINDS } from "./landed.js";
 import { LineEditor } from "./lines.js";
 import { askPayment } from "./payment.js";
+import { mountAttachments } from "../lib/attachments.js";
 
 export async function bills(el) {
   const d = await api("/bills");
@@ -129,4 +130,5 @@ export async function bill(el, id) {
   });
   on("[data-return]", () => returnGoods(x, b.locations || []).then((ok) => ok && again()));
   on("[data-void]", async () => { if (await run(() => api(`/bills/${id}/void`, { method: "POST", body: { reason: "Voided" } }), "Voided")) again(); });
+  mountAttachments(body.appendChild(document.createElement("div")), `bill:${id}`, { title: "Files - the supplier's invoice, delivery note" });
 }

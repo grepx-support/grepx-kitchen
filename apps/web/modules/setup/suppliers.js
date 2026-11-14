@@ -7,6 +7,7 @@
 // Suppliers: drag into order; add or edit one with the WhatsApp number orders are sent to (ORD-01).
 import { html } from "/assets/kit/index.js";
 import { post, sortList, values, wireSort } from "./common.js";
+import { mountAttachments } from "../lib/attachments.js";
 
 const form = (x = {}) => html`<form class="card accent k-section"><h2>${x.id ? `Edit ${x.name}` : "Add a supplier"}</h2><input type="hidden" name="id" value="${x.id || ""}">
   <div class="row"><label>Name<input name="name" required value="${x.name || ""}"></label><label>Phone / WhatsApp<input name="phone" value="${x.phone || ""}"></label>
@@ -26,5 +27,6 @@ export default {
       const v = values(e.target);
       if (await post("/setup/suppliers", { supplier_id: v.id || undefined, name: v.name, phone: v.phone, email: v.email, contact: v.contact, notes: v.notes }, "Supplier saved")) location.hash = "#/setup?tab=suppliers";
     };
+    if (q.edit) mountAttachments(el.appendChild(document.createElement("div")), `supplier:${q.edit}`, { title: "Files - contracts, certificates, price lists" });
   },
 };

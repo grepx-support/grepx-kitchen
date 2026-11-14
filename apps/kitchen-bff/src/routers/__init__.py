@@ -7,9 +7,9 @@ import grepx_contracts as gc
 from fastapi import APIRouter, Depends
 
 from kitchen import feature_on
-from . import approvals, audit, bills, branding, chef, data, dispatch, funds, leave, payroll, pdf, roster, safety, team, closing, costs, inventory, kitchen, me, orders, forecast, outbox, platform, public, quotes, report, runs, sales, setup, stock, warehouse
+from . import api_keys, approvals, my, attachments, audit, bills, branding, chef, data, dispatch, funds, leave, payroll, pdf, roster, safety, team, closing, costs, inventory, kitchen, me, orders, forecast, outbox, platform, public, quotes, report, runs, sales, setup, stock, warehouse
 
-ROUTERS = [me.router, approvals.router, audit.router, data.router, branding.router, dispatch.router, chef.router, funds.router, leave.router, payroll.router, pdf.router, roster.router, safety.router, team.router, platform.router, setup.router, stock.router, kitchen.router, orders.router, closing.router, costs.router,
+ROUTERS = [me.router, my.router, api_keys.router, approvals.router, attachments.router, audit.router, data.router, branding.router, dispatch.router, chef.router, funds.router, leave.router, payroll.router, pdf.router, roster.router, safety.router, team.router, platform.router, setup.router, stock.router, kitchen.router, orders.router, closing.router, costs.router,
            warehouse.router, runs.router, inventory.router, outbox.router, public.router, quotes.router, sales.router, bills.router, report.router, forecast.router]
 
 # Setup -> Features: a router whose feature is off refuses every call (the web hides its pages too, /me "features").

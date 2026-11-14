@@ -14,6 +14,7 @@ import { badge, cash, frame, openPdf } from "./common.js";
 import { LineEditor } from "./lines.js";
 import { askPayment } from "./payment.js";
 import { editCustomer } from "./sales.js";
+import { mountAttachments } from "../lib/attachments.js";
 
 export async function editor(el, id) {
   const [b, d, items] = await Promise.all([biz(), api("/sales"), catalogue()]);
@@ -105,4 +106,5 @@ export async function detail(el, id) {
     if (await confirm({ title: "Void this invoice?", text: "It stays on record as void; its number is not reused.", ok: "Void", danger: true })
       && await run(() => api(`/sales/invoices/${id}/void`, { method: "POST", body: { reason: "Voided" } }), "Voided")) again();
   });
+  mountAttachments(body.appendChild(document.createElement("div")), `invoice:${id}`);
 }

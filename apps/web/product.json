@@ -41,6 +41,7 @@
   "modules": [
     "core/auth",
     "kitchen/today",
+    "kitchen/my",
     "kitchen/kitchen",
     "kitchen/chef",
     "kitchen/safety",
@@ -58,6 +59,7 @@
     "kitchen/setup",
     "kitchen/outbox",
     "kitchen/audit",
+    "kitchen/files",
     "kitchen/landing",
     "kitchen/platform",
     "core/profile",

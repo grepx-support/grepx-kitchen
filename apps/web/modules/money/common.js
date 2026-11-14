@@ -26,7 +26,8 @@ const TABS = () => [canSell() && { id: "sales", label: "Invoices", icon: "receip
   canSell() && { id: "customers", label: "Customers", icon: "users", href: "#/sales/customers" },
   canPay() && { id: "bills", label: "Supplier bills", icon: "inbox", href: "#/bills" },
   has("manage_business") && { id: "report", label: "Summary", icon: "chart", href: "#/money/report" },
-  has("manage_business") && { id: "margins", label: "Profit", icon: "trend", href: "#/money/margins" }].filter(Boolean);
+  has("manage_business") && { id: "margins", label: "Profit", icon: "trend", href: "#/money/margins" },
+  has("manage_business") && { id: "accounting", label: "Accounting", icon: "book", href: "#/money/accounting" }].filter(Boolean);
 
 export function frame(el, current, title, subtitle, actions = "") {
   el.style.setProperty("--area", area("money"));

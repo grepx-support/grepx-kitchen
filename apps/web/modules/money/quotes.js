@@ -10,6 +10,7 @@ import { api, run } from "/assets/app.js";
 import { confirm, DataTable, empty, html, icon, kpiRow, openDialog } from "/assets/kit/index.js";
 import { biz } from "../lib/business.js";
 import { badge, cash, frame, openPdf } from "./common.js";
+import { mountAttachments } from "../lib/attachments.js";
 
 const FILTERS = ["all", "draft", "sent", "expired", "ordered", "invoiced", "declined", "cancelled"];
 const ask = async (title, text, name, ok = "Save") => {
@@ -96,4 +97,5 @@ export async function quote(el, id) {
     const out = await post("invoice", {}, "Draft invoice made - check it and issue it");
     if (out) location.hash = `#/sales/invoice/${out.invoice_id}`;
   });
+  mountAttachments(body.appendChild(document.createElement("div")), `quote:${id}`, { title: "Files - menus, floor plans" });
 }

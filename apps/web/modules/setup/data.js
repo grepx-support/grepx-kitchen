@@ -35,7 +35,13 @@ async function bring(kind, title) {
 export default {
   id: "data", label: "Import / export", icon: "download", feature: "import_export",
   async render(el) {
-    const d = await api("/data");
+    const d = await api("/data").catch(() => null);
+    if (!d?.kinds) {                       // the server has not been updated yet, or is restarting
+      el.innerHTML = String(html`<section class="card k-section"><h2>Import / export is not ready</h2><p class="muted">The server could not list what can be imported.
+        If it was just updated, it may still be restarting - try again in a minute. If it keeps happening, the server needs its latest update.</p>
+        <button class="btn" onclick="location.reload()">Try again</button></section>`);
+      return;
+    }
     el.innerHTML = String(html`<p class="muted">Bring your records in from Excel or CSV, or take them out. ${ORDER}</p>
       <div class="grid two">${d.kinds.map((x) => html`<section class="card" data-kind="${x.kind}" data-title="${x.title}"><h2>${x.title}</h2>
         <p class="muted small">${x.notes.join(" ")}</p>

@@ -6,7 +6,7 @@
 
 // Features: everything the app can do, grouped and explained in a line, each switched on or off for the business.
 // A feature that is off leaves the menu for everyone and its pages refuse (the data stays; switch it on to have it back).
-import { api, run } from "/assets/app.js";
+import { api, run, state } from "/assets/app.js";
 import { html, icon } from "/assets/kit/index.js";
 import { resetBiz } from "../lib/business.js";
 
@@ -30,13 +30,31 @@ export const FEATURES = [
     ["import_export", "Import / export", "Bring records in from Excel or CSV and take them out."]]],
 ];
 
+/** The pages a feature brings (from the app's own routes): a chip each, click to open. */
+function pages(key) {
+  const seen = new Set();
+  const list = (state.routes || []).filter((r) => r.feature === key && !r.path.includes(":") && !seen.has(r.path) && seen.add(r.path));
+  const label = (r) => r.nav || r.path.split("/").filter(Boolean).slice(-1)[0].replace(/[-_]/g, " ").replace(/^./, (c) => c.toUpperCase());
+  return list.length ? html`<div class="ft-pages">${list.map((r) => html`<a class="ft-page" href="#${r.path}">${icon(r.icon || "dot", { size: 12 })} ${label(r)}</a>`)}</div>` : "";
+}
+
 export default {
   id: "features", label: "Features", icon: "settings",
   render(el, s, q, { redraw }) {
     const on = s.business?.modules || {};
-    el.innerHTML = String(html`<p class="muted">Switch on what your business uses. What is off leaves the menu for everyone; its records are kept.</p>
-      <form class="grid two">${FEATURES.map(([group, ic, list]) => html`<section class="card"><h2>${icon(ic)} ${group}</h2>${list.map(([key, name, what]) =>
-        html`<label class="ft-row"><input type="checkbox" name="${key}" ${on[key] !== false ? "checked" : ""}><span><b>${name}</b><br><small class="muted">${what}</small></span></label>`)}</section>`)}</form>`);
+    const total = FEATURES.reduce((n, [, , list]) => n + list.length, 0), live = FEATURES.reduce((n, [, , list]) => n + list.filter(([k]) => on[k] !== false).length, 0);
+    el.innerHTML = String(html`<div class="card row ft-head"><p class="muted grow">Switch on what your business uses. What is off leaves the menu for everyone; its records are kept.
+        Each feature lists the pages it brings - click one to open it.</p><b class="ft-count">${live} / ${total} on</b>
+        <input type="search" placeholder="Find a feature or page" data-find></div>
+      <form class="grid two">${FEATURES.map(([group, ic, list]) => html`<section class="card ft-group"><h2>${icon(ic)} ${group}</h2>${list.map(([key, name, what]) =>
+        html`<div class="ft-row ${on[key] !== false ? "on" : ""}" data-key="${key}"><label class="ft-switch"><input type="checkbox" name="${key}" ${on[key] !== false ? "checked" : ""}><span class="ft-knob"></span></label>
+          <div><b>${name}</b><br><small class="muted">${what}</small>${pages(key)}</div></div>`)}</section>`)}</form>
+      <section class="card k-section"><h2>${icon("check")} Always on</h2><p class="muted">Setup, Files, API keys, Accounting export, Approvals, Audit trail, Search (Ctrl K).</p></section>`);
+    el.querySelector("[data-find]").oninput = (e) => {
+      const t = e.target.value.toLowerCase();
+      el.querySelectorAll(".ft-row").forEach((r) => { r.hidden = t && !r.textContent.toLowerCase().includes(t); });
+      el.querySelectorAll(".ft-group").forEach((g) => { g.hidden = ![...g.querySelectorAll(".ft-row")].some((r) => !r.hidden); });
+    };
     el.querySelector("form").addEventListener("change", async (e) => {
       const box = e.target;
       if (await run(() => api("/setup/business", { method: "PATCH", body: { modules: { [box.name]: box.checked } } }), `${box.checked ? "Switched on" : "Switched off"}`)) {

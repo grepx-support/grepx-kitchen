@@ -10,8 +10,13 @@ import binascii
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 from grepx_bff.errors import ApiError
+from grepx_bff.views import clean
 from grepx_bff.tabular import TableError, read, write_csv, write_xlsx
 
+import json
+
+import grepx_contracts as gc
+from exports import FORMATS, Books
 from imports import IMPORTERS
 from kitchen import Kitchen, allow
 
@@ -30,6 +35,34 @@ def file_out(name: str, headings: list[str], rows: list[list], fmt: str, notes: 
     if fmt == "csv":
         return Response(write_csv(headings, rows), media_type="text/csv", headers={"Content-Disposition": f'attachment; filename="{name}.csv"'})
     return Response(write_xlsx(headings, rows, name[:31], notes), media_type=XLSX, headers={"Content-Disposition": f'attachment; filename="{name}.xlsx"'})
+
+
+def books(k: Kitchen, start: str, end: str, accounts: str) -> Books:
+    try:
+        names = json.loads(accounts) if accounts else {}
+    except ValueError:
+        raise ApiError("INVALID_ACCOUNTS", 400)
+    return Books([clean(r) for r in k.rows(gc.billing.INVOICES)], [clean(r) for r in k.rows(gc.payables.BILLS)], start, end, names if isinstance(names, dict) else {})
+
+
+@router.get("/accounting")
+def accounting(start: str = "", end: str = "", accounts: str = "", k: Kitchen = Depends(owner)):
+    """The books for the dates as a journal and a trial balance (on screen), the formats a file can be made in, and the
+    account names used."""
+    b = books(k, start, end, accounts)
+    from grepx_money import ledger
+    journal = b.journal()
+    return {"formats": FORMATS, "accounts": b.acc.as_dict(), "journal": journal, "trial": ledger.trial_balance(journal),
+            "currency": k.business.get("currency", "")}
+
+
+@router.get("/accounting/file")
+def accounting_file(format: str = "journal", start: str = "", end: str = "", accounts: str = "", file: str = "xlsx", k: Kitchen = Depends(owner)):
+    if format not in FORMATS:
+        raise ApiError("UNKNOWN_FORMAT", 404)
+    headings, rows = books(k, start, end, accounts).table(format)
+    name = f"{format}-{start or 'all'}-{end or 'today'}"
+    return file_out(name, headings, rows, file, [FORMATS[format], f"From {start or 'the start'} to {end or 'today'}"])
 
 
 @router.get("")

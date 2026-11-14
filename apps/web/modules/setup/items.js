@@ -11,6 +11,7 @@ import { fmt } from "../lib/format.js";
 import { partsBlock, partsOf, wireParts } from "./parts.js";
 import { option, post, sortList, values, wireSort } from "./common.js";
 import { itemFields, pickedAllergens } from "../chef/marks.js";
+import { mountAttachments } from "../lib/attachments.js";
 
 const TAG = { ingredient: "🥩", finished: "🌮", supply: "📦" };
 
@@ -74,5 +75,6 @@ export default {
         diet: v.diet || "", allergens: pickedAllergens(e.target),
         components: partsOf(e.target, "components"), breaks_into: partsOf(e.target, "breaks_into") }, "Item saved")) location.hash = "#/setup?tab=items";
     };
+    if (q.edit) mountAttachments(el.appendChild(document.createElement("div")), `item:${q.edit}`, { title: "Files - spec sheets, certificates" });
   },
 };

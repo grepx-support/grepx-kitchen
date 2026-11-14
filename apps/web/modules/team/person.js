@@ -10,6 +10,7 @@ import { api, run } from "/assets/app.js";
 import { html, icon, pill } from "/assets/kit/index.js";
 import { biz } from "../lib/business.js";
 import { frame } from "./common.js";
+import { mountAttachments } from "../lib/attachments.js";
 
 const field = (label, name, v = "", type = "text", extra = "") => html`<label>${label}<input name="${name}" type="${type}" value="${v ?? ""}" ${extra}></label>`;
 
@@ -54,4 +55,5 @@ export async function personPage(el, q) {
   body.querySelectorAll("[data-rm]").forEach((x) => x.addEventListener("click", async () => {
     if (await run(() => api(`/team/${p.employee_id}/documents/${x.dataset.rm}`, { method: "DELETE" }), "Removed")) again(p.employee_id);
   }));
+  if (p.employee_id) mountAttachments(body.appendChild(document.createElement("div")), `employee:${p.employee_id}`, { title: "Other files" });
 }

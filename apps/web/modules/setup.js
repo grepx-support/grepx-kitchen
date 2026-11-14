@@ -12,13 +12,14 @@ import business from "./setup/business.js";
 import data from "./setup/data.js";
 import features from "./setup/features.js";
 import items from "./setup/items.js";
+import apiKeys from "./setup/api-keys.js";
 import locations from "./setup/locations.js";
 import overheads from "./setup/overheads.js";
 import { roles, users } from "./setup/people.js";
 import recipes from "./setup/recipes.js";
 import suppliers from "./setup/suppliers.js";
 
-const TABS = [business, features, locations, items, suppliers, recipes, users, roles, overheads, data];
+const TABS = [business, features, locations, items, suppliers, recipes, users, roles, overheads, data, apiKeys];
 
 async function setup(el, q) {
   const shown = TABS.filter((t) => !t.feature || (state.me?.features || {})[t.feature] !== false);

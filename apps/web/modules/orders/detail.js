@@ -15,6 +15,7 @@ import { money, stamp } from "../lib/format.js";
 import { receive } from "./common.js";
 import { openPdf } from "../money/common.js";
 import { orderSummary } from "./summary.js";
+import { mountAttachments } from "../lib/attachments.js";
 
 const TONE = { saved: "warn", received: "good", cancelled: "" };
 
@@ -55,6 +56,7 @@ export async function detail(el, id) {
   const slot = el.querySelector(".slot");
   const basket = open ? new Basket({ label: "Qty", lines: o.lines.map((l) => ({ item_id: l.item_id, name: l.item_name, unit: l.unit, qty: l.qty })) }).mount(slot) : null;
   const again = () => detail(el, id);
+  el.querySelectorAll("tr[data-go]").forEach((tr) => tr.addEventListener("click", (e) => { if (!e.target.closest("a,button")) location.hash = tr.dataset.go; }));
   el.querySelector("[data-po-pdf]").onclick = () => openPdf(`/pdf/order/${o.po_id || o.id}`);
   el.querySelector("[data-copy]").onclick = async () => { try { await navigator.clipboard.writeText(o.text); toast("Copied - paste it into WhatsApp"); } catch (e) { toast("Select the text and copy it."); } };
   el.querySelector("[data-dup]")?.addEventListener("click", async () => { const n = await run(() => api(`/orders/${o.id}/copy`, { method: "POST" }), "New order saved"); if (n) location.hash = `#/orders/${n.po_id}`; });
@@ -67,4 +69,5 @@ export async function detail(el, id) {
   });
   el.querySelector("[data-receive]")?.addEventListener("click", async () => { if (await receive({ ...o, lines: o.lines.map((l) => ({ ...l, qty: basket.lines(true).find((x) => x.item_id === l.item_id)?.qty ?? l.qty })) })) again(); });
   el.querySelector("[data-save]")?.addEventListener("click", async () => { if (await run(() => api(`/orders/${o.id}`, { method: "POST", body: { lines: basket.lines() } }), "Saved")) again(); });
+  mountAttachments(el.appendChild(document.createElement("div")), `order:${id}`, { title: "Files - delivery notes, photos" });
 }

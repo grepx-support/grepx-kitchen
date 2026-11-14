@@ -248,24 +248,32 @@
     "path": "common-services/identity/access-service",
     "request_table": "access_requests",
     "actions": [
+      "CREATE_API_KEY",
       "DELETE_ROLE",
       "REGISTER_PERMISSION",
+      "REVOKE_API_KEY",
       "SAVE_ROLE",
       "SET_PERMISSION",
       "SET_ROLE",
       "SET_STAFF_ROLE"
     ],
     "reasons": [
+      "INVALID_KEY",
+      "INVALID_SCOPE",
       "LAST_ADMIN",
       "MISSING_FIELD",
+      "MISSING_TENANT",
       "SELF_DEMOTION",
+      "TOO_MANY_KEYS",
+      "UNKNOWN_KEY",
       "UNKNOWN_PERMISSION",
       "UNKNOWN_ROLE",
       "UNKNOWN_STAFF_ROLE"
     ],
     "other_tables": [],
-    "summary": "Role ladder (from config roles:), volunteer roles, permission catalogue, personal permissions, effective permissions. Keywords: rbac, authorization, staff",
+    "summary": "Role ladder (from config roles:), volunteer roles, permission catalogue, personal permissions, effective permissions; API keys per organisation (read / write, hash only). Keywords: rbac, authorization, staff, api key, token",
     "routes": [
+      "api_keys",
       "delete_role",
       "register_permission",
       "save_role",
@@ -369,11 +377,13 @@
     "path": "common-services/media-service",
     "request_table": "media_requests",
     "actions": [
+      "ATTACH",
       "DELETE",
       "PROCESS"
     ],
     "reasons": [
       "MISSING_FILE",
+      "NOT_ALLOWED",
       "NOT_AN_IMAGE",
       "TOO_LARGE",
       "UNKNOWN_KIND",
@@ -382,8 +392,9 @@
     "other_tables": [
       "media"
     ],
-    "summary": "Image uploads \u2192 resized WebP in local/S3 storage. Keywords: image, photo, upload, picture, avatar",
+    "summary": "Image uploads \u2192 resized WebP in local/S3 storage; attachments (PDF, photos, office files) kept as they are on any record. Keywords: image, photo, upload, picture, avatar, attachment, file, document",
     "routes": [
+      "attach",
       "delete",
       "process"
     ],

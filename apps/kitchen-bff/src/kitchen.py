@@ -64,7 +64,7 @@ def kitchen_user(user: Principal = Depends(current_user), gw=Depends(gateway)) -
     if business.get("closed") and not user.support:          # closed by the platform operator; support can still look
         raise ApiError("BUSINESS_CLOSED", 403)
     person = gw.one(gc.people.PEOPLE, user.user_id) or {}
-    return Kitchen(user, gw, business, person.get("name") or "")
+    return Kitchen(user, gw, business, person.get("name") or user.name or "")
 
 
 def allow(*perms: str, module: str = ""):

@@ -59,7 +59,8 @@ def line_view(po: dict, items: dict[str, dict], show_cost: bool = False) -> list
         ordered = float(l["qty"])
         received = got.get(l["item_id"]) if po.get("received") else None
         row = {"item_id": l["item_id"], "name": l.get("item_name") or item.get("name", l["item_id"]), "unit": l.get("unit") or item.get("unit", ""),
-               "ordered": ordered, "received": received, "difference": round(received - ordered, 3) if received is not None and received != ordered else 0}
+               "ordered": ordered, "received": received, "difference": round(received - ordered, 3) if received is not None and received != ordered else 0,
+               "image_id": item.get("image_id", "")}
         if show_cost:
             cost = float(item.get("cost") or 0)
             row.update({"unit_cost": cost, "value": round((received if received is not None else ordered) * cost, 2)})

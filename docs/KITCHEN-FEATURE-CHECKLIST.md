@@ -118,7 +118,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Payroll: monthly run from salary or clocked hours, joiners / leavers pro-rated, unpaid leave, overtime, bonuses, advances, payslips (print); locking the month puts each outlet's labour cost into Costs | ✅ | People → Payroll (payroll-service, reusable) |
 | Statutory rules per country as plug-ins - India (EPF, ESI, Professional Tax, TDS new regime), Australia (PAYG + Medicare, super), Singapore (CPF, SDL), Basic - every rate in one settings page | ✅ | People → Payroll → Country & rates |
 | Payslip PDF; sent by email / WhatsApp / SMS with the PDF attached, once the month is locked (one person or everyone; who could not be reached is listed; each send kept) | ✅ | Payroll → Send payslips…, or a payslip → Send… (payroll-service SEND_PAYSLIP) |
-| Staff see their own shifts and payslips; mobile app screens | ⬜ | at the end, with the mobile app |
+| Staff see their own shifts and payslips; mobile app screens | ✅ | "My work" (#/my): clock in / out with a PIN pad, my shifts, hours, finalised payslips (PDF), leave balance and asking for leave; shortcuts to recipe cards, food safety, two-step sign-in |
 
 ## 10. Messages (email, WhatsApp, SMS)
 | Feature | Status | Where / what is missing |
@@ -228,14 +228,14 @@ Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ n
 | **General** | | |
 | Reports, dashboards | ✅ | costs, money, stock, dashboards |
 | Pick, pack, dispatch | ✅ | pick lists, delivery runs, delivery notes |
-| File library on products, customers, suppliers, transactions | 🟡 | item pictures, employee documents ✅; attachments on any record ⬜ (media-service, generic) |
-| Open API with keys | ⬜ | grepx-bff API keys per business (generic) |
+| File library on products, customers, suppliers, transactions | ✅ | media-service ATTACH (documents and pictures only); drop files on bills, orders, invoices, quotes, items, suppliers, people; Files library page |
+| Open API with keys | ✅ | access-service api_keys (hash only), grepx-bff X-Api-Key (read / write, rate limited); Setup → API keys |
 | Data import / export | ✅ | round 6 |
 | **Add-ons** | | |
 | B2B ordering store (customers order online at their prices) | ⬜ | product app on billing price lists |
 | CRM | 🟡 | lead-service ✅ (leads); activity history per customer ⬜ |
-| Accounting (Xero / QuickBooks) | ⬜ | integration-service: invoices, bills, payments out |
+| Accounting (Xero / QuickBooks) | 🟡 | Money → Accounting: balanced journal, trial balance, Xero and QuickBooks import files (grepx_money.ledger) ✅; live sync ⬜ (integration-service) |
 | E-commerce / delivery apps (Shopify, Grab, Swiggy...) | ⬜ | integration-service: orders in, stock out |
 
-**Suggested next, in order:** ~~(1) customer price lists, quantity breaks and charge lines~~ done; ~~(2) landed cost; (3) supplier returns; (4) disassembly and combos~~ done; (5) attachments on any record; ~~(6) recall~~ done; (7) API keys; (8) accounting link.
+**Suggested next, in order:** ~~(1) customer price lists, quantity breaks and charge lines~~ done; ~~(2) landed cost; (3) supplier returns; (4) disassembly and combos~~ done; ~~(5) attachments~~ done; ~~(6) recall~~ done; ~~(7) API keys; (8) accounting export~~ done. **Next:** live accounting sync, B2B ordering store, supplier lead times / currency, over-stock alerts, CRM activity history.
 
