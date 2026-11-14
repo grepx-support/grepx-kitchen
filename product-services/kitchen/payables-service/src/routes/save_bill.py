@@ -3,13 +3,17 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """SAVE_BILL - enter (or correct, while not approved) a supplier's invoice: their number, date, due date (default: 30
-days), lines, tax; optionally its purchase order, which it is matched against (ordered / received / billed, and price)."""
+days), lines, tax; optionally its purchase order, which it is matched against (ordered / received / billed, and price).
+Each item's price is compared with what the supplier charged last time; a rise of the owner's percentage or more is a
+jump, kept on the bill and sent to the owners."""
 from grepx_money import document_lines, priced
 from grepx_service import RequestContext, new_key, now_iso
 
 from domain import check_dates, due_from, is_duplicate, match
+from domain.prices import changes, points
 from dto import BillState, ReasonCode
 from .common import Stop, run
+from .price_alert import tell_owners
 
 
 def handle(ctx: RequestContext) -> None:
@@ -40,5 +44,9 @@ def handle(ctx: RequestContext) -> None:
                        "lines": lines, "tax_rate": str(ctx.get("tax_rate") or 0), "discount_rate": "0", "match": state, "issues": issues,
                        "notes": ctx.text("notes")[:500], "currency": ap.business.get("currency", ""), "paid": 0, "payments": [],
                        "entered_at": old.get("entered_at") or now_iso(), "entered_by": old.get("entered_by") or ctx.text("actor_name")})
-        return {"bill": ap.save(key, bill), "bill_id": key}
+        bill["price_changes"] = changes(lines, bill["supplier_id"], bill_date, key, points(ap.bills()),
+                                        (ap.business.get("settings") or {}).get("price_jump_pct", 10))
+        saved = ap.save(key, bill)
+        tell_owners(ap, saved, [c for c in bill["price_changes"] if c["jump"]])
+        return {"bill": saved, "bill_id": key}
     run(ctx, body)

@@ -20,10 +20,18 @@ def po_view(k: Kitchen, po: dict, items: dict) -> dict:
     v = clean(po)
     v["lines"] = [{**l, "item_name": items.get(l["item_id"], {}).get("name", l["item_id"]), "unit": items.get(l["item_id"], {}).get("unit", "")}
                   for l in po.get("lines") or []]
-    if not k.can("view_costs"):
+    if not k.can("view_costs"):                     # warehouse staff see no money: only whether the owner still has to approve
+        v.pop("value", None)
+        if v.get("approval"):
+            v["approval"] = {f: v["approval"][f] for f in ("state", "by", "note", "at") if f in v["approval"]}
         return v
     v["value"] = round(sum(float(l["qty"]) * float(items.get(l["item_id"], {}).get("cost") or 0) for l in po.get("lines") or []), 2)
     return v
+
+
+def purchase(k: Kitchen, fields: dict) -> dict:
+    """Ask purchase-service and answer with the order as this person may see it (no money for warehouse staff)."""
+    return po_view(k, k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, fields)["order"], k.items())
 
 
 @router.get("/recommendation")
@@ -87,25 +95,25 @@ def order(po_id: str, k: Kitchen = Depends(allow("orders", "warehouse_in", modul
 @router.post("")
 def save(body: dict, k: Kitchen = Depends(buyer)):
     fields = {f: body[f] for f in ("supplier_id", "location_id", "note") if f in body}
-    return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "SAVE", **fields, "lines": body.get("lines") or []})["order"]
+    return purchase(k, {"action": "SAVE", **fields, "lines": body.get("lines") or []})
 
 
 @router.post("/{po_id}")
 def change(po_id: str, body: dict, k: Kitchen = Depends(buyer)):
     fields = {f: body[f] for f in ("supplier_id", "location_id", "note") if f in body}
-    return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "SAVE", "po_id": po_id, **fields, "lines": body.get("lines") or []})["order"]
+    return purchase(k, {"action": "SAVE", "po_id": po_id, **fields, "lines": body.get("lines") or []})
 
 
 @router.post("/{po_id}/copy")
 def copy(po_id: str, k: Kitchen = Depends(buyer)):
-    return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "COPY", "po_id": po_id})["order"]
+    return purchase(k, {"action": "COPY", "po_id": po_id})
 
 
 @router.post("/{po_id}/cancel")
 def cancel(po_id: str, k: Kitchen = Depends(buyer)):
-    return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "CANCEL", "po_id": po_id})["order"]
+    return purchase(k, {"action": "CANCEL", "po_id": po_id})
 
 
 @router.post("/{po_id}/receive")
 def receive(po_id: str, body: dict, k: Kitchen = Depends(allow("orders", "warehouse_in", module=ORD))):
-    return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "RECEIVE", "po_id": po_id, "lines": body.get("lines")})["order"]
+    return purchase(k, {"action": "RECEIVE", "po_id": po_id, "lines": body.get("lines")})

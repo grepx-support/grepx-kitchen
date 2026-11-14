@@ -34,7 +34,7 @@ export async function detail(el, id) {
   const open = o.state === "saved";
   const wa = o.supplier_phone ? `https://wa.me/${o.supplier_phone.replace(/\D/g, "")}?text=${encodeURIComponent(o.text)}` : "";
   el.innerHTML = String(html`${pageHead({ ...head("orders"), title: o.number, subtitle: `${o.supplier_name} · ${stamp(o.created_at)}`,
-    actions: html`${pill(o.state, TONE[o.state])}<button class="btn small" data-po-pdf>${icon("printer", { size: 15 })} PDF</button><a class="btn small" href="#/orders">${icon("board", { size: 15 })} Board</a>
+    actions: html`${pill(o.state, TONE[o.state])}${o.approval?.state === "pending" ? pill("waiting for the owner's approval", "warn") : o.approval?.state === "rejected" ? pill(`rejected: ${o.approval.note}`, "bad") : ""}<button class="btn small" data-po-pdf>${icon("printer", { size: 15 })} PDF</button><a class="btn small" href="#/orders">${icon("board", { size: 15 })} Board</a>
       <a class="btn small" href="#/orders/list">${icon("list", { size: 15 })} List</a>
       <a class="btn small ${o.prev_id ? "" : "disabled"}" href="${o.prev_id ? `#/orders/${o.prev_id}` : "javascript:void 0"}" title="Newer order (K)">‹ Newer</a>
       <a class="btn small ${o.next_id ? "" : "disabled"}" href="${o.next_id ? `#/orders/${o.next_id}` : "javascript:void 0"}" title="Older order (J)">Older ›</a>` })}

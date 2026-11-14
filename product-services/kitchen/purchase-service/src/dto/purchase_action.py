@@ -12,3 +12,4 @@ class PurchaseAction(str, Enum):
     CANCEL = "CANCEL"
     RECEIVE = "RECEIVE"
     SEND = "SEND"                # the order goes to the supplier by email / WhatsApp / SMS (logged until a provider is set)
+    APPROVE = "APPROVE"          # the owner's yes / no to an order above their approval amount (settings.po_approval_over)

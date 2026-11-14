@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends
 from grepx_bff.errors import ApiError
 
 from kitchen import Kitchen, allow
-from .orders import buyer
+from .orders import buyer, purchase
 from .pdf import order_file, payslip_file
 
 router = APIRouter(tags=["send"])
@@ -21,8 +21,8 @@ owner = allow("manage_business")
 def send_order(po_id: str, body: dict, k: Kitchen = Depends(buyer)):
     """Send the order to the supplier (email / WhatsApp / SMS; only logged until the business connects a provider)."""
     files = [order_file(po_id, k).attachment(k.gw.storage)] if body.get("attach", True) else []
-    return k.cmd(gc.purchase.REQUESTS, gc.purchase.SERVICE, {"action": "SEND", "po_id": po_id, "channels": body.get("channels") or [],
-                                                             "attachments": files})["order"]
+    return purchase(k, {"action": "SEND", "po_id": po_id, "channels": body.get("channels") or [],
+                                                             "attachments": files})
 
 
 def send_one(k: Kitchen, month: str, employee_id: str, channels: list[str]) -> dict:

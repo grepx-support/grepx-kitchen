@@ -13,3 +13,4 @@ class PayablesAction(str, Enum):
     VOID_BILL = "VOID_BILL"
     SUMMARY = "SUMMARY"
     MONTHLY = "MONTHLY"
+    PRICES = "PRICES"                  # price history per supplier and item, and the recent rises (jumps first)

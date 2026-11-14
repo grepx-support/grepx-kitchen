@@ -911,6 +911,7 @@
     "actions": [
       "APPROVE_BILL",
       "MONTHLY",
+      "PRICES",
       "RECORD_PAYMENT",
       "SAVE_BILL",
       "SUMMARY",
@@ -922,6 +923,8 @@
     "routes": [
       "approve_bill",
       "monthly",
+      "price_alert",
+      "prices",
       "record_payment",
       "save_bill",
       "summary",
@@ -963,6 +966,7 @@
     "path": "product-services/kitchen/purchase-service",
     "request_table": "purchase_requests",
     "actions": [
+      "APPROVE",
       "CANCEL",
       "COPY",
       "RECEIVE",
@@ -973,6 +977,7 @@
     "other_tables": [],
     "summary": "Purchase orders to suppliers: save, change, copy, cancel, receive in full or with changed quantities (receipt adds stock at the holding place); ready-to-send text for WhatsApp. Keywords: PO, supplier order, procurement, receiving, goods in",
     "routes": [
+      "approve",
       "cancel",
       "copy",
       "receive",

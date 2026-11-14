@@ -8,7 +8,7 @@ from __future__ import annotations
 import grepx_contracts as gc
 from grepx_service import RequestContext, new_key, now_iso
 
-from domain import message
+from domain import approval_for, message, order_value
 from dto import PoState, ReasonCode, Table
 
 
@@ -58,6 +58,8 @@ def next_number(ctx: RequestContext, tenant: str) -> str:
 
 
 def write(ctx: RequestContext, biz: dict, po: dict, supplier: dict, place: dict, names: dict) -> dict:
+    po["value"] = order_value(po["lines"], names)
+    po["approval"] = approval_for(po["value"], (biz.get("settings") or {}).get("po_approval_over") or 0, po.get("approval"))
     po["text"] = message(biz.get("name", ""), supplier.get("name", ""), po["number"], place.get("name", ""), po["lines"], names, po.get("note", ""))
     po["updated_at"] = now_iso()
     ctx.emitter.submit(Table.PURCHASE_ORDERS.value, po["po_id"], "ACCEPTED", po)

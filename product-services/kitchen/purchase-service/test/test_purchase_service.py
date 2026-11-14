@@ -73,3 +73,23 @@ def test_an_order_is_sent_to_its_supplier(h):
     assert done.ok and done.fields["order"]["sent"][0]["channels"] == ["whatsapp", "sms"]
     msgs = h.rows("notifications")
     assert {m["channel"] for m in msgs} == {"whatsapp", "sms"} and msgs[0]["template"] == "purchase_order" and "Bread" in msgs[0]["values"]["text"]
+
+
+def test_big_orders_wait_for_the_owner(h):
+    from domain import approval_for
+    assert approval_for(100, 0, None) is None and approval_for(100, 500, None) is None
+    assert approval_for(600, 500, {"state": "approved", "value": 700}) == {"state": "approved", "value": 700}
+    assert approval_for(800, 500, {"state": "approved", "value": 700})["state"] == "pending"           # grew past what was approved
+    h.seed("businesses", "hft", {"business_id": "hft", "tenant_id": "hft", "name": "HFT", "settings": {"po_approval_over": 100}})
+    small = call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "bread", "qty": 10}]).fields["order"]
+    assert small["value"] == 30 and small["approval"] is None
+    big = call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "lids", "qty": 20}]).fields["order"]
+    assert big["approval"] == {"state": "pending", "value": 180.0, "limit": 100.0}
+    assert call(h, action="SEND", po_id=big["po_id"], channels=["whatsapp"]).reason == "NEEDS_APPROVAL"
+    assert call(h, action="APPROVE", po_id=big["po_id"], approve=False).reason == "NOTE_REQUIRED"
+    assert call(h, action="APPROVE", po_id=small["po_id"], approve=True).reason == "NOTHING_TO_APPROVE"
+    yes = call(h, action="APPROVE", po_id=big["po_id"], approve=True, actor_name="Omar").fields["order"]["approval"]
+    assert (yes["state"], yes["by"]) == ("approved", "Omar")
+    assert call(h, action="SEND", po_id=big["po_id"], channels=["whatsapp"]).ok
+    more = call(h, action="SAVE", po_id=big["po_id"], lines=[{"item_id": "lids", "qty": 30}]).fields["order"]
+    assert more["approval"]["state"] == "pending"                                                     # 270 > the 180 approved

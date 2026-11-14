@@ -8,6 +8,7 @@ notification-service sends it - or only logs it until the business connects a pr
 import grepx_contracts as gc
 from grepx_service import RequestContext, notify, now_iso
 
+from domain import may_send
 from dto import ReasonCode, Table
 from .common import Stop, business, order, own, run
 
@@ -18,6 +19,8 @@ def handle(ctx: RequestContext) -> None:
     def body():
         biz = business(ctx)
         po = {k: v for k, v in order(ctx, biz["_key"]).items() if not k.startswith("_")}
+        if not may_send(po.get("approval")):
+            raise Stop(ReasonCode.NEEDS_APPROVAL)
         supplier = own(ctx, gc.item.SUPPLIERS, po["supplier_id"], biz["_key"], ReasonCode.UNKNOWN_SUPPLIER)
         channels = [c for c in ctx.get("channels") or ["email", "whatsapp"]]
         if not channels or any(c not in CHANNELS for c in channels):

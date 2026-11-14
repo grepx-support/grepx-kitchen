@@ -48,6 +48,7 @@
     "kitchen/team",
     "kitchen/stock",
     "kitchen/orders",
+    "kitchen/approvals",
     "kitchen/closing",
     "kitchen/warehouse",
     "kitchen/runs",

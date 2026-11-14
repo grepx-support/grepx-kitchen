@@ -108,3 +108,21 @@ def test_monthly_action(h):
     bill(h)
     got = call(h, action="MONTHLY").fields
     assert sum(m["bills"] for m in got["months"]) == 1
+
+
+def test_price_history_and_jumps_tell_the_owner(h):
+    from domain.prices import changes, unit_cost
+    assert unit_cost({"unit_price": 1000, "discount": "10"}) == 900
+    h.seed("businesses", "hft", {"business_id": "hft", "tenant_id": "hft", "timezone": "UTC", "currency": "SGD", "settings": {"price_jump_pct": 10}})
+    h.seed("user_access", "o1", {"staff_role_id": "hft.owner"})
+    h.seed("people", "o1", {"name": "Omar Owner", "email": "omar@hft.test", "phone": ""})
+    assert bill(h).fields["bill"]["price_changes"] == []                                         # first bill: nothing to compare
+    up = call(h, action="SAVE_BILL", supplier_id="meat", supplier_ref="HM-801", bill_date="2026-11-12",
+              lines=[{"item_id": "beef", "qty": 8, "unit_price": "13.80"}, {"item_id": "pork", "qty": 5, "unit_price": "9.30"}]).fields["bill"]
+    got = {c["item_id"]: c for c in up["price_changes"]}
+    assert (got["beef"]["pct"], got["beef"]["jump"]) == (15.0, True) and (got["pork"]["pct"], got["pork"]["jump"]) == (3.3, False)
+    sent = h.rows("notifications")
+    assert len(sent) == 1 and sent[0]["template"] == "price_jump" and "Beef" in sent[0]["values"]["summary"]
+    view = call(h, action="PRICES", item_id="beef", days=3650).fields
+    assert [p["price"] for p in view["points"]] == [1200, 1380] and view["rises"][0]["jump"] and view["jump_pct"] == 10
+    assert changes([{"item_id": "beef", "unit_price": 1380}], "veg", "2026-11-12", "x", [], 10) == []    # another supplier: no history

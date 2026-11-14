@@ -38,6 +38,12 @@ templates:
     channels: [email]
     subject: "Quotation {number} from {org}"
     text: "Dear {customer},\n\nThank you for your enquiry. Please find our quotation {number} for your event on {event}: {total}, valid until {valid_until}.\n\nReply to this email to confirm, or call us with any changes.\n{org}"
+  price_jump:
+    label: A supplier's price jumped (for the owners)
+    placeholders: [first_name, supplier, count, summary, bill, link]
+    channels: [email, whatsapp]
+    subject: "{supplier} raised {count} price(s)"
+    text: "Hi {first_name},\n\n{supplier}'s bill {bill} has higher prices than last time:\n{summary}\n\nCheck it before you approve the bill."
   customer_invoice:
     label: An invoice emailed to a customer
     placeholders: [org, customer, number, total, due, link]

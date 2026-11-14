@@ -58,8 +58,8 @@ Next up is marked **NEXT** (in the order it will be built).
 | Order timeline (made, sent, received, billed, approved, paid) and ordered-against-received lines | ✅ | order page, drawer, list |
 | Goods receipt: in full or changed, expiry, batch, bin | ✅ | Warehouse in |
 | Supplier bills, three-way match, approval with note on mismatch, payments | ✅ | Supplier bills |
-| Supplier price history and price-jump alerts | ⬜ | step 4 of the plan |
-| Purchase approval above an amount set by the owner | ⬜ | |
+| Supplier price history (every price per item from their bills) and price-jump alerts: a rise of the owner's % (default 10) over that supplier's last price is flagged on the bill and sent to the owners | ✅ | Approvals → price rises; `/approvals/prices` (payables-service PRICES) |
+| Purchase approval above an amount set by the owner: such an order can't be sent until approved; approval holds for the value approved; rejected with a note | ✅ | Setup → Business; Approvals (purchase-service APPROVE) |
 | Supplier portal, bidding | 🔒 | F5 / F8: needs the business's sharing rules |
 
 ## 5. Stock and warehouse
@@ -140,7 +140,7 @@ Next up is marked **NEXT** (in the order it will be built).
 | Sortable, paged tables (25 / 50 / 100 / all) that scroll inside; CSV download where it matters | 🟡 | paging and sorting everywhere; CSV on the money summary only - more with the import / export round |
 | Saved filters per table | ⬜ | |
 | Activity timeline on records | 🟡 | orders done; deliveries and invoices next |
-| Approval inbox (bills to approve, mismatches) | ⬜ | |
+| Approvals inbox: big orders, bills to approve (mismatches and price jumps first), leave requests, price rises - each only for who may decide it | ✅ | Approvals (G A) |
 | Several languages | ⬜ | English only |
 | Assistant: ask in your own words (stock, expiry, how much of X, orders, what to order, who owes, bills, month, best dishes, forecast, cooking, deliveries, open a page); cached answers; permissions respected | ✅ | chat button on every page, Ctrl+J |
 | Assistant backed by an AI model (free-form questions) | 🔒 | needs an AI key and the owner's consent; the assistant has the slot for it |

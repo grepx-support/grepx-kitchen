@@ -47,4 +47,7 @@ COPY = {
     "WRONG_STATE": "That can't be done at this stage.",
     "INVALID_EVENT": "Enter the event date (and a start time like 18:30, guests 0 or more).",
     "NO_EMAIL": "The customer has no email address - add one first.",
+    "NEEDS_APPROVAL": "This order is above your approval amount - the owner approves it first (Approvals).",
+    "NOTHING_TO_APPROVE": "This order is not waiting for approval.",
+    "NOTE_REQUIRED": "Add a note saying why.",
 }

@@ -26,6 +26,8 @@ export default {
         <label>Large change %<input name="large_change_pct" type="number" min="1" value="${st.large_change_pct}"></label>
         <label>COGS range from %<input name="cogs_min" type="number" min="0" max="100" value="${st.cogs_min}"></label>
         <label>to %<input name="cogs_max" type="number" min="0" max="100" value="${st.cogs_max}"></label></div>
+      <div class="row"><label>Orders above this need my approval (0 = never)<input name="po_approval_over" type="number" min="0" step="any" value="${st.po_approval_over ?? 0}"></label>
+        <label>Tell me when a supplier's price rises by %<input name="price_jump_pct" type="number" min="1" max="500" value="${st.price_jump_pct ?? 10}"></label></div>
       <label>Sales types at closing (comma separated)<input name="sales_types" value="${(st.sales_types || []).join(", ")}"></label>
       ${logoBlock(bl.logo_id)}
       <h2 class="k-section">Invoicing details <span class="muted small">(printed on invoices)</span></h2><div class="row">
@@ -42,7 +44,7 @@ export default {
       e.preventDefault();
       const v = values(e.target);
       const body = { name: v.name, currency: v.currency, timezone: v.timezone, modules: Object.fromEntries(Object.keys(MODULES).map((k) => [k, v[`m_${k}`]])),
-        settings: { target_weeks: v.target_weeks, safety_pct: v.safety_pct, large_change_pct: v.large_change_pct, cogs_min: v.cogs_min, cogs_max: v.cogs_max,
+        settings: { target_weeks: v.target_weeks, safety_pct: v.safety_pct, large_change_pct: v.large_change_pct, cogs_min: v.cogs_min, cogs_max: v.cogs_max, po_approval_over: v.po_approval_over || 0, price_jump_pct: v.price_jump_pct || 10,
           sales_types: v.sales_types.split(",").map((x) => x.trim()).filter(Boolean) },
         billing: { legal_name: v.legal_name, tax_label: v.tax_label, tax_number: v.tax_number, tax_rate: v.tax_rate || 0, address: v.address, payment_note: v.payment_note, auto_reminders: !!v.auto_reminders } };
       if (await run(() => api("/setup/business", { method: "PATCH", body }), "Saved")) { resetBiz(); redraw(); }

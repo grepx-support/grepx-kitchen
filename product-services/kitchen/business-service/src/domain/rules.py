@@ -23,8 +23,11 @@ DEFAULT_SETTINGS = {
     "cogs_min": 25,             # R9 / COS-07: acceptable COGS range, % of sales
     "cogs_max": 35,
     "sales_types": ["Sales", "Other sales"],   # Q8: what staff enter at closing
+    "po_approval_over": 0,      # purchase orders worth more than this need the owner's approval (0 = never)
+    "price_jump_pct": 10,       # a supplier price this much above their last price is flagged and the owner told
 }
-LIMITS = {"target_weeks": (1, 3), "safety_pct": (0, 200), "large_change_pct": (1, 1000), "cogs_min": (0, 100), "cogs_max": (0, 100)}
+LIMITS = {"target_weeks": (1, 3), "safety_pct": (0, 200), "large_change_pct": (1, 1000), "cogs_min": (0, 100), "cogs_max": (0, 100),
+          "po_approval_over": (0, 100_000_000), "price_jump_pct": (1, 500)}
 KINDS = {k.value for k in LocationKind}
 MODULES = [m.value for m in Module]
 
