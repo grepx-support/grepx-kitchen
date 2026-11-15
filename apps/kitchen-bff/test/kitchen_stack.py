@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[3]
 COMMON = ["common-services/identity", "common-services/people-service", "common-services/notification-service",
           "common-services/template-service", "common-services/task-service", "common-services/audit-log-service",
           "common-services/settings-service", "common-services/scheduler-service", "common-services/lead-service",
-          "common-services/media-service", "common-services/employee-service", "common-services/roster-service",
+          "common-services/media-service", "common-services/purchase-service", "common-services/employee-service", "common-services/roster-service",
           "common-services/leave-service", "common-services/payroll-service",
           "common-services/compliance-service", "common-services/fund-service"]
 MONTH = date.today().isoformat()[:7]
