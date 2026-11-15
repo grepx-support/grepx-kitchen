@@ -13,20 +13,13 @@ from grepx_bff.errors import ApiError
 
 from documents import PdfFile, ReportPdf, brand, specs
 from kitchen import Kitchen, allow
-from . import closing, orders, payroll, safety, stock, warehouse
+from . import closing, orders, safety, stock, warehouse
 
 router = APIRouter(prefix="/pdf", tags=["pdf"])
 
 
 def report(spec: dict, k: Kitchen, name: str) -> PdfFile:
     return PdfFile(ReportPdf(spec, brand(k)).build(), name)
-
-
-def payslip_file(month: str, employee_id: str, k: Kitchen) -> PdfFile:
-    slip = next((s for s in payroll.month(month=month, k=k)["payslips"] if s["employee_id"] == employee_id), None)
-    if slip is None:
-        raise ApiError("NOT_FOUND", 404)
-    return report(specs.payslip(slip, k.business, k.business.get("currency", "")), k, f"payslip-{month}-{slip['name'].replace(' ', '-')}")
 
 
 def order_file(po_id: str, k: Kitchen) -> PdfFile:
@@ -54,11 +47,6 @@ def closing_report(closing_id: str, k: Kitchen = Depends(allow("manage_business"
     found["counts"] = [{**l, "cost": items.get(l["item_id"], {}).get("cost", 0)} for l in found["counts"]]
     return report(specs.closing(found, found.get("location_name", ""), k.business.get("currency", "")), k,
                   f"closing-{closing_id.split(':')[-1]}").response()
-
-
-@router.get("/payslip")
-def payslip(month: str, employee_id: str, k: Kitchen = Depends(allow("manage_business"))):
-    return payslip_file(month, employee_id, k).response()
 
 
 @router.get("/order/{po_id}")

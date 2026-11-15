@@ -10,85 +10,24 @@ every read filters by it, so one business never sees another's rows (BUS-05).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional
 
 import grepx_contracts as gc
-from fastapi import Depends
 
-from grepx_bff.errors import ApiError
-from grepx_bff.security import Principal, current_user, gateway
+from grepx_bff.business import Access, Business, listed, signed_in  # noqa: F401 (listed: kitchen routers import it from here)
 from grepx_bff.views import clean
 
 
 @dataclass
-class Kitchen:
-    user: Principal
-    gw: Any
-    business: dict
-    name: str
-
-    @property
-    def tenant(self) -> str:
-        return self.user.tenant
-
-    def can(self, perm: str) -> bool:
-        return perm in self.user.perms or "*" in self.user.perms
-
-    def cmd(self, table: str, service: str, fields: dict, key: Optional[str] = None) -> dict:
-        return self.gw.command(table, service, {**fields, "tenant_id": self.tenant, "actor_id": self.user.user_id,
-                                                "actor_name": self.name}, key=key).fields
-
-    def rows(self, table: str, criteria: str = "", **eq) -> list[dict]:
-        return self.gw.rows(table, criteria, tenant_id=self.tenant, **eq)
-
-    def one(self, table: str, key: str) -> Optional[dict]:
-        row = self.gw.one(table, key)
-        return row if row and row.get("tenant_id") == self.tenant else None
-
-    def location(self, key: str) -> dict:
-        row = self.one(gc.business.LOCATIONS, key)
-        if row is None:
-            raise ApiError("UNKNOWN_LOCATION", 404)
-        return row
+class Kitchen(Business):
+    """The shared business user plus the kitchen's own lookups."""
 
     def items(self) -> dict[str, dict]:
         return {r["_key"]: r for r in self.rows(gc.item.ITEMS)}
 
 
-def kitchen_user(user: Principal = Depends(current_user), gw=Depends(gateway)) -> Kitchen:
-    if not user.tenant:
-        raise ApiError("MISSING_TENANT", 403)
-    business = gw.one(gc.business.BUSINESSES, user.tenant)
-    if business is None:
-        raise ApiError("UNKNOWN_BUSINESS", 403)
-    if business.get("closed") and not user.support:          # closed by the platform operator; support can still look
-        raise ApiError("BUSINESS_CLOSED", 403)
-    person = gw.one(gc.people.PEOPLE, user.user_id) or {}
-    return Kitchen(user, gw, business, person.get("name") or user.name or "")
-
-
-def allow(*perms: str, module: str = ""):
-    """The user holds one of perms (none given: any business user) and the module is switched on (BUS-03, ACC-02)."""
-    def check(k: Kitchen = Depends(kitchen_user)) -> Kitchen:
-        if module and not (k.business.get("modules") or {}).get(module, True):
-            raise ApiError("MODULE_OFF", 403)
-        if perms and not any(k.can(p) for p in perms):
-            raise ApiError("FORBIDDEN", 403)
-        return k
-    return check
-
-
-def feature_on(module: str):
-    """A whole router (Setup -> Features) refuses while its feature is switched off for the business."""
-    def check(k: Kitchen = Depends(kitchen_user)) -> None:
-        if not (k.business.get("modules") or {}).get(module, True):
-            raise ApiError("MODULE_OFF", 403)
-    return check
-
-
-def listed(rows, *then: str) -> list[dict]:
-    """Rows in the order the owner dragged them into (`sort`), unsorted ones after, then by the given fields."""
-    return sorted(rows, key=lambda r: (r.get("sort") is None, r.get("sort") or 0, *(str(r.get(f, "")) for f in then)))
+kitchen_user = signed_in(Kitchen)
+ACCESS = Access(kitchen_user)
+allow, feature_on = ACCESS.allow, ACCESS.feature_on
 
 
 def named(rows: list[dict], items: dict[str, dict], places: dict[str, dict] | None = None) -> list[dict]:

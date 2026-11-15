@@ -41,12 +41,12 @@
   "modules": [
     "core/auth",
     "kitchen/today",
-    "kitchen/my",
+    "business/my",
     "kitchen/kitchen",
     "kitchen/chef",
     "kitchen/safety",
-    "kitchen/funds",
-    "kitchen/team",
+    "business/funds",
+    "business/team",
     "kitchen/stock",
     "kitchen/orders",
     "kitchen/approvals",
@@ -71,8 +71,49 @@
     "core/security"
   ],
   "styles": [
+    "business/business.css",
     "kitchen/kitchen.css"
   ],
+  "people": {
+    "place": "outlet",
+    "places": "outlets",
+    "positions": [
+      "Head chef",
+      "Sous chef",
+      "Chef de partie",
+      "Cook",
+      "Tandoor cook",
+      "Kitchen helper",
+      "Steward",
+      "Cashier",
+      "Outlet manager",
+      "Driver"
+    ],
+    "documents": [
+      "Food handler licence",
+      "Health certificate",
+      "Work visa",
+      "ID card",
+      "First aid",
+      "Driving licence"
+    ],
+    "tiles": [
+      {
+        "href": "#/chef",
+        "icon": "book",
+        "label": "Recipe cards"
+      },
+      {
+        "href": "#/safety",
+        "icon": "shield",
+        "label": "Food safety checks"
+      }
+    ],
+    "team_hint": "Add your chefs, cooks and outlet staff.",
+    "locked": "Month locked - labour cost is in Costs",
+    "fund_use": "e.g. two new outlets and the central kitchen",
+    "costs_hint": "Name a use like one of your outlets and its real costs (Costs page: ingredients, labour, rent, other) and EBITDA are compared with what it was given."
+  },
   "landing": "#/welcome",
   "assistant": {
     "name": "Kitchen assistant",

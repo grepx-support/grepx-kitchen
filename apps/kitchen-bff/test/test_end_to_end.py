@@ -399,7 +399,7 @@ def test_team_and_roster_across_outlets(env):
     assert full["projection"]["payback_month"] and full["against_plan"][0]["purpose"] == "Outlet" and "Outlet" in full["places"]
     assert view["balance_sheet"]["INR"]["balances"]
     assert view["totals"]["INR"]["pending"] == 20000000 and view["totals"]["INR"]["available"] == 25000000 and view["overdue"][0]["name"] == "Asha Mehta"
-    for path in (f"/api/v1/pdf/payslip?month=2026-11&employee_id={meera}", f"/api/v1/pdf/safety?first=2026-01-01&last=2030-12-31&site_id={k1}",
+    for path in (f"/api/v1/payroll/payslip?month=2026-11&employee_id={meera}", f"/api/v1/pdf/safety?first=2026-01-01&last=2030-12-31&site_id={k1}",
                  f"/api/v1/pdf/count-sheet?location_id={k1}"):
         r = api.get(path, headers=owner)
         assert r.status_code == 200 and r.content[:4] == b"%PDF", (path, r.text[:200])

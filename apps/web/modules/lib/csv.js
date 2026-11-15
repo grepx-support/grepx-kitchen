@@ -5,12 +5,5 @@
  */
 
 // Download rows as a CSV file (Excel opens it). Values with commas, quotes or new lines are quoted.
-const cell = (v) => { const s = v == null ? "" : String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
-
-/** download("audit.csv", [["When", "Who"], ...rows]) */
-export function downloadCsv(name, rows) {
-  const text = "﻿" + rows.map((r) => r.map(cell).join(",")).join("\r\n");
-  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([text], { type: "text/csv" })), download: name });
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-}
+// Shared by every business product: this is the platform copy (web/modules/business/lib/csv.js).
+export * from "/assets/modules/business/lib/csv.js";

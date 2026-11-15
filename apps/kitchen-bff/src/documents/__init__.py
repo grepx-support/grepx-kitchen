@@ -2,12 +2,9 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""Printable documents (PDF, rendered with the open-source fpdf2 library: https://github.com/py-pdf/fpdf2, LGPL-3.0)."""
+"""Kitchen documents: the shared PDF kit (grepx_bff.documents) plus the kitchen's own working-document specs."""
+from grepx_bff.documents import BillPdf, InvoicePdf, PdfFile, QuotePdf, ReportPdf, brand, render
+
 from . import specs
-from .branding import brand
-from .pdf_file import PdfFile
-from .invoice import BillPdf, InvoicePdf, render
-from .quote import QuotePdf
-from .report import ReportPdf
 
 __all__ = ["brand", "BillPdf", "InvoicePdf", "PdfFile", "QuotePdf", "ReportPdf", "render", "specs"]
