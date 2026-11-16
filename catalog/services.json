@@ -686,6 +686,19 @@
     "reacts_to": []
   },
   {
+    "name": "site-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/site-service",
+    "request_table": "site_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Each business's own public web page (its address /b/<name>): what its owner chooses to show - name, headline, colour, logo, contact and opening hours, social links (Instagram, Facebook, YouTube), promotions with end dates, highlights, brands, videos - and which sections are switched on. Keywords: public page, landing page, website, mini site, storefront, promotions, offers, social media, instagram, facebook, youtube, branding",
+    "routes": [],
+    "reacts_to": []
+  },
+  {
     "name": "slot-service",
     "layer": "common",
     "product": "",

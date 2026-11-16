@@ -41,6 +41,7 @@
   "modules": [
     "core/auth",
     "core/signup",
+    "core/page",
     "kitchen/today",
     "business/my",
     "kitchen/kitchen",
@@ -128,6 +129,25 @@
       "Add your items and recipes (or import them)",
       "Add your suppliers",
       "Invite your staff"
+    ]
+  },
+  "page_defaults": {
+    "tagline": "Fresh food, made daily",
+    "headline": "Fresh food, made today.",
+    "intro": "Cooked fresh every day from good ingredients. Order ahead, cater your event or come and eat with us.",
+    "highlights": [
+      {
+        "title": "Cooked fresh daily",
+        "text": "Made in our own kitchen every morning."
+      },
+      {
+        "title": "Catering",
+        "text": "Events and offices, delivered on time."
+      },
+      {
+        "title": "Quality you can trust",
+        "text": "Food safety checked every day."
+      }
     ]
   }
 }

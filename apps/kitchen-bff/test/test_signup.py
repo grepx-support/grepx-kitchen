@@ -60,3 +60,41 @@ def test_a_kitchen_signs_up_itself(env):
     assert api.post("/api/v1/public/signup", json={**ME, "slug": "spicehub-two"}).json()["detail"]["reason"] == "EMAIL_IN_USE"
     assert api.post(f"/api/v1/public/signup/{sid}/finish").status_code == 409
     assert api.get("/b/spicehub").status_code == 200                 # the web app answers the business's address
+
+
+def test_each_business_has_its_own_public_page(env):
+    """The owner chooses what their page shows; visitors of /b/<name> see it (ended offers hidden); without the owner's
+    permission nobody changes it; a business set up by the operator picks its address once."""
+    stack, api = env
+    ops = login(api, "ops@grepx.sg", "operator-pw")
+    made = ok(api.post("/api/v1/platform/businesses", headers=ops, json={"name": "Page Test Co", "currency": "INR", "timezone": "Asia/Kolkata",
+              "owner": {"name": "Page Owner", "email": "owner@page.test", "phone": "+6590000009", "password": "owner-pass"}}))
+    owner = login(api, "owner@page.test", "owner-pass")
+    mine = ok(api.get("/api/v1/setup/page", headers=owner))
+    assert (mine["page"], mine["slug"], mine["business_name"]) == (None, "", "Page Test Co")
+    assert ok(api.post("/api/v1/setup/page/address", headers=owner, json={"slug": "page-test"}))["slug"] == "page-test"
+    assert api.post("/api/v1/setup/page/address", headers=owner, json={"slug": "other"}).json()["detail"]["reason"] == "HAS_ADDRESS"
+    assert ok(api.get("/api/v1/public/page/page-test"))["page"] is None          # nothing published yet: the web shows defaults
+
+    page = {"company": "Page Test Co", "headline": "Best deals in town", "color": "#C9A96E",
+            "social": {"instagram": "instagram.com/pagetest", "youtube": "https://youtube.com/@pagetest"},
+            "promotions": [{"title": "Festive offer", "badge": "LIVE", "ends": "2099-12-31"}, {"title": "Old offer", "ends": "2000-01-01"}],
+            "videos": ["https://youtu.be/dQw4w9WgXcQ"], "brands": ["One", "Two"], "sections": {"brands": False}}
+    assert api.put("/api/v1/setup/page", headers=owner, json={**page, "color": "blue"}).json()["detail"]["reason"] == "INVALID_COLOR"
+    assert ok(api.put("/api/v1/setup/page", headers=owner, json=page))["slug"] == "page-test"
+    seen = ok(api.get("/api/v1/public/page/page-test"))
+    assert seen["name"] == "Page Test Co" and seen["page"]["social"]["instagram"] == "https://instagram.com/pagetest"
+    assert [p["title"] for p in seen["page"]["promotions"]] == ["Festive offer"] and seen["page"]["brands"] == []
+    assert seen["page"]["videos"] == ["dQw4w9WgXcQ"] and "business_id" not in seen["page"]
+    assert len(ok(api.get("/api/v1/setup/page", headers=owner))["page"]["promotions"]) == 2     # the owner still sees the ended one
+
+    assert api.put("/api/v1/setup/page", json=page).status_code == 401                          # visitors cannot change it
+    other = ok(api.post("/api/v1/platform/businesses", headers=ops, json={"name": "Other Co", "currency": "INR", "timezone": "Asia/Kolkata",
+              "owner": {"name": "Other Owner", "email": "owner@other.test", "phone": "+6590000010", "password": "owner-pass"}}))
+    assert ok(api.get("/api/v1/setup/page", headers=login(api, "owner@other.test", "owner-pass")))["page"] is None   # each business its own
+    # GrepX support opened "with edit" can change a business's page for its owner
+    look = ok(api.post(f"/api/v1/platform/businesses/{made['business_id']}/support", headers=ops, json={"edit": True}))
+    ok(api.put("/api/v1/setup/page", headers={"Authorization": f"Bearer {look['token']}"}, json={**page, "headline": "Set up by support"}))
+    assert ok(api.get("/api/v1/public/page/page-test"))["page"]["headline"] == "Set up by support"
+    assert other["business_id"] != made["business_id"]
+    assert api.get("/api/v1/public/page/nobody-here").status_code == 404
