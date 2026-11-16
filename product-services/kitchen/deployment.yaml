@@ -36,9 +36,11 @@ plugins:
   path: product-services/kitchen/plugins
   purchasing: purchasing_kitchen        # shared purchase-service: items, suppliers, holding places, stock RECEIVE
 
-kitchen:                   # read by kitchen-bff when it sets up a new business
+kitchen:                   # read by kitchen-bff when it sets up a new business (platform operator or self-service sign-up)
   staff_roles: [owner, warehouse, kitchen, closing, delivery]     # copied from catalog/access.yaml roles for each business
   owner_role: owner
+  currency: AUD            # a sign-up's defaults when the owner did not pick a country
+  timezone: Australia/Sydney
 
 monitor:                   # ops-monitor-service: the live operations screen at <site>/ops/
   title: Kitchen Live

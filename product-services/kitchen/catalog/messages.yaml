@@ -68,3 +68,14 @@ templates:
     channels: [email]
     subject: "Demo request: {company}"
     text: "{name} from {company} ({size}) asked for a demo.\nEmail: {email}\nPhone: {phone}\n\n{message}"
+  signup_email:
+    label: Confirm the email of a new business signing up (a link)
+    placeholders: [first_name, name, business, link, org]
+    channels: [email]
+    subject: "Confirm your email for {business}"
+    text: "Hi {first_name},\n\nYou're setting up {business}. Open this link to confirm your email:\n{link}\n\nIf you didn't sign up, ignore this email."
+  signup_code:
+    label: The 6-digit code that confirms a new business's mobile (SMS / WhatsApp)
+    placeholders: [code, business, org]
+    channels: [sms, whatsapp]
+    text: "{code} is your code to set up {business}. It works for 15 minutes. Don't share it."

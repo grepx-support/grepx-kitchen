@@ -128,6 +128,24 @@
     "reacts_to": []
   },
   {
+    "name": "crm-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/crm-service",
+    "request_table": "crm_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "CRM for any business: people and companies, deals on a pipeline the business shapes (drag between stages, won / lost with why), activities (calls, meetings, notes, tasks with due dates), one timeline per contact, my agenda, forecast, win rate and deals going stale. Keywords: crm, contacts, customers, leads, deals, pipeline, sales, follow up, activities",
+    "routes": [
+      "activities",
+      "contacts",
+      "deals",
+      "views"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "employee-service",
     "layer": "common",
     "product": "",
@@ -499,6 +517,34 @@
     "reacts_to": []
   },
   {
+    "name": "purchase-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/purchase-service",
+    "request_table": "purchase_requests",
+    "actions": [
+      "APPROVE",
+      "CANCEL",
+      "COPY",
+      "RECEIVE",
+      "SAVE",
+      "SEND"
+    ],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Purchase orders to suppliers: save, change, copy, cancel, receive in full or with changed quantities (receipt adds stock at the holding place); ready-to-send text for WhatsApp. Keywords: PO, supplier order, procurement, receiving, goods in",
+    "routes": [
+      "approve",
+      "cancel",
+      "copy",
+      "goods_port",
+      "receive",
+      "save",
+      "send"
+    ],
+    "reacts_to": []
+  },
+  {
     "name": "questionnaire-service",
     "layer": "common",
     "product": "",
@@ -624,6 +670,19 @@
       "delete",
       "set"
     ],
+    "reacts_to": []
+  },
+  {
+    "name": "signup-service",
+    "layer": "common",
+    "product": "",
+    "path": "common-services/signup-service",
+    "request_table": "signup_requests",
+    "actions": [],
+    "reasons": [],
+    "other_tables": [],
+    "summary": "Self-service sign-up of a new business: the owner's details are held while their email (a link) and mobile (a 6-digit code) are confirmed, then the product sets the business up and its short name becomes its web address (/b/<name>, later <name>.<domain>); old names keep pointing to the new one. Keywords: sign up, signup, register business, onboarding, trial, verify email, OTP, phone code, slug, subdomain, tenant address, SaaS",
+    "routes": [],
     "reacts_to": []
   },
   {
@@ -983,33 +1042,6 @@
       "set_target",
       "warehouse_in",
       "warehouse_out"
-    ],
-    "reacts_to": []
-  },
-  {
-    "name": "purchase-service",
-    "layer": "product",
-    "product": "kitchen",
-    "path": "product-services/kitchen/purchase-service",
-    "request_table": "purchase_requests",
-    "actions": [
-      "APPROVE",
-      "CANCEL",
-      "COPY",
-      "RECEIVE",
-      "SAVE",
-      "SEND"
-    ],
-    "reasons": [],
-    "other_tables": [],
-    "summary": "Purchase orders to suppliers: save, change, copy, cancel, receive in full or with changed quantities (receipt adds stock at the holding place); ready-to-send text for WhatsApp. Keywords: PO, supplier order, procurement, receiving, goods in",
-    "routes": [
-      "approve",
-      "cancel",
-      "copy",
-      "receive",
-      "save",
-      "send"
     ],
     "reacts_to": []
   },

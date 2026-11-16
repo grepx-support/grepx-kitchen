@@ -43,13 +43,15 @@ export async function landing(el) {
   el.innerHTML = String(html`<div class="lp">
     <header class="lp-top"><a class="lp-brand" href="#/welcome"><span>${p.logo || ""}</span>${p.name || "Kitchen"}</a>
       <nav><a href="#features" data-jump>Features</a><a href="#how" data-jump>How it works</a><a href="#plans" data-jump>Plans</a>
-      <a class="btn small" href="#/login">Sign in</a><a class="btn small primary" href="#demo" data-jump>Request a demo</a></nav></header>
+      <a class="btn small" href="#/login">Sign in</a>${state.product.signup === "business" ? html`<a class="btn small primary" href="#/signup">Start free</a>`
+        : html`<a class="btn small primary" href="#demo" data-jump>Request a demo</a>`}</nav></header>
 
     <section class="lp-hero"><div>
       <p class="lp-kicker">${icon("sparkle", { size: 15 })} For central kitchens, cloud kitchens and restaurant groups</p>
       <h1>Know what every plate costs - <em>today</em>, not at month end.</h1>
       <p class="lp-lead">${p.name || "Kitchen"} runs your store, kitchen, warehouse and deliveries in one place, and turns every movement into stock, cost and alerts as it happens.</p>
-      <div class="lp-cta"><a class="btn primary" href="#demo" data-jump>Request a demo ${icon("arrow", { size: 16 })}</a><a class="btn" href="#features" data-jump>See what it does</a></div></div>
+      <div class="lp-cta">${state.product.signup === "business" ? html`<a class="btn primary" href="#/signup">Start free - set up in 2 minutes ${icon("arrow", { size: 16 })}</a><a class="btn" href="#demo" data-jump>Request a demo</a>`
+        : html`<a class="btn primary" href="#demo" data-jump>Request a demo ${icon("arrow", { size: 16 })}</a>`}<a class="btn" href="#features" data-jump>See what it does</a></div></div>
       <div class="lp-mock" aria-hidden="true"><div class="lp-mbar"><i></i><i></i><i></i></div>
         <div class="lp-mkpi"><b>28.4%</b><span>food cost today</span></div><div class="lp-mkpi"><b>3</b><span>alerts</span></div>
         <div class="lp-mrow" style="--w:82%;--c:#0ea5e9"><span>Chicken thigh</span><i></i></div>

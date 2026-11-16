@@ -36,10 +36,11 @@
     "staff",
     "admin"
   ],
-  "signup": false,
+  "signup": "business",
   "home_after_login": "#/",
   "modules": [
     "core/auth",
+    "core/signup",
     "kitchen/today",
     "business/my",
     "kitchen/kitchen",
@@ -118,5 +119,15 @@
   "assistant": {
     "name": "Kitchen assistant",
     "greeting": "Hi! I know your stock, orders, money and kitchen - ask me in your own words, or pick a question:"
+  },
+  "signup_copy": {
+    "unit": "kitchen",
+    "checklist": [
+      "Add your logo, address and tax number in Setup",
+      "Add your central store, kitchens and outlets",
+      "Add your items and recipes (or import them)",
+      "Add your suppliers",
+      "Invite your staff"
+    ]
   }
 }

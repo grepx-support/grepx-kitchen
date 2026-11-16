@@ -6,6 +6,7 @@
 import grepx_contracts as gc
 
 from grepx_bff import business, people
+from grepx_bff.routers import signup
 from kitchen import ACCESS
 from people_hooks import OutletCosts, labour_into_costs
 from . import api_keys, approvals, attachments, audit, bills, branding, chef, data, dispatch, pdf, safety, closing, costs, inventory, kitchen, me, orders, forecast, outbox, platform, public, quotes, report, runs, sales, setup, stock, warehouse
@@ -23,3 +24,4 @@ ROUTERS = ACCESS.gate_all(ROUTERS, [(r, f.value) for r, f in FEATURE_OF])
 # Team, roster, leave, payroll, my work and funds are shared (grepx_bff.people); the kitchen adds its costs to them.
 SHARED = people.routers(after_finalise=labour_into_costs, fund_costs=OutletCosts())
 ROUTERS = business.ACCESS.gate_all([r for r, _ in SHARED], [(r, f) for r, f in SHARED if f]) + ROUTERS
+ROUTERS += signup.routers("kitchen")     # self-service sign-up (signup-service); deployment `kitchen:` names the roles
