@@ -237,5 +237,15 @@ Grouped as Unleashed groups its features. ✅ we have it · 🟡 partly · ⬜ n
 | Accounting (Xero / QuickBooks) | 🟡 | Money → Accounting: balanced journal, trial balance, Xero and QuickBooks import files (grepx_money.ledger) ✅; live sync ⬜ (integration-service) |
 | E-commerce / delivery apps (Shopify, Grab, Swiggy...) | ⬜ | integration-service: orders in, stock out |
 
+## Barcodes and labels
+| Feature | | Where |
+|---|---|---|
+| Scan the maker's barcode on packs (USB / Bluetooth scanner or phone / laptop camera) to pick the item on Warehouse in, Warehouse out, Transfer, waste and stock correction | ✅ | kit ItemPalette (scanner types + Enter, camera), item barcode |
+| Lot labels: item, lot / batch, expiry ("USE BY"), date received, bin, quantity, with a barcode; printed right after goods arrive or from Lots & expiry | ✅ | web lib/labels.js, warehouse lots |
+| Scanning a lot label picks its item on Warehouse out, Transfer, waste and corrections | ✅ | lotResolver |
+| Batch labels for what the kitchen made: dish, made on, use by (shelf life), batch, veg mark, allergens - printed after a production run, copies per container | ✅ | web kitchen page |
+| Shelf labels for items (their barcode, or their own code when they have none) | ✅ | Setup -> Items |
+| A4 label sheets (24 / 40) or thermal 50 x 25 / 38 x 25 mm label printers | ✅ | platform web/modules/business/lib/labels.js |
+
 **Suggested next, in order:** ~~(1) customer price lists, quantity breaks and charge lines~~ done; ~~(2) landed cost; (3) supplier returns; (4) disassembly and combos~~ done; ~~(5) attachments~~ done; ~~(6) recall~~ done; ~~(7) API keys; (8) accounting export~~ done. **Next:** live accounting sync, B2B ordering store, supplier lead times / currency, over-stock alerts, CRM activity history.
 

@@ -14,6 +14,7 @@ import { catalogue } from "../lib/items.js";
 import { picker } from "../lib/place.js";
 import { receive } from "../orders/common.js";
 import { frame } from "./common.js";
+import { lotLabel, printLabelsDialog } from "../lib/labels.js";
 
 export async function warehouseIn(el) {
   const b = await biz();
@@ -37,11 +38,27 @@ export async function warehouseIn(el) {
     ...(bins.length ? [{ name: "bin_id", label: "Bin", type: "select", options: [["", "-"], ...bins.map((x) => [x.id, x.code])] }] : [])] });
   builder.mount(body.querySelector(".slot"));
   body.querySelectorAll("[data-receive]").forEach((btn) => btn.onclick = async () => {
-    if (await receive(open.orders.find((o) => o.id === btn.dataset.receive))) warehouseIn(el);
+    const order = open.orders.find((o) => o.id === btn.dataset.receive);
+    if (await receive(order)) { await offerLabels(place.id, (order.lines || []).map((l) => l.item_id)); warehouseIn(el); }
   });
   body.querySelector("[data-add]").onclick = async () => {
     const lines = builder.lines();
     if (!lines.length) return toast("Add what arrived.");
-    if (await run(() => api("/stock/receive", { method: "POST", body: { location_id: body.querySelector('[name="at"]').value, lines, note: body.querySelector('[name="note"]').value } }), "Received")) warehouseIn(el);
+    const at = body.querySelector('[name="at"]').value;
+    if (await run(() => api("/stock/receive", { method: "POST", body: { location_id: at, lines, note: body.querySelector('[name="note"]').value } }), "Received")) {
+      await offerLabels(at, lines.map((l) => l.item_id));
+      warehouseIn(el);
+    }
   };
+}
+
+/** After goods arrive: print a label for each lot received today (item, lot, expiry), to stick on the boxes. */
+async function offerLabels(place, itemIds) {
+  const day = new Date().toISOString().slice(0, 10);
+  for (let i = 0; i < 4; i++) {                           // the warehouse files the lots a moment after the stock arrives
+    const f = await api(`/warehouse?location_id=${place}`).catch(() => null);
+    const fresh = (f?.lots || []).filter((l) => itemIds.includes(l.item_id) && (l.received || "") >= day);
+    if (fresh.length) return printLabelsDialog(fresh.map(lotLabel));
+    await new Promise((r) => setTimeout(r, 500));
+  }
 }

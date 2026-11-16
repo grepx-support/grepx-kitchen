@@ -12,6 +12,7 @@ import { catalogue } from "../lib/items.js";
 import { picker } from "../lib/place.js";
 import { REASONS } from "../lib/waste.js";
 import { breakdownCard, wireBreakdown } from "./breakdown.js";
+import { lotResolver } from "../lib/labels.js";
 import { frame } from "./common.js";
 
 export async function move(el) {
@@ -28,11 +29,13 @@ export async function move(el) {
     ${has("adjust_stock") ? html`<section class="card accent k-section" style="--area:#e11d48"><h2>${icon("alert")} Adjust stock</h2>
       <p class="muted">Enter the right quantity. A reason is required and kept in the history.</p><div class="k-bar">${picker(b.locations, first, () => true, "at", "At")}
       <label class="grow">Reason<input name="note" minlength="3" placeholder="e.g. miscounted yesterday"></label><button class="btn danger" data-adjust>Adjust</button></div><div class="a"></div></section>` : ""}`);
-  const transfer = new Builder({ items, title: "Items", label: "Move" });
+  const lots = await api("/warehouse").then((f) => f.lots).catch(() => []);
+  const scan = { scan: true, resolve: lotResolver(items, lots) };       // scanning a box's barcode or lot label picks its item
+  const transfer = new Builder({ items, title: "Items", label: "Move", ...scan });
   transfer.mount(body.querySelector(".t"));
-  const wasted = canWaste() ? new Builder({ items, title: "Items", label: "Thrown away", empty: "Drag in what was thrown away" }) : null;
+  const wasted = canWaste() ? new Builder({ items, title: "Items", label: "Thrown away", empty: "Drag in what was thrown away", ...scan }) : null;
   if (wasted) wasted.mount(body.querySelector(".w"));
-  const adjust = has("adjust_stock") ? new Builder({ items, title: "Items", label: "Correct qty", empty: "Drag in the item to correct" }) : null;
+  const adjust = has("adjust_stock") ? new Builder({ items, title: "Items", label: "Correct qty", empty: "Drag in the item to correct", ...scan }) : null;
   if (adjust) adjust.mount(body.querySelector(".a"));
   wireBreakdown(body, items, () => move(el));
   const val = (name) => body.querySelector(`[name="${name}"]`).value;

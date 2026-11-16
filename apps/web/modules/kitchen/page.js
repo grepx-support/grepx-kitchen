@@ -12,6 +12,7 @@ import { biz, has } from "../lib/business.js";
 import { fmt, time } from "../lib/format.js";
 import { catalogue, finished, notFinished } from "../lib/items.js";
 import { isKitchen, picker, remember, remembered } from "../lib/place.js";
+import { batchLabel, printLabelsDialog } from "../lib/labels.js";
 import { history, ingredients, targetCards } from "./target.js";
 import { manualTarget, wireManualTarget } from "./manual-target.js";
 
@@ -41,13 +42,25 @@ export async function kitchen(el, q) {
   use.mount(el.querySelector(".use"));
   const again = () => kitchen(el, { location: loc });
   el.querySelector("[data-pick]").onchange = (e) => { remember(e.target.value); kitchen(el, { location: e.target.value }); };
-  el.querySelector("[data-prod]").onclick = () => save(prod, "/kitchen/production", loc, "Enter what you made.", "Production saved", again);
+  el.querySelector("[data-prod]").onclick = async () => {
+    const made = prod.lines();
+    if (!(await save(prod, "/kitchen/production", loc, "Enter what you made.", "Production saved"))) return;
+    // A label for each container of what was just made: use-by from the item's shelf life, allergens from its recipe.
+    const marks = await api("/chef/allergens").then((r) => Object.fromEntries(r.dishes.map((d) => [d.item_id, d]))).catch(() => ({}));
+    const batch = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+    const labels = made.map((l) => items.find((i) => i.id === l.item_id)).filter(Boolean)
+      .map((i) => batchLabel(i, { batch, allergens: marks[i.id]?.allergens?.length ? marks[i.id].allergens : null, diet: marks[i.id]?.diet || null }));
+    if (labels.length) await printLabelsDialog(labels, { copies: true });
+    again();
+  };
   el.querySelector("[data-use]").onclick = () => save(use, "/kitchen/use", loc, "Enter what you used.", "Ingredients saved", again);
   wireManualTarget(el, again);
 }
 
 async function save(builder, path, loc, nothing, done, again) {
   const lines = builder.lines();
-  if (!lines.length) return toast(nothing);
-  if (await run(() => api(path, { method: "POST", body: { location_id: loc, lines } }), done)) again();
+  if (!lines.length) { toast(nothing); return false; }
+  const ok = !!(await run(() => api(path, { method: "POST", body: { location_id: loc, lines } }), done));
+  if (ok && again) again();
+  return ok;
 }

@@ -37,7 +37,8 @@ def items(k: Kitchen = Depends(allow())):
     rows = [r for r in k.rows(gc.item.ITEMS) if r.get("active", True)]
     return {"items": [{"id": r["_key"], "name": r.get("name", ""), "unit": r.get("unit", ""), "kind": r.get("kind", ""),
                        "category": r.get("category", ""), "barcode": r.get("barcode", ""), "price": r.get("price") or 0,
-                       "shelf_life_days": r.get("shelf_life_days"), "components": r.get("components") or [],
+                       "shelf_life_days": r.get("shelf_life_days"), "allergens": r.get("allergens") or [], "diet": r.get("diet") or "",
+                       "components": r.get("components") or [],
                        "breaks_into": r.get("breaks_into") or []} for r in listed(rows, "name")]}
 
 

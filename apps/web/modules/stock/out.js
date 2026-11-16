@@ -11,6 +11,7 @@ import { biz } from "../lib/business.js";
 import { fmt } from "../lib/format.js";
 import { catalogue } from "../lib/items.js";
 import { isHolding, notHolding, picker, remember, remembered } from "../lib/place.js";
+import { lotResolver } from "../lib/labels.js";
 import { frame } from "./common.js";
 
 export async function warehouseOut(el, q) {
@@ -25,7 +26,8 @@ export async function warehouseOut(el, q) {
       <button class="btn primary" data-send>${icon("send", { size: 16 })} Send stock</button></div>
     <p class="muted">Suggested: enough for <b>${plan.days_of_cover}</b> days${plan.has_history ? ` (from ${plan.history_days} days of usage)` : " - no usage history yet, drag items in"}.</p>
     <div class="slot"></div></div>`);
-  const builder = new Builder({ title: "Warehouse stock", label: "Send",
+  const lots = await api(`/warehouse?location_id=${from}`).then((f) => f.lots).catch(() => []);
+  const builder = new Builder({ title: "Warehouse stock", label: "Send", scan: true, resolve: lotResolver(items, lots),
     items: items.map((i) => ({ ...i, hint: `warehouse ${fmt(at[i.id] || 0)} ${i.unit}` })),
     lines: plan.lines.map((l) => ({ item_id: l.item_id, name: l.name, unit: l.unit, qty: l.suggested ?? "", hint: `there ${fmt(l.at_location)} · warehouse ${fmt(l.at_holding)}` })) });
   builder.mount(body.querySelector(".slot"));

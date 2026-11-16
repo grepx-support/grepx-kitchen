@@ -12,6 +12,7 @@ import { partsBlock, partsOf, wireParts } from "./parts.js";
 import { option, post, sortList, values, wireSort } from "./common.js";
 import { itemFields, pickedAllergens } from "../chef/marks.js";
 import { mountAttachments } from "../lib/attachments.js";
+import { itemLabel, printLabelsDialog } from "../lib/labels.js";
 
 const TAG = { ingredient: "🥩", finished: "🌮", supply: "📦" };
 
@@ -59,11 +60,16 @@ export default {
   id: "items", label: "Items", icon: "box",
   render(el, s, q) {
     const sup = Object.fromEntries(s.suppliers.map((x) => [x.id, x.name]));
-    el.innerHTML = String(html`<section class="card"><p class="muted">Drag to set the order items appear on every screen.</p>
+    el.innerHTML = String(html`<section class="card"><p class="muted" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
+        <span>Drag to set the order items appear on every screen.</span><button type="button" class="btn small" data-shelf>${icon("printer", { size: 14 })} Shelf labels</button></p>
       ${sortList(s.items.map((i) => ({ id: i.id, title: i.name, tag: TAG[i.kind] || "•", img: i.image_id, off: i.active === false, href: `#/setup?tab=items&edit=${i.id}`,
         sub: `${i.kind} · ${i.unit} · cost ${fmt(i.cost)}${i.category ? ` · ${i.category}` : ""}${sup[i.supplier_id] ? ` · ${sup[i.supplier_id]}` : ""}` })))}</section>
       ${q.edit ? pictureBlock(s.items.find((i) => i.id === q.edit) || {}) : ""}${q.edit ? costHistory(s.items.find((i) => i.id === q.edit) || {}) : ""}${form(s.items.find((i) => i.id === q.edit), s.suppliers, s.items)}`);
     wireSort(el, "items");
+    el.querySelector("[data-shelf]").onclick = () => {      // the one being edited, else every active item - its barcode (or its id) to scan
+      const one = s.items.find((i) => i.id === q.edit);
+      printLabelsDialog((one ? [one] : s.items.filter((i) => i.active !== false)).map(itemLabel), { copies: true });
+    };
     wirePicture(el, q.edit);
     wireParts(el.querySelector("form"), s.items.find((i) => i.id === q.edit) || {}, s.items);
     el.querySelector("form").onsubmit = async (e) => {
