@@ -4,7 +4,5 @@
  * Unauthorised copying, use, modification or distribution is strictly prohibited.
  */
 
-// Can this browser draw the 3D views? Kept apart from stage.js so asking does not download three.js.
-export function webglWorks() {
-  try { const c = document.createElement("canvas"); return !!(window.WebGL2RenderingContext && c.getContext("webgl2")); } catch { return false; }
-}
+// Shared by every business product: this is the platform copy (web/modules/business/lib/three/support.js).
+export * from "/assets/modules/business/lib/three/support.js";

@@ -35,6 +35,7 @@ messages:                  # message role a generic service sends -> template ke
 plugins:
   path: product-services/kitchen/plugins
   purchasing: purchasing_kitchen        # shared purchase-service: items, suppliers, holding places, stock RECEIVE
+  warehouse: warehouse_kitchen          # shared warehouse-service: zones, items with shelf life, lots, picks -> stock SEND
 
 kitchen:                   # read by kitchen-bff when it sets up a new business (platform operator or self-service sign-up)
   staff_roles: [owner, warehouse, kitchen, closing, delivery]     # copied from catalog/access.yaml roles for each business
