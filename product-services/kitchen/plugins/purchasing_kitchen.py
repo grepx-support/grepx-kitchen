@@ -31,3 +31,19 @@ def receive(ctx, tenant, order, lines):
                 {"action": gc.stock.StockAction.RECEIVE.value, "tenant_id": tenant, "location_id": order["location_id"],
                  "lines": lines, "ref": order["po_id"], "supplier_id": order["supplier_id"], "note": f"Purchase order {order['number']}",
                  "actor_id": ctx.text("actor_id"), "actor_name": ctx.text("actor_name")}, gc.stock.SERVICE)
+
+
+def set_costs(ctx, tenant, bill, costs):
+    """An approved supplier bill's landed unit costs become the items' costs (payables-service)."""
+    ctx.request(gc.item.REQUESTS, f"recost-{bill['bill_id']}",
+                {"action": gc.item.ItemAction.SET_COSTS.value, "tenant_id": tenant, "costs": costs, "source": f"Bill {bill.get('supplier_ref', '')}",
+                 "actor_id": ctx.text("actor_id"), "actor_name": ctx.text("actor_name")}, gc.item.SERVICE)
+
+
+def send_back(ctx, tenant, key, location_id, lines, bill, entry):
+    """Goods returned to the supplier leave stock at that place (payables-service RETURN_GOODS)."""
+    ctx.request(gc.stock.REQUESTS, f"ret-{key}",
+                {"action": gc.stock.StockAction.RETURN.value, "tenant_id": tenant, "location_id": location_id,
+                 "lines": [{"item_id": l["item_id"], "qty": float(l["qty"])} for l in lines], "supplier_id": bill["supplier_id"],
+                 "reason": entry["reason"], "ref": bill["bill_id"], "note": f"Return to {bill.get('supplier_name', '')} ({bill.get('supplier_ref', '')})",
+                 "actor_id": ctx.text("actor_id"), "actor_name": ctx.text("actor_name")}, gc.stock.SERVICE)
