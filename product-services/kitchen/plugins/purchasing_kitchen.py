@@ -27,7 +27,7 @@ def may_receive_at(place):
 
 
 def receive(ctx, tenant, order, lines):
-    ctx.request(gc.stock.REQUESTS, f"po-{order['po_id']}",
+    ctx.request(gc.stock.REQUESTS, f"po-{order['po_id']}" + (f"-{order['delivery_no']}" if order.get("delivery_no", 1) > 1 else ""),
                 {"action": gc.stock.StockAction.RECEIVE.value, "tenant_id": tenant, "location_id": order["location_id"],
                  "lines": lines, "ref": order["po_id"], "supplier_id": order["supplier_id"], "note": f"Purchase order {order['number']}",
                  "actor_id": ctx.text("actor_id"), "actor_name": ctx.text("actor_name")}, gc.stock.SERVICE)
