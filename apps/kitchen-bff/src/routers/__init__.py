@@ -6,8 +6,9 @@
 import grepx_contracts as gc
 
 from grepx_bff import business, people
-from grepx_bff.routers import business_page, signup
-from kitchen import ACCESS
+from grepx_bff.routers import ai, business_page, signup
+import ai_facts
+from kitchen import ACCESS, allow
 from people_hooks import OutletCosts, labour_into_costs
 from . import api_keys, approvals, attachments, audit, bills, branding, chef, data, dispatch, pdf, safety, closing, costs, inventory, kitchen, me, orders, forecast, outbox, platform, public, quotes, report, runs, sales, setup, stock, warehouse
 
@@ -26,3 +27,5 @@ SHARED = people.routers(after_finalise=labour_into_costs, fund_costs=OutletCosts
 ROUTERS = business.ACCESS.gate_all([r for r, _ in SHARED], [(r, f) for r, f in SHARED if f]) + ROUTERS
 ROUTERS += signup.routers("kitchen")     # self-service sign-up (signup-service); deployment `kitchen:` names the roles
 ROUTERS += business_page.routers()      # each business's own public page (site-service)
+ROUTERS += [ai.router(dep=allow("view_stock", "view_costs", "manage_business", "kitchen"), facts=ai_facts.facts, brief=ai_facts.brief,
+                      product="GrepX Kitchen")]      # AI: the morning brief and "ask anything" (ai-service)

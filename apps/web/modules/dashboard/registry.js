@@ -6,6 +6,7 @@
 
 // Every widget the kitchen home can show. A new widget = a new file here plus one line below; nothing else changes.
 import { WidgetRegistry } from "/assets/kit/index.js";
+import brief from "./brief.js";
 import closings from "./closings.js";
 import cogs from "./cogs.js";
 import deliveries from "./deliveries.js";
@@ -18,4 +19,4 @@ import orders from "./orders.js";
 import safety from "./safety.js";
 
 export const widgets = new WidgetRegistry();
-[hello, cogs, money, kitchen, needed, safety, orders, deliveries, closings, moves].forEach((w) => widgets.register(w));
+[brief, hello, cogs, money, kitchen, needed, safety, orders, deliveries, closings, moves].forEach((w) => widgets.register(w));

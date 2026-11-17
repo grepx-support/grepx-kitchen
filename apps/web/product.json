@@ -117,6 +117,13 @@
     "costs_hint": "Name a use like one of your outlets and its real costs (Costs page: ingredients, labour, rent, other) and EBITDA are compared with what it was given."
   },
   "landing": "#/welcome",
+  "ai": {"ask": "/ai/ask"},
+  "mobile_tabs": [
+    {"label": "Home", "icon": "home", "href": "#/"},
+    {"label": "Kitchen", "icon": "pot", "href": "#/kitchen", "perm": "kitchen"},
+    {"label": "Stock", "icon": "box", "href": "#/stock", "perm": "view_stock"},
+    {"label": "Closing", "icon": "clipboard", "href": "#/closing", "perm": "closing"}
+  ],
   "assistant": {
     "name": "Kitchen assistant",
     "greeting": "Hi! I know your stock, orders, money and kitchen - ask me in your own words, or pick a question:"
