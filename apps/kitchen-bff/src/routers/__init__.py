@@ -3,6 +3,8 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """Kitchen routes; the common ones (auth, tasks, messages, access, media, gateway) come from grepx_bff."""
+from pathlib import Path
+
 import grepx_contracts as gc
 
 from grepx_bff import business, people
@@ -28,4 +30,4 @@ ROUTERS = business.ACCESS.gate_all([r for r, _ in SHARED], [(r, f) for r, f in S
 ROUTERS += signup.routers("kitchen")     # self-service sign-up (signup-service); deployment `kitchen:` names the roles
 ROUTERS += business_page.routers()      # each business's own public page (site-service)
 ROUTERS += [ai.router(dep=allow("view_stock", "view_costs", "manage_business", "kitchen"), facts=ai_facts.facts, brief=ai_facts.brief,
-                      product="GrepX Kitchen")]      # AI: the morning brief and "ask anything" (ai-service)
+                      product="GrepX Kitchen", context=ai.context_of(Path(__file__).resolve().parents[4] / "product-services" / "kitchen" / "catalog" / "ai_context.md"), model="grepx-kitchen")]      # AI: the morning brief and "ask anything" (ai-service)
