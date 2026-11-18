@@ -4,6 +4,7 @@
 
 // Kitchen Stock & Costing - phone app. The server is chosen at build time: --dart-define=API_BASE=https://...
 // Same /api/v1 as the web app; each screen shows only to users whose role allows it (the server checks again).
+// "More" opens every other feature - the web pages, signed in - so nothing on the web is missing on the phone.
 import 'package:flutter/material.dart';
 
 import 'core/api.dart';
@@ -16,6 +17,7 @@ import 'screens/login_screen.dart';
 import 'screens/orders_screen.dart';
 import 'screens/stock_screen.dart';
 import 'screens/warehouse_out_screen.dart';
+import 'screens/web_screen.dart';
 
 const apiBase = String.fromEnvironment('API_BASE', defaultValue: 'http://10.0.2.2:8861');
 
@@ -80,7 +82,10 @@ class _ShellState extends State<Shell> {
       TabSpec('Deliveries', Icons.delivery_dining_outlined, 'delivery', 'inventory', () => DeliveriesScreen(api: api)),
       TabSpec('Stock', Icons.inventory_2_outlined, 'view_stock', 'inventory', () => StockScreen(api: api)),
     ];
-    final tabs = all.where((t) => (t.perm.isEmpty || s.can(t.perm)) && (t.module.isEmpty || s.moduleOn(t.module))).toList();
+    // Every other feature (AI chat, recipes, costing, purchasing, bills, team, setup...): the product's own pages, signed in.
+    final more = TabSpec('More', Icons.apps, '', '', () => WebScreen(key: const ValueKey('more'), base: api.base, path: '#/', token: s.token));
+    final daily = all.where((t) => (t.perm.isEmpty || s.can(t.perm)) && (t.module.isEmpty || s.moduleOn(t.module))).toList();
+    final tabs = [...daily.take(4), more];                  // a phone bar holds five: four daily tasks, then everything else
     if (index >= tabs.length) index = 0;
     return Scaffold(
       appBar: AppBar(
