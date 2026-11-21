@@ -2,19 +2,21 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-name: kitchen_mobile
-description: Kitchen Stock & Costing - the phone app for owners, warehouse, kitchen, store/truck and delivery staff.
+# Kitchen Stock & Costing on the phone (iOS + Android). The look, shell, sign-in, notifications and charts come from the shared
+# package grepx_app (grepx-platform, linked in as platform/ by ./workspace.sh); this app adds only the kitchen screens.
+name: grepx_kitchen
+description: Kitchen Stock & Costing - production, closing, sending stock, orders, deliveries and stock on the phone.
 publish_to: none
-version: 1.0.0+1
+version: 2.0.0+2
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.1
-  shared_preferences: ^2.2.3
+  grepx_app:
+    path: ../../platform/mobile/grepx_app
   url_launcher: ^6.3.0
-  webview_flutter: ^4.10.0
+  flutter_animate: ^4.5.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

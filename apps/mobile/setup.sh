@@ -3,32 +3,10 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-# Prepare the Flutter app (first time: generates the android/ and ios/ shells, then fetches packages).
+# The kitchen phone app - once, after cloning (and after a Flutter upgrade); the work is in the shared setup.
 #   ./setup.sh
-#   flutter run --dart-define=API_BASE=http://10.0.2.2:8861                    (Android emulator, local server)
-#   flutter build apk --release --dart-define=API_BASE=https://kitchen.example.com
+#   flutter run --dart-define=API_BASE=https://your.domain.com      (emulator + local server: http://10.0.2.2:8861)
+#   flutter build apk --release --dart-define=API_BASE=https://your.domain.com
 set -euo pipefail
 cd "$(dirname "$0")"
-
-say() { printf '%s %-5s [%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" "mobile" "$2"; }
-die() { say ERROR "$1"; exit 1; }
-
-command -v flutter >/dev/null 2>&1 || die "Flutter is not installed - see https://docs.flutter.dev/get-started/install"
-if [ ! -d android ]; then
-  say INFO "generating the android/ and ios/ shells (first time)"
-  flutter create --org sg.grepx --project-name kitchen_mobile --platforms=android,ios . >/dev/null || die "flutter create failed"
-fi
-# the app talks to the server and opens the camera for scanning (Android release builds need these said)
-M=android/app/src/main/AndroidManifest.xml
-for perm in INTERNET CAMERA; do grep -q "permission.$perm" "$M" || sed -i.bak "/<manifest/a\    <uses-permission android:name=\"android.permission.$perm\"/>" "$M"; done
-P=ios/Runner/Info.plist
-grep -q NSCameraUsageDescription "$P" || sed -i.bak "0,/<dict>/s|<dict>|<dict>\n\t<key>NSCameraUsageDescription</key>\n\t<string>Scan barcodes, IMEIs and QR codes</string>|" "$P"
-rm -f "$M.bak" "$P.bak"
-# Gradle memory: new Flutter projects ask for 8 GB, which WSL / small laptops kill mid-build ("daemon disappeared").
-# 3 GB is plenty for this app; set GRADLE_JVMARGS to change it.
-G=android/gradle.properties
-JVM="${GRADLE_JVMARGS:--Xmx3g -XX:MaxMetaspaceSize=1g -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8}"
-if [ -f "$G" ]; then sed -i.bak "s|^org.gradle.jvmargs=.*|org.gradle.jvmargs=$JVM|" "$G" && rm -f "$G.bak"; fi
-say INFO "fetching packages"
-flutter pub get >/dev/null || die "flutter pub get failed"
-say OK "mobile ready - run: flutter run --dart-define=API_BASE=<your site, e.g. https://kitchen.example.com>"
+exec bash ../../platform/mobile/setup.sh grepx_kitchen "Kitchen"
