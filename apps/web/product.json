@@ -6,6 +6,7 @@
     "primary": "#0d9488",
     "primary-ink": "#ffffff"
   },
+  "palettes": ["bistro", "gold", "ocean", "graphite"],
   "areas": {
     "ai": "#7c3aed",
     "home": "#0d9488",
